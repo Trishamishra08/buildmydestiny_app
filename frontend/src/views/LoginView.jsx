@@ -15,6 +15,9 @@ import { useStore } from '../context/StoreContext';
  *
  * Sign-in is by mobile OTP only: there is no password or social login here.
  */
+// Demo credentials are shown on dev builds, or when VITE_SHOW_DEMO_LOGIN=true.
+const SHOW_DEMO = import.meta.env.DEV || import.meta.env.VITE_SHOW_DEMO_LOGIN === 'true';
+
 export default function LoginView() {
   const { userOtpLogin, navigateTo, addToast } = useStore();
 
@@ -77,6 +80,11 @@ export default function LoginView() {
     // Focus last filled box or next empty
     const nextFocusIndex = Math.min(pasteData.length, 5);
     otpInputRefs.current[nextFocusIndex]?.focus();
+  };
+
+  const fillDemo = () => {
+    setPhoneNumber('9876543210');
+    setOtpValues(['1', '2', '3', '4', '5', '6']);
   };
 
   // Resend OTP handler
@@ -535,6 +543,16 @@ export default function LoginView() {
             <span>{loading ? 'Please wait...' : 'LOGIN'}</span>
           </button>
         </form>
+
+        {SHOW_DEMO && (
+          <button
+            type="button"
+            onClick={fillDemo}
+            style={{ width: '100%', marginTop: '1rem', background: '#FFF8E1', border: '1px dashed #FFB800', borderRadius: 12, padding: '0.6rem 0.75rem', color: '#0A0A0A', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+          >
+            Demo access · 9876543210 · OTP 123456 — <span style={{ color: '#0284C7', fontWeight: 800 }}>tap to fill</span>
+          </button>
+        )}
 
         {/* Footer: Create an account */}
         <div
