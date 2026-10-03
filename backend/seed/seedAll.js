@@ -25,9 +25,8 @@ import { SEED_SECTIONS, SEED_CATEGORIES, SEED_PRODUCTS } from './seedDatabase.js
  * admins or customers through the apps are left alone. Pass --reset to also clear the
  * sample orders before re-creating them.
  *
- * Default panel login (OTP is always 123456):
- *   Vendor  phone 9876543210   (Destiny Build Supplies)
- *   Admin   phone 9876543210
+ * Default login for every app (OTP is always 123456): phone 9876543210
+ *   Customer (Trisha Mishra), Vendor (Destiny Build Supplies) and Admin all share it.
  */
 
 const DEFAULT_PHONE = '9876543210';
@@ -141,7 +140,7 @@ const DEMO_ADDRESS = {
   id: 'addr-demo-1',
   label: 'Current Construction Site',
   recipientName: 'Trisha Mishra',
-  phone: '+91 91111 11111',
+  phone: '+91 98765 43210',
   street: '123, Scheme No. 78, Vijay Nagar',
   city: 'Indore',
   state: 'Madhya Pradesh',
@@ -188,7 +187,7 @@ async function seedAccounts() {
 
   const customer = await upsertUser({
     name: 'Trisha Mishra',
-    phone: '+91 91111 11111',
+    phone: '+91 98765 43210',
     email: 'trisha@example.com',
     role: 'customer',
     city: 'Indore',
@@ -355,7 +354,7 @@ async function run() {
   console.log('\n🎉 Seed complete.');
   console.log(`   Vendor panel  /vendor  → phone ${DEFAULT_PHONE}, OTP 123456`);
   console.log(`   Admin panel   /admin   → phone ${DEFAULT_PHONE}, OTP 123456`);
-  console.log('   Customer app  /        → any 10-digit phone, OTP 123456 (demo: 9111111111)');
+  console.log('   Customer app  /        → phone 9876543210, OTP 123456 (other numbers must sign up first)');
   await mongoose.disconnect();
 }
 
