@@ -47,7 +47,11 @@ const allowedOrigins = (process.env.CLIENT_URL || '')
   .filter(Boolean);
 
 // Local Vite dev servers stay allowed so a configured CLIENT_URL never breaks development.
-const devOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+const devOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://buildmydestinyapp-frontend.vercel.app',
+];
 
 app.use(
   cors({

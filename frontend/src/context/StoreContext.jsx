@@ -256,9 +256,17 @@ const parseRouteFromUrl = () => {
     }
 
     const cleanPath = rawPath.replace(/^\/+/, '').replace(/\/+$/, '');
-    const viewName = cleanPath || 'home';
+    let viewName = cleanPath || 'home';
 
     const params = {};
+
+    // Panel deep links: /admin, /vendor, /admin/orders, /vendor/products, /Admin/ ...
+    // The first segment picks the panel and the second one the tab.
+    const [firstSegment, secondSegment] = cleanPath.split('/');
+    if (['admin', 'vendor'].includes(String(firstSegment).toLowerCase())) {
+      viewName = firstSegment.toLowerCase();
+      if (secondSegment) params.tab = secondSegment.toLowerCase();
+    }
     if (rawSearch) {
       const searchParams = new URLSearchParams(rawSearch);
       for (const [key, value] of searchParams.entries()) {
@@ -303,7 +311,7 @@ const buildUrlFromRoute = (view, params = {}) => {
   } else if (view === 'search') {
     const q = params.query || params.q || '';
     if (q) queryParams.set('query', q);
-  } else if (view === 'admin') {
+  } else if (view === 'admin' || view === 'vendor') {
     if (params.tab) queryParams.set('tab', params.tab);
   } else {
     Object.keys(params).forEach((key) => {

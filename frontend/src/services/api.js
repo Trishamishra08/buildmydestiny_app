@@ -1,6 +1,14 @@
-const API_BASE = import.meta.env.DEV
-  ? (import.meta.env.VITE_DEV_API_URL || '/api')
-  : (import.meta.env.VITE_API_URL || '/api');
+// VITE_API_URL may be set as a bare host ("https://api.example.com") or with a trailing slash;
+// normalise it to "<host>/api" so requests never hit "//path" or a missing /api prefix.
+const normalizeApiBase = (url) => {
+  const trimmed = String(url || '').trim().replace(/\/+$/, '');
+  if (!trimmed) return '/api';
+  return /\/api$/.test(trimmed) ? trimmed : `${trimmed}/api`;
+};
+
+const API_BASE = normalizeApiBase(
+  import.meta.env.DEV ? import.meta.env.VITE_DEV_API_URL : import.meta.env.VITE_API_URL
+);
 
 /**
  * Resolve the bearer token to send.

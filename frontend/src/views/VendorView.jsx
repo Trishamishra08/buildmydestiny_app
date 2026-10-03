@@ -592,9 +592,9 @@ const NAV_ITEMS = [
 const ORDER_POLL_MS = 20000;
 
 export default function VendorView() {
-  const { vendorUser, vendorLogout, navigateTo, addToast, categories } = useStore();
+  const { vendorUser, vendorLogout, navigateTo, addToast, categories, viewParams } = useStore();
 
-  const [tab, setTab] = useState('dashboard');
+  const [tab, setTab] = useState(() => (NAV_ITEMS.some((n) => n.id === viewParams?.tab) ? viewParams.tab : 'dashboard'));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [stats, setStats] = useState(null);
   const [products, setProducts] = useState([]);
@@ -687,6 +687,7 @@ export default function VendorView() {
 
   const goTo = (id) => {
     setTab(id);
+    navigateTo('vendor', { tab: id }, true);
     setDrawerOpen(false);
   };
 
