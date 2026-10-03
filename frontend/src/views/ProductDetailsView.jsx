@@ -27,6 +27,7 @@ import { useStore } from '../context/StoreContext';
 import { PRODUCTS } from '../data/mockData';
 import ProductCard from '../components/ProductCard';
 import { getProductOptions, getCartItemKey } from '../utils/pricing';
+import { resolveProductImage } from '../utils/productImages';
 
 export const ProductDetailsView = () => {
   const {
@@ -232,7 +233,10 @@ export const ProductDetailsView = () => {
   }
 
   const isFavorite = isInWishlist(product.id);
-  const galleryImages = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image];
+  const resolvedImg = resolveProductImage(product);
+  const rawGallery = product.gallery && product.gallery.length > 0 ? product.gallery : [resolvedImg];
+  const galleryImages = rawGallery.map((img) => (img && !img.includes('unsplash') ? img : resolvedImg));
+  const activeImage = galleryImages[activeImgIdx] || resolvedImg;
 
   const handleAdd = () => {
     const itemToAdd = {
@@ -243,7 +247,7 @@ export const ProductDetailsView = () => {
       discount: currentDiscount,
       selectedVariant: selectedVariantSummary,
       variantSelection: currentSelection,
-      image: galleryImages[activeImgIdx] || product.image,
+      image: activeImage,
     };
     addToCart(itemToAdd, 1);
   };
@@ -365,26 +369,35 @@ export const ProductDetailsView = () => {
               style={{
                 position: 'relative',
                 backgroundColor: '#FFFFFF',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-subtle)',
+                borderRadius: '16px',
+                border: '1px solid #E2E8F0',
                 overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: 'clamp(280px, 68vw, 420px)',
-                padding: '1rem',
+                minHeight: '280px',
+                height: 'clamp(300px, 72vw, 420px)',
+                padding: '1.5rem',
                 boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)',
               }}
             >
               {/* Product Image */}
               <img
-                src={galleryImages[activeImgIdx]}
+                src={activeImage}
                 alt={product.name}
                 style={{
-                  maxWidth: '100%',
-                  maxHeight: '100%',
+                  width: '100%',
+                  height: '100%',
+                  maxWidth: '360px',
+                  maxHeight: '340px',
                   objectFit: 'contain',
+                  display: 'block',
+                  margin: '0 auto',
                   transition: 'transform 0.3s ease',
+                }}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = resolvedImg;
                 }}
               />
 
@@ -758,52 +771,64 @@ export const ProductDetailsView = () => {
 
       {/* 2. FIXED BOTTOM STICKY PURCHASE BAR (EXACT MATCH TO REFERENCE SCREENSHOT) */}
       <div className="qc-bottom-sticky-bar">
-        <div>
-          {selectedVariantSummary && (
-            <div className="qc-bottom-variant-text" title={selectedVariantSummary}>
-              {selectedVariantSummary}
+        <div
+          style={{
+            maxWidth: '1080px',
+            margin: '0 auto',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+          }}
+        >
+          <div>
+            {selectedVariantSummary && (
+              <div className="qc-bottom-variant-text" title={selectedVariantSummary}>
+                {selectedVariantSummary}
+              </div>
+            )}
+            <div className="qc-bottom-price-row">
+              <span className="qc-bottom-price-val">₹ {currentPrice.toLocaleString()}</span>
+              {currentMrp && <span className="qc-bottom-mrp-val">₹ {currentMrp.toLocaleString()}</span>}
+              {currentDiscount && (
+                <span className="qc-bottom-discount-badge">{currentDiscount}</span>
+              )}
             </div>
-          )}
-          <div className="qc-bottom-price-row">
-            <span className="qc-bottom-price-val">₹ {currentPrice.toLocaleString()}</span>
-            {currentMrp && <span className="qc-bottom-mrp-val">₹ {currentMrp.toLocaleString()}</span>}
-            {currentDiscount && (
-              <span className="qc-bottom-discount-badge">{currentDiscount}</span>
+            <div className="qc-bottom-gst-sub">Including GST</div>
+          </div>
+
+          <div>
+            {qtyInCart > 0 ? (
+              <div className="qc-bottom-qty-counter">
+                <button
+                  type="button"
+                  onClick={handleDecrement}
+                  className="qc-bottom-qty-btn"
+                  aria-label="Decrease quantity"
+                >
+                  <Minus size={14} strokeWidth={2.5} />
+                </button>
+                <span className="qc-bottom-qty-num">{qtyInCart}</span>
+                <button
+                  type="button"
+                  onClick={handleIncrement}
+                  className="qc-bottom-qty-btn"
+                  aria-label="Increase quantity"
+                >
+                  <Plus size={14} strokeWidth={2.5} />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleAdd}
+                className="qc-bottom-add-btn"
+              >
+                <span>Add</span>
+              </button>
             )}
           </div>
-          <div className="qc-bottom-gst-sub">Including GST</div>
-        </div>
-
-        <div>
-          {qtyInCart > 0 ? (
-            <div className="qc-bottom-qty-counter">
-              <button
-                type="button"
-                onClick={handleDecrement}
-                className="qc-bottom-qty-btn"
-                aria-label="Decrease quantity"
-              >
-                <Minus size={14} strokeWidth={2.5} />
-              </button>
-              <span className="qc-bottom-qty-num">{qtyInCart}</span>
-              <button
-                type="button"
-                onClick={handleIncrement}
-                className="qc-bottom-qty-btn"
-                aria-label="Increase quantity"
-              >
-                <Plus size={14} strokeWidth={2.5} />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={handleAdd}
-              className="qc-bottom-add-btn"
-            >
-              <span>Add</span>
-            </button>
-          )}
         </div>
       </div>
     </div>

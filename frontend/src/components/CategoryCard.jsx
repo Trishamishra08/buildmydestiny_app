@@ -6,8 +6,72 @@ import { useStore } from '../context/StoreContext';
  * Creates crisp, clean isolated product graphics without messy photo backgrounds,
  * perfectly matching the quick-commerce aesthetic from reference Image 2.
  */
+const CATEGORY_IMAGE_MAP = {
+  cement: '/images/categories/cat_cement.png',
+  bricks: '/images/categories/cat_bricks.png',
+  brick: '/images/categories/cat_bricks.png',
+  steel: '/images/categories/cat_steel.png',
+  rebars: '/images/categories/cat_steel.png',
+  sand: '/images/categories/cat_sand.png',
+  blocks: '/images/categories/cat_blocks.png',
+  block: '/images/categories/cat_blocks.png',
+  tiles: '/images/categories/cat_tiles.png',
+  tile: '/images/categories/cat_tiles.png',
+  tiling: '/images/categories/cat_tiles.png',
+  electrical: '/images/categories/cat_electrical.png',
+  plumbing: '/images/categories/cat_plumbing.png',
+};
+
+const resolveCategoryIcon = (slug, name, category, image) => {
+  const s = (slug || '').toLowerCase().trim();
+  const n = (name || category?.name || '').toLowerCase().trim();
+
+  // Direct map match
+  if (CATEGORY_IMAGE_MAP[s]) return CATEGORY_IMAGE_MAP[s];
+
+  // Semantic keyword matching for high-priority transparent assets
+  if (s.includes('cement') || n.includes('cement')) return '/images/categories/cat_cement.png';
+  if (s.includes('brick') || n.includes('brick')) return '/images/categories/cat_bricks.png';
+  if (s.includes('steel') || n.includes('steel') || s.includes('rebar') || n.includes('rebar')) return '/images/categories/cat_steel.png';
+  if (s.includes('sand') || n.includes('sand')) return '/images/categories/cat_sand.png';
+  if (s.includes('block') || n.includes('block') || s.includes('aac') || n.includes('aac')) return '/images/categories/cat_blocks.png';
+  if (s.includes('tile') || n.includes('tile') || s.includes('floor') || n.includes('floor')) return '/images/categories/cat_tiles.png';
+  if (s.includes('electr') || n.includes('electr') || s.includes('wire') || n.includes('wire')) return '/images/categories/cat_electrical.png';
+  if (s.includes('plumb') || n.includes('plumb') || s.includes('pipe') || n.includes('pipe')) return '/images/categories/cat_plumbing.png';
+
+  // If category has a custom image that is not an Unsplash photo background
+  const customImg = category?.image || image;
+  if (customImg && typeof customImg === 'string' && !customImg.includes('unsplash.com')) {
+    return customImg;
+  }
+
+  return null;
+};
+
 const CategoryGraphic = ({ slug, name, category, image }) => {
-  const categoryImage = category?.image || image;
+  const categoryImage = resolveCategoryIcon(slug, name, category, image);
+  if (categoryImage) {
+    return (
+      <img
+        src={categoryImage}
+        alt={name || category?.name || 'Category'}
+        style={{
+          width: '78%',
+          height: '78%',
+          objectFit: 'contain',
+          display: 'block',
+          margin: 'auto',
+          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.06))',
+          pointerEvents: 'none',
+        }}
+        loading="lazy"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = '/images/categories/cat_cement.png';
+        }}
+      />
+    );
+  }
   switch (slug) {
     case 'cement':
       return (
@@ -482,16 +546,41 @@ const CategoryGraphic = ({ slug, name, category, image }) => {
 
 /**
  * Quick Commerce Category Tile Component
- * - Crisp light blue squircle background (#EAF4FA)
- * - Isolated, drop-shadowed 3D product bundle illustration
- * - Bold dark title below the tile
+ * - Clean white/soft-gray squircle background matching Image 2
+ * - Isolated, compact transparent product icon
+ * - Bold dark title below the tile (Cement, Bricks, Steel, etc.)
  */
 export const CategoryCard = ({ category }) => {
-  const { navigateTo } = useStore();
+  const { navigateTo, categories } = useStore();
+
+  const rawName = category?.name || '';
+  const lower = rawName.toLowerCase();
+  let displayName = rawName;
+  if (lower.startsWith('cement')) displayName = 'Cement';
+  else if (lower.startsWith('brick')) displayName = 'Bricks';
+  else if (lower.startsWith('steel')) displayName = 'Steel';
+  else if (lower.startsWith('sand')) displayName = 'Sand';
+  else if (lower.startsWith('block')) displayName = 'Blocks';
+  else if (lower.startsWith('tile')) displayName = 'Tiles';
+  else if (lower.startsWith('electr')) displayName = 'Electrical';
+  else if (lower.startsWith('plumb')) displayName = 'Plumbing';
+
+  const handleClick = () => {
+    const targetSlug = (category.slug || displayName.toLowerCase()).trim();
+    const matched = (categories || []).find((c) => {
+      const s = (c.slug || '').toLowerCase();
+      const n = (c.name || '').toLowerCase();
+      return s === targetSlug || n === targetSlug || s.includes(targetSlug) || n.includes(targetSlug);
+    });
+    navigateTo('category-products', {
+      slug: matched ? matched.slug : targetSlug,
+      categoryName: matched ? matched.name : displayName,
+    });
+  };
 
   return (
     <div
-      onClick={() => navigateTo('category-products', { slug: category.slug, categoryName: category.name })}
+      onClick={handleClick}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -502,33 +591,31 @@ export const CategoryCard = ({ category }) => {
       }}
       className="qc-category-item"
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-3px)';
+        e.currentTarget.style.transform = 'translateY(-2px)';
         const box = e.currentTarget.querySelector('.qc-tile-box');
         if (box) {
-          box.style.backgroundColor = 'var(--qc-category-hover, #FFEFC2)';
-          box.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.1)';
-          box.style.borderColor = '#FFD84D';
+          box.style.borderColor = '#FFB800';
+          box.style.boxShadow = '0 4px 12px rgba(255, 184, 0, 0.15)';
         }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateY(0)';
         const box = e.currentTarget.querySelector('.qc-tile-box');
         if (box) {
-          box.style.backgroundColor = 'var(--qc-category-bg, #FFF8E1)';
-          box.style.boxShadow = 'none';
-          box.style.borderColor = 'var(--qc-category-border, #FFE08A)';
+          box.style.borderColor = '#ECEEF2';
+          box.style.boxShadow = '0 1px 4px rgba(0, 0, 0, 0.04)';
         }
       }}
     >
-      {/* Light Blue Squircle Tile Container */}
+      {/* Clean Rounded Square Tile Container (Matching Reference Image 2) */}
       <div
         className="qc-tile-box"
         style={{
           width: '100%',
           aspectRatio: '1 / 1',
-          maxWidth: '110px',
-          backgroundColor: 'var(--qc-category-bg, #FFF8E1)',
-          borderRadius: '18px',
+          maxWidth: '86px',
+          backgroundColor: '#FFFFFF',
+          borderRadius: '16px',
           padding: '8px',
           display: 'flex',
           alignItems: 'center',
@@ -536,11 +623,12 @@ export const CategoryCard = ({ category }) => {
           position: 'relative',
           overflow: 'hidden',
           transition: 'all 0.2s ease',
-          border: '1px solid var(--qc-category-border, #FFE08A)',
+          border: '1px solid #ECEEF2',
+          boxShadow: '0 1px 4px rgba(0, 0, 0, 0.04)',
         }}
       >
         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <CategoryGraphic slug={category.slug} name={category.name} category={category} image={category.image} />
+          <CategoryGraphic slug={category.slug} name={displayName} category={category} image={category.image} />
         </div>
       </div>
 
@@ -555,18 +643,19 @@ export const CategoryCard = ({ category }) => {
       >
         <span
           style={{
-            fontSize: '0.74rem',
-            fontWeight: '700',
+            fontSize: '0.76rem',
+            fontWeight: '600',
             color: '#1E293B',
-            lineHeight: '1.2',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
+            lineHeight: 1.25,
+            letterSpacing: '-0.01em',
+            textAlign: 'center',
+            display: 'block',
             overflow: 'hidden',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
           }}
         >
-          {category.name}
+          {displayName}
         </span>
       </div>
     </div>

@@ -1,9 +1,37 @@
-/**
- * BUILD MY DESTINY – COMPLETE SEEDED DATASET
- * Exact Catalog, Sections & Products matching reference UI
- */
+import 'dotenv/config';
+import mongoose from 'mongoose';
+import Category from '../models/Category.js';
+import CategorySection from '../models/CategorySection.js';
+import Product from '../models/Product.js';
 
-export const CATEGORIES = [
+const SEED_SECTIONS = [
+  {
+    id: 'sec-structural',
+    title: 'Structural & Masonry',
+    slug: 'structural-masonry',
+    description: 'Foundational building materials direct from factory yards',
+    isActive: true,
+    categories: ['cat-cement', 'cat-bricks', 'cat-steel', 'cat-sand', 'cat-blocks'],
+  },
+  {
+    id: 'sec-finishing',
+    title: 'Finishing & Interiors',
+    slug: 'finishing-interiors',
+    description: 'Flooring, wall decor, adhesives and surface protection',
+    isActive: true,
+    categories: ['cat-tiles', 'cat-paints', 'cat-adhesives'],
+  },
+  {
+    id: 'sec-electrical-plumbing',
+    title: 'Electrical & Plumbing',
+    slug: 'electrical-plumbing',
+    description: 'Certified wires, switches, sanitary pipes and water fittings',
+    isActive: true,
+    categories: ['cat-electrical', 'cat-plumbing'],
+  },
+];
+
+const SEED_CATEGORIES = [
   {
     id: 'cat-cement',
     name: 'Cement',
@@ -11,8 +39,6 @@ export const CATEGORIES = [
     section: 'Structural & Masonry',
     sectionId: 'sec-structural',
     image: '/images/categories/cat_cement.png',
-    iconName: 'Building',
-    itemCount: '12 Brands',
     description: 'OPC 53 Grade, PPC & Weather-proof construction cement bags',
     subcategories: ['OPC 53 Grade', 'PPC Cement', 'White Cement', 'Waterproof Cement'],
     isActive: true,
@@ -24,8 +50,6 @@ export const CATEGORIES = [
     section: 'Structural & Masonry',
     sectionId: 'sec-structural',
     image: '/images/categories/cat_bricks.png',
-    iconName: 'Layers',
-    itemCount: '8 Types',
     description: 'Red clay kiln bricks, fly-ash bricks & interlocking pavers',
     subcategories: ['Red Kiln Bricks', 'Fly Ash Bricks', 'Interlocking Pavers'],
     isActive: true,
@@ -37,8 +61,6 @@ export const CATEGORIES = [
     section: 'Structural & Masonry',
     sectionId: 'sec-structural',
     image: '/images/categories/cat_steel.png',
-    iconName: 'ShieldCheck',
-    itemCount: '15 Grades',
     description: 'Fe 550D TMT rebar bundles, binding wire & MS angles',
     subcategories: ['8mm TMT Steel', '10mm TMT Steel', '12mm TMT Steel', 'Binding Wire'],
     isActive: true,
@@ -50,8 +72,6 @@ export const CATEGORIES = [
     section: 'Structural & Masonry',
     sectionId: 'sec-structural',
     image: '/images/categories/cat_sand.png',
-    iconName: 'Truck',
-    itemCount: '6 Types',
     description: 'River sand, M-Sand (manufactured) & plaster sand by dumper',
     subcategories: ['River Sand', 'M-Sand', 'Plaster Sand'],
     isActive: true,
@@ -63,8 +83,6 @@ export const CATEGORIES = [
     section: 'Structural & Masonry',
     sectionId: 'sec-structural',
     image: '/images/categories/cat_blocks.png',
-    iconName: 'Layers',
-    itemCount: '10 Sizes',
     description: 'Autoclaved Aerated Concrete (AAC) lightweight blocks & solid blocks',
     subcategories: ['AAC Lightweight Blocks', 'Solid Concrete Blocks', 'Hollow Blocks'],
     isActive: true,
@@ -76,8 +94,6 @@ export const CATEGORIES = [
     section: 'Finishing & Interiors',
     sectionId: 'sec-finishing',
     image: '/images/categories/cat_tiles.png',
-    iconName: 'Sparkles',
-    itemCount: '50+ Designs',
     description: 'Vitrified floor tiles, wall tiles, tile adhesives & epoxy grouts',
     subcategories: ['Vitrified Floor Tiles', 'Ceramic Wall Tiles', 'Tile Adhesive', 'Epoxy Grout'],
     isActive: true,
@@ -89,9 +105,7 @@ export const CATEGORIES = [
     section: 'Electrical & Plumbing',
     sectionId: 'sec-electrical-plumbing',
     image: '/images/categories/cat_electrical.png',
-    iconName: 'Zap',
-    itemCount: '100+ Items',
-    description: 'Copper wire rolls, conduit pipes, MCBs, distribution boards & modular switches',
+    description: 'Copper wire rolls, conduit pipes, MCBs & modular switches',
     subcategories: ['Copper Wires (FR-LSH)', 'Conduit Pipes & Boxes', 'Modular Switches & Sockets', 'MCB & Distribution'],
     isActive: true,
   },
@@ -102,8 +116,6 @@ export const CATEGORIES = [
     section: 'Electrical & Plumbing',
     sectionId: 'sec-electrical-plumbing',
     image: '/images/categories/cat_plumbing.png',
-    iconName: 'RotateCcw',
-    itemCount: '150+ Fittings',
     description: 'CPVC, UPVC pipes, water storage tanks, brass valves & sanitary fittings',
     subcategories: ['CPVC Pipes & Fittings', 'UPVC Drainage Pipes', 'Brass Valves & Cocks', 'Water Storage Tanks'],
     isActive: true,
@@ -115,8 +127,6 @@ export const CATEGORIES = [
     section: 'Finishing & Interiors',
     sectionId: 'sec-finishing',
     image: '/images/products/prod_asian_paints.png',
-    iconName: 'Sparkles',
-    itemCount: '25 Brands',
     description: 'Interior and exterior emulsions, wall putty, and waterproofing solutions',
     subcategories: ['Interior Matt Emulsion', 'Exterior Weatherproof Paint', 'Wall Putty & Primer'],
     isActive: true,
@@ -128,39 +138,13 @@ export const CATEGORIES = [
     section: 'Finishing & Interiors',
     sectionId: 'sec-finishing',
     image: '/images/products/prod_asian_paints.png',
-    iconName: 'ShieldCheck',
-    itemCount: '18 Types',
     description: 'Wood adhesives, instant adhesives, sealants, and waterproofing chemicals',
     subcategories: ['Wood Adhesives', 'Instant Glues', 'Waterproofing Chemicals'],
     isActive: true,
   },
 ];
 
-export const CATEGORY_SECTIONS = [
-  {
-    id: 'sec-structural',
-    name: 'Structural & Masonry',
-    title: 'Structural & Masonry',
-    slug: 'structural-masonry',
-    categories: ['cat-cement', 'cat-bricks', 'cat-steel', 'cat-sand', 'cat-blocks'],
-  },
-  {
-    id: 'sec-finishing',
-    name: 'Finishing & Interiors',
-    title: 'Finishing & Interiors',
-    slug: 'finishing-interiors',
-    categories: ['cat-tiles', 'cat-paints', 'cat-adhesives'],
-  },
-  {
-    id: 'sec-electrical-plumbing',
-    name: 'Electrical & Plumbing',
-    title: 'Electrical & Plumbing',
-    slug: 'electrical-plumbing',
-    categories: ['cat-electrical', 'cat-plumbing'],
-  },
-];
-
-export const PRODUCTS = [
+const SEED_PRODUCTS = [
   {
     id: 'prod-polycab-wire',
     name: 'Polycab Wire',
@@ -189,7 +173,7 @@ export const PRODUCTS = [
       'Gauge / Size': '1.5 sq mm',
       'Voltage Rating': '1100 V',
     },
-    description: 'Polycab FR-LSH Copper Insulated Wire (1.5 sq mm) certified for residential and commercial electrification with maximum safety and energy efficiency.',
+    description: 'Polycab FR-LSH Copper Insulated Wire (1.5 sq mm) certified for residential electrification with maximum safety.',
   },
   {
     id: 'prod-asian-paints',
@@ -539,74 +523,41 @@ export const PRODUCTS = [
   },
 ];
 
-export const MOCK_ORDERS = [
-  {
-    id: 'BMD-2026-90412',
-    date: '2026-10-02T11:30:00.000Z',
-    items: [
-      {
-        product: PRODUCTS[2], // UltraTech Cement
-        quantity: 20,
-        price: 340,
-      },
-      {
-        product: PRODUCTS[0], // Polycab Wire
-        quantity: 2,
-        price: 1250,
-      },
-    ],
-    total: 9300,
-    status: 'Confirmed',
-    deliveryDate: '2026-10-04',
-    address: 'Site #42, Super Corridor, Indore, MP 452005',
-    paymentMethod: 'Razorpay UPI',
-    paymentStatus: 'Paid',
-  },
-];
+async function seed() {
+  try {
+    const mongoUri = process.env.MONGO_URI;
+    if (!mongoUri) {
+      console.error('MONGO_URI is missing from environment variables');
+      process.exit(1);
+    }
+    console.log('Connecting to MongoDB...');
+    await mongoose.connect(mongoUri);
+    console.log('Connected successfully!');
 
-export const MOCK_ADDRESSES = [
-  {
-    id: 'addr-1',
-    label: 'Current Construction Site',
-    recipientName: 'Harsh Vardhan',
-    phone: '+91 98260 12345',
-    street: 'Plot 42, Scheme 78, Vijay Nagar',
-    city: 'Indore',
-    state: 'Madhya Pradesh',
-    pincode: '452010',
-    isDefault: true,
-  },
-];
+    // 1. Seed Category Sections
+    console.log('Clearing old Category Sections...');
+    await CategorySection.deleteMany({});
+    const insertedSections = await CategorySection.insertMany(SEED_SECTIONS);
+    console.log(`Seeded ${insertedSections.length} Category Sections!`);
 
-export const MOCK_NOTIFICATIONS = [
-  {
-    id: 'notif-1',
-    title: 'Order Dispatched!',
-    message: 'Your order #BMD-2026-90412 with 20 bags of UltraTech Cement has been dispatched from depot.',
-    time: '2 hours ago',
-    read: false,
-  },
-];
+    // 2. Seed Categories
+    console.log('Clearing old Categories...');
+    await Category.deleteMany({});
+    const insertedCats = await Category.insertMany(SEED_CATEGORIES);
+    console.log(`Seeded ${insertedCats.length} Categories!`);
 
-export const MOCK_FAQS = [
-  {
-    category: 'Delivery',
-    question: 'How fast is express delivery to construction sites?',
-    answer: 'Standard depot materials (cement, rebars, sand, bricks) are dispatched within 60 to 90 minutes of order confirmation across covered pin codes.',
-  },
-  {
-    category: 'Quality',
-    question: 'Are all building materials certified and genuine?',
-    answer: 'Yes, 100% of our materials are directly sourced from authorized brand depots (UltraTech, Ambuja, Polycab, Jindal, Kajaria) and include manufacturer batch test certificates.',
-  },
-];
+    // 3. Seed Products
+    console.log('Clearing old Products...');
+    await Product.deleteMany({});
+    const insertedProds = await Product.insertMany(SEED_PRODUCTS);
+    console.log(`Seeded ${insertedProds.length} Products!`);
 
-export const TOP_BRANDS = [
-  { name: 'UltraTech', logo: '/images/products/prod_ultratech.png', count: 12 },
-  { name: 'Polycab', logo: '/images/products/prod_polycab.png', count: 15 },
-  { name: 'Asian Paints', logo: '/images/products/prod_asian_paints.png', count: 20 },
-  { name: 'Jindal Steel', logo: '/images/categories/cat_steel.png', count: 8 },
-  { name: 'Kajaria', logo: '/images/categories/cat_tiles.png', count: 25 },
-];
+    console.log('Seeding complete! E-commerce catalog is ready.');
+    process.exit(0);
+  } catch (err) {
+    console.error('Seeding error:', err);
+    process.exit(1);
+  }
+}
 
-export const CITIES = ['Indore', 'Bhopal', 'Ujjain', 'Dewas'];
+seed();

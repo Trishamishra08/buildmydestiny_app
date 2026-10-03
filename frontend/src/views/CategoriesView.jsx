@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, X, ChevronRight, Layers } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
-import { CATEGORY_SECTIONS } from '../data/mockData';
+import { CATEGORIES, CATEGORY_SECTIONS } from '../data/mockData';
+import CategoryCard from '../components/CategoryCard';
 
 export const CategoriesView = () => {
   const { navigateTo, categorySections, categories } = useStore();
@@ -36,32 +37,43 @@ export const CategoriesView = () => {
     }
   };
 
-  // Build every section from the LIVE category list. Section records also hold copies of
-  // their categories, but those copies are not updated when a category is edited or
-  // deleted, so showing them kept deleted categories visible. A category is listed under
-  // the section named in its `section` field; if no such section exists it still appears
-  // under its own section heading, so nothing the admin added is hidden.
-  const sectionRecords = categorySections && categorySections.length > 0 ? categorySections : CATEGORY_SECTIONS;
-  const liveCategories = (categories || []).filter((cat) => cat && cat.isActive !== false);
+  // Build every section from the live category list or seeded fallback
+  const sectionRecords = (categorySections && categorySections.length > 0) ? categorySections : CATEGORY_SECTIONS;
+  const liveCategories = (categories && categories.length > 0)
+    ? categories.filter((cat) => cat && cat.isActive !== false)
+    : CATEGORIES;
+
   const sectionKey = (value) => String(value || '').trim().toLowerCase();
   const sectionsToUse = [];
   const byKey = new Map();
+
   sectionRecords.forEach((section) => {
     if (section.isActive === false) return;
     const entry = { ...section, categories: [] };
     sectionsToUse.push(entry);
     byKey.set(sectionKey(section.title || section.name), entry);
     if (section.id) byKey.set(`id:${section.id}`, entry);
+    if (section.slug) byKey.set(`slug:${section.slug}`, entry);
   });
+
   liveCategories.forEach((cat) => {
-    const name = cat.section || cat.sectionName || 'Other Materials';
-    let entry = (cat.sectionId && byKey.get(`id:${cat.sectionId}`)) || byKey.get(sectionKey(name));
+    const secName = cat.section || cat.sectionName || '';
+    let entry = (cat.sectionId && byKey.get(`id:${cat.sectionId}`)) ||
+                (secName && byKey.get(sectionKey(secName))) ||
+                sectionsToUse.find((s) => Array.isArray(s.categories) && (s.categories.includes(cat.id) || s.categories.includes(cat.slug)));
+
     if (!entry) {
-      entry = { id: `sec_auto_${sectionKey(name)}`, title: name, slug: sectionKey(name).replace(/[^a-z0-9]+/g, '-'), categories: [] };
-      sectionsToUse.push(entry);
-      byKey.set(sectionKey(name), entry);
+      const fallbackTitle = secName || 'Other Materials';
+      entry = byKey.get(sectionKey(fallbackTitle));
+      if (!entry) {
+        entry = { id: `sec_auto_${sectionKey(fallbackTitle)}`, title: fallbackTitle, slug: sectionKey(fallbackTitle).replace(/[^a-z0-9]+/g, '-'), categories: [] };
+        sectionsToUse.push(entry);
+        byKey.set(sectionKey(fallbackTitle), entry);
+      }
     }
-    entry.categories.push(cat);
+    if (!entry.categories.some((c) => (c.id && c.id === cat.id) || (c.slug && c.slug === cat.slug))) {
+      entry.categories.push(cat);
+    }
   });
 
   // Filter sections and categories based on search input
@@ -200,7 +212,7 @@ export const CategoriesView = () => {
                   {section.title}
                 </h2>
 
-                {/* 4-Column Responsive Grid */}
+                {/* 4-Column Responsive Grid with CategoryCard */}
                 <div
                   style={{
                     display: 'grid',
@@ -209,84 +221,7 @@ export const CategoriesView = () => {
                   }}
                 >
                   {section.categories.map((cat) => (
-                    <div
-                      key={cat.id}
-                      onClick={() => navigateTo('category-products', { slug: cat.slug })}
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                        userSelect: 'none',
-                      }}
-                      className="category-tile-item"
-                    >
-                      {/* Tile Square Box */}
-                      <div
-                        style={{
-                          width: '100%',
-                          aspectRatio: '1 / 1',
-                          borderRadius: '18px',
-                          backgroundColor: '#FFF8E1',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          padding: '8px',
-                          border: '1px solid rgba(0, 0, 0, 0.04)',
-                          boxShadow: '0 1px 4px rgba(0, 0, 0, 0.03)',
-                          transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                          overflow: 'hidden',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
-                          e.currentTarget.style.backgroundColor = '#FFEFC2';
-                          e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.12)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'none';
-                          e.currentTarget.style.backgroundColor = '#FFF8E1';
-                          e.currentTarget.style.boxShadow = '0 1px 4px rgba(0, 0, 0, 0.03)';
-                        }}
-                      >
-                        <img
-                          src={cat.image}
-                          alt={cat.name}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'contain',
-                            borderRadius: '10px',
-                          }}
-                          loading="lazy"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src =
-                              'https://images.unsplash.com/photo-1590069261209-f8e9b8642343?auto=format&fit=crop&q=80&w=300';
-                          }}
-                        />
-                      </div>
-
-                      {/* Label Underneath */}
-                      <span
-                        style={{
-                          marginTop: '6px',
-                          fontSize: '0.74rem',
-                          fontWeight: '700',
-                          color: 'var(--primary-navy)',
-                          textAlign: 'center',
-                          lineHeight: '1.2',
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          wordBreak: 'break-word',
-                          maxWidth: '100%',
-                        }}
-                        title={cat.name}
-                      >
-                        {cat.name}
-                      </span>
-                    </div>
+                    <CategoryCard key={cat.id || cat.slug} category={cat} />
                   ))}
                 </div>
               </div>

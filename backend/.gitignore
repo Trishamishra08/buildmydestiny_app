@@ -12,10 +12,6 @@ frontend/dist/
 .env
 .env*
 *.env
-backend/.env
-backend/.env*
-frontend/.env
-frontend/.env*
 .env.local
 .env.development.local
 .env.test.local

@@ -39,8 +39,8 @@ import {
 
 const StoreContext = createContext(null);
 
-// Clean Data Migration
-const DATA_VERSION = 'mistri_clean_v4_empty';
+// Clean Data Migration (Exact UI Reference Sync)
+const DATA_VERSION = 'mistri_ui_exact_v8';
 if (typeof window !== 'undefined') {
   try {
     if (localStorage.getItem('mistri_app_version') !== DATA_VERSION) {
@@ -54,6 +54,11 @@ if (typeof window !== 'undefined') {
       ];
       keysToPurge.forEach((k) => localStorage.removeItem(k));
       localStorage.setItem('mistri_app_version', DATA_VERSION);
+    }
+    // Also explicitly purge if categories contain test garbage like xyz or jalebi
+    const storedCats = localStorage.getItem('mistri_categories');
+    if (storedCats && (storedCats.includes('xyz') || storedCats.includes('jalebi') || storedCats.includes('unsplash.com'))) {
+      localStorage.removeItem('mistri_categories');
     }
   } catch (e) {
     console.warn('Failed to purge legacy mock storage', e);
@@ -155,7 +160,18 @@ const INITIAL_COUPONS = [
 const INITIAL_QUOTATIONS = [];
 
 // Initial Marketing Banners
-const INITIAL_BANNERS = [];
+const INITIAL_BANNERS = [
+  {
+    id: 'hero-banner-main',
+    title: "Build Your Dream. We'll Help You Build It Right.",
+    subtitle: 'Quality Materials. Trusted Suppliers. Delivered to Your Site.',
+    image: '/hero-banner.jpg',
+    position: 'hero',
+    isActive: true,
+    target: 'products',
+    showTextOverlay: false,
+  },
+];
 
 
 // Initial Site Settings

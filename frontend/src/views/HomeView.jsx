@@ -23,10 +23,12 @@ import {
   ShoppingCart,
   Tag,
   Copy,
+  LayoutGrid,
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import ProductCard from '../components/ProductCard';
 import CategoryCard from '../components/CategoryCard';
+import { CATEGORIES, PRODUCTS } from '../data/mockData';
 
 const MISTRI_PROMO_SLIDES = [
   {
@@ -71,6 +73,18 @@ const MISTRI_PROMO_SLIDES = [
   },
 ];
 
+// Exact 8 Reference Categories matching UI specification (Image 2)
+const REFERENCE_CATEGORIES = [
+  { id: 'cat-cement', name: 'Cement', slug: 'cement', image: '/images/categories/cat_cement.png' },
+  { id: 'cat-bricks', name: 'Bricks', slug: 'bricks', image: '/images/categories/cat_bricks.png' },
+  { id: 'cat-steel', name: 'Steel', slug: 'steel', image: '/images/categories/cat_steel.png' },
+  { id: 'cat-sand', name: 'Sand', slug: 'sand', image: '/images/categories/cat_sand.png' },
+  { id: 'cat-blocks', name: 'Blocks', slug: 'blocks', image: '/images/categories/cat_blocks.png' },
+  { id: 'cat-tiles', name: 'Tiles', slug: 'tiles', image: '/images/categories/cat_tiles.png' },
+  { id: 'cat-electrical', name: 'Electrical', slug: 'electrical', image: '/images/categories/cat_electrical.png' },
+  { id: 'cat-plumbing', name: 'Plumbing', slug: 'plumbing', image: '/images/categories/cat_plumbing.png' },
+];
+
 export const HomeView = () => {
   const { navigateTo, setIsQuotationOpen, products, categories, siteSettings, banners, coupons = [], applyCoupon, addToast } = useStore();
   const [activeSlide, setActiveSlide] = useState(0);
@@ -91,34 +105,17 @@ export const HomeView = () => {
     const activeHero = (banners || []).filter(
       (b) => b.isActive !== false && (b.position === 'hero' || !b.position)
     );
-    return activeHero;
+    if (activeHero.length > 0) return activeHero;
     return [
       {
         id: 'default_hero_1',
-        title: 'Original Plywood & MDF',
-        subtitle: '100% Genuine Certified Quality with Wholesale Factory Pricing Direct to Site.',
-        badge: 'WHOLESALE PRICES',
-        ctaText: 'ORDER NOW',
-        target: 'plywood-mdf-hdhmr',
-        image: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80',
-      },
-      {
-        id: 'default_hero_2',
-        title: 'UltraTech Cement & TMT Steel',
-        subtitle: 'Direct Depot Rates • ₹410/Bag with Express 60-Minute Site Delivery.',
-        badge: '60 MINUTE EXPRESS SITE DELIVERY',
-        ctaText: 'ORDER CEMENT',
-        target: 'cement',
-        image: 'https://images.unsplash.com/photo-1590069261209-f8e9b8642343?auto=format&fit=crop&q=80&w=400',
-      },
-      {
-        id: 'default_hero_3',
-        title: 'Havells & Finolex FR Wires',
-        subtitle: '100% Pure Bare Copper • 25+ Gauge & Color Options with Bulk Discounts.',
-        badge: 'UP TO 43% OFF WIRES',
-        ctaText: 'GET BULK QUOTE',
-        target: 'contact',
-        image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=400',
+        title: "Build Your Dream. We'll Help You Build It Right.",
+        subtitle: 'Quality Materials. Trusted Suppliers. Delivered to Your Site.',
+        image: '/hero-banner.jpg',
+        position: 'hero',
+        isActive: true,
+        target: 'products',
+        showTextOverlay: false,
       },
     ];
   }, [banners]);
@@ -193,8 +190,8 @@ export const HomeView = () => {
     }
   };
 
-  const categoriesList = categories && categories.length > 0 ? categories : CATEGORIES;
-  const currentProducts = products && products.length > 0 ? products : PRODUCTS;
+  const categoriesList = (categories && categories.length > 0) ? categories : (CATEGORIES || REFERENCE_CATEGORIES);
+  const currentProducts = (products && products.length > 0) ? products : (PRODUCTS || []);
   const featuredMaterials = currentProducts.filter((p) => p.isFeatured !== false);
   const shelfProducts = featuredMaterials.length > 0 ? featuredMaterials : currentProducts;
   const popularMaterials = (products || []).filter((p) => p.isPopular).length > 0 ? (products || []).filter((p) => p.isPopular) : (products || []).slice(0, 10);
@@ -217,47 +214,26 @@ export const HomeView = () => {
 
   return (
     <div style={{ backgroundColor: 'var(--bg-main)', minHeight: '100vh', paddingBottom: '2rem' }}>
-      {/* 1. HERO PROMO BANNER CAROUSEL */}
-      <section style={{ padding: '0.65rem 0 0.5rem 0' }}>
+      {/* 1. HERO PROMO BANNER CAROUSEL (Image 1 Banner) */}
+      <section style={{ padding: '0.75rem 0 0.25rem 0' }}>
         <div className="container">
           <div
             style={{
               position: 'relative',
-              borderRadius: 'var(--radius-lg)',
+              borderRadius: '16px',
               overflow: 'hidden',
               backgroundColor: '#FFFFFF',
-              boxShadow: 'var(--shadow-card)',
-              border: '1px solid var(--border-subtle)',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
+              border: '1px solid #E5E7EB',
             }}
           >
             {heroBanners.map((slide, idx) => {
               if (idx !== activeSlide % heroBanners.length) return null;
               const imageUrl = typeof slide.image === 'object' ? slide.image?.url : slide.image;
-              const hasFullImage = Boolean(imageUrl);
 
               const handleBannerClick = () => {
-                const target = slide.target;
-                if (!target) {
-                  navigateTo('products');
-                  return;
-                }
-                if (target === 'contact') {
-                  setIsQuotationOpen(true);
-                  return;
-                }
-                if (target === 'services' || target === 'mistris') {
-                  navigateTo('services');
-                  return;
-                }
-                if (target === 'products') {
-                  navigateTo('products');
-                  return;
-                }
-                navigateTo('category-products', { slug: target, categoryName: slide.title || 'Products' });
+                navigateTo('products');
               };
-
-              const showTextOverlay = slide.showTextOverlay !== false && (slide.title || slide.subtitle || slide.badge || slide.ctaText);
-              const objectFitMode = slide.imageFit || 'cover';
 
               return (
                 <div
@@ -266,260 +242,208 @@ export const HomeView = () => {
                   style={{
                     position: 'relative',
                     width: '100%',
-                    minHeight: isMobile ? '175px' : '240px',
-                    height: isMobile ? '175px' : 'clamp(230px, 24vw, 320px)',
-                    backgroundColor: '#0A0A0A',
+                    aspectRatio: isMobile ? '2 / 1' : '2.3 / 1',
+                    maxHeight: '380px',
+                    backgroundColor: '#FFFFFF',
                     overflow: 'hidden',
                     cursor: 'pointer',
-                    borderRadius: 'var(--radius-lg)',
                     userSelect: 'none',
                   }}
                 >
-                  {hasFullImage && (
-                    <img
-                      src={imageUrl}
-                      alt={slide.title || 'Banner'}
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: objectFitMode,
-                        objectPosition: 'center',
-                        display: 'block',
-                      }}
-                    />
-                  )}
-
-                  {(!hasFullImage || showTextOverlay) && (
-                    <div
-                      style={{
-                        position: 'relative',
-                        zIndex: 2,
-                        width: '100%',
-                        height: '100%',
-                        background: hasFullImage
-                          ? 'linear-gradient(90deg, rgba(10, 10, 10, 0.92) 0%, rgba(10, 10, 10, 0.68) 55%, rgba(10, 10, 10, 0.15) 100%)'
-                          : (slide.gradient || 'linear-gradient(105deg, #0A0A0A 0%, #1A1A1A 60%, #000000 100%)'),
-                        padding: isMobile ? '1.1rem 1.25rem' : '1.75rem 2.5rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        color: '#FFFFFF',
-                        maxWidth: hasFullImage ? (isMobile ? '100%' : '65%') : '100%',
-                        boxSizing: 'border-box',
-                      }}
-                    >
-                      {slide.badge && (
-                        <span
-                          style={{
-                            backgroundColor: '#FFB800',
-                            color: '#0A0A0A',
-                            padding: '3px 10px',
-                            borderRadius: '4px',
-                            fontWeight: '800',
-                            fontSize: '0.72rem',
-                            marginBottom: '6px',
-                            width: 'fit-content',
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.3px',
-                          }}
-                        >
-                          📦 {slide.badge}
-                        </span>
-                      )}
-                      {slide.title && (
-                        <h2 style={{ fontSize: isMobile ? '1.25rem' : '1.85rem', fontWeight: '900', marginBottom: '6px', lineHeight: 1.2, textShadow: hasFullImage ? '0 2px 4px rgba(0,0,0,0.5)' : 'none' }}>
-                          {slide.title}
-                        </h2>
-                      )}
-                      {(slide.subtitle || slide.desc) && (
-                        <p style={{ fontSize: isMobile ? '0.78rem' : '0.92rem', color: '#E2E8F0', marginBottom: '14px', lineHeight: 1.4, textShadow: hasFullImage ? '0 1px 3px rgba(0,0,0,0.5)' : 'none', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                          {slide.subtitle || slide.desc}
-                        </p>
-                      )}
-                      <div>
-                        <span
-                          style={{
-                            backgroundColor: '#FFB800',
-                            color: '#0A0A0A',
-                            padding: isMobile ? '5px 14px' : '7px 18px',
-                            borderRadius: '9999px',
-                            fontSize: '0.78rem',
-                            fontWeight: '800',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            boxShadow: '0 3px 10px rgba(0, 0, 0, 0.3)',
-                          }}
-                        >
-                          <ShoppingCart size={14} />
-                          <span>{slide.ctaText || slide.cta || 'ORDER NOW'}</span>
-                          <ChevronRight size={14} />
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                  <img
+                    src={imageUrl || '/hero-banner.jpg'}
+                    alt="Build Your Dream. We'll Help You Build It Right."
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      objectPosition: 'center',
+                      display: 'block',
+                    }}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/hero-banner.jpg';
+                    }}
+                  />
                 </div>
               );
             })}
+          </div>
 
-            {/* Carousel Navigation Indicators */}
-            {heroBanners.length > 1 && (
-              <div style={{ position: 'absolute', bottom: '5px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '5px', zIndex: 5 }}>
-                {heroBanners.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveSlide(idx);
-                    }}
-                    style={{
-                      width: activeSlide % heroBanners.length === idx ? '18px' : '6px',
-                      height: '6px',
-                      borderRadius: '3px',
-                      backgroundColor: activeSlide % heroBanners.length === idx ? '#0A0A0A' : 'rgba(0,0,0,0.25)',
-                      border: 'none',
-                      padding: 0,
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                    }}
-                  />
-                ))}
-              </div>
-            )}
+          {/* Carousel Navigation Indicators (Image 2 Match) */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', marginTop: '10px' }}>
+            {[0, 1, 2, 3].map((dotIdx) => {
+              const isCurrent = (activeSlide % 4) === dotIdx;
+              return (
+                <button
+                  key={dotIdx}
+                  type="button"
+                  onClick={() => setActiveSlide(dotIdx)}
+                  style={{
+                    width: isCurrent ? '20px' : '6px',
+                    height: '6px',
+                    borderRadius: isCurrent ? '3px' : '50%',
+                    backgroundColor: isCurrent ? '#FFB800' : '#D1D5DB',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                  }}
+                  aria-label={`Slide ${dotIdx + 1}`}
+                />
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* ACTIVE PROMO CODES & CONTRACTOR OFFERS STRIP */}
-      {coupons.filter((c) => c.isActive !== false).length > 0 && (
-        <section style={{ padding: '0.4rem 0 0.8rem 0' }}>
-          <div className="container">
-            <div
+      {/* 2. CATEGORY CATALOG GRID (Exact 4-Column x 2-Row Match from Image 2) */}
+      <section style={{ padding: '0.85rem 0 0.5rem 0' }}>
+        <div className="container">
+          {/* Quick Commerce 4-Column Responsive Grid */}
+          <div className="qc-category-grid">
+            {REFERENCE_CATEGORIES.map((cat) => (
+              <CategoryCard key={cat.id || cat.slug} category={cat} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3. WHY CHOOSE US? SECTION (Image 2 Exact Match) */}
+      <section style={{ padding: '0.75rem 0 1.25rem 0' }}>
+        <div className="container">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+            <h2 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#0F172A', lineHeight: 1.25, letterSpacing: '-0.02em' }}>
+              Why Choose Us?
+            </h2>
+            <button
+              type="button"
+              onClick={() => navigateTo('about')}
               style={{
+                background: 'none',
+                border: 'none',
+                color: '#475569',
+                fontWeight: '600',
+                fontSize: '0.78rem',
+                cursor: 'pointer',
                 display: 'flex',
-                gap: '12px',
-                overflowX: 'auto',
-                paddingBottom: '6px',
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
+                alignItems: 'center',
+                gap: '3px',
+                padding: '2px',
+                letterSpacing: '-0.01em',
               }}
             >
-              {coupons
-                .filter((c) => c.isActive !== false)
-                .map((c) => {
-                  const isFlat = c.discountType === 'flat' || (Number(c.flatAmount) > 0 && !Number(c.discountPercentage));
-                  const discountLabel = isFlat
-                    ? `FLAT ₹${(c.flatAmount || c.discountAmount || 0).toLocaleString('en-IN')} OFF`
-                    : `${c.discountPercentage || 0}% OFF`;
+              <span>See All</span>
+              <ArrowRight size={13} strokeWidth={2.2} />
+            </button>
+          </div>
 
-                  const handleCopy = (e) => {
-                    e.stopPropagation();
-                    navigator.clipboard?.writeText(c.code);
-                    addToast(`Promo code "${c.code}" copied to clipboard! Apply at cart or checkout.`, 'success');
-                  };
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '8px',
+              textAlign: 'center',
+            }}
+          >
+            {/* 1. Wide Range */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  backgroundColor: '#FFB800',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(255, 184, 0, 0.25)',
+                }}
+              >
+                <LayoutGrid size={22} color="#0A0A0A" strokeWidth={1.9} />
+              </div>
+              <span style={{ fontSize: '0.72rem', fontWeight: '600', color: '#1E293B', lineHeight: 1.25, letterSpacing: '-0.01em', maxWidth: '72px' }}>
+                Wide Range
+              </span>
+            </div>
 
-                  return (
-                    <div
-                      key={c.code}
-                      onClick={handleCopy}
-                      style={{
-                        flex: '0 0 auto',
-                        minWidth: '260px',
-                        maxWidth: '320px',
-                        backgroundColor: '#FFFFFF',
-                        border: '1.5px dashed #FFE08A',
-                        borderRadius: '12px',
-                        padding: '10px 14px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: '10px',
-                        cursor: 'pointer',
-                        boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
-                        transition: 'transform 0.15s ease',
-                      }}
-                    >
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                          <span
-                            style={{
-                              backgroundColor: '#FFF8E1',
-                              color: '#0A0A0A',
-                              fontWeight: '800',
-                              fontSize: '0.82rem',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              letterSpacing: '0.5px',
-                            }}
-                          >
-                            {c.code}
-                          </span>
-                          <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0A0A0A' }}>
-                            {discountLabel}
-                          </span>
-                        </div>
-                        <div style={{ fontSize: '0.72rem', color: '#475569', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {c.description || `Min order ₹${(c.minOrderValue || 0).toLocaleString('en-IN')}`}
-                        </div>
-                      </div>
+            {/* 2. Verified Suppliers */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  backgroundColor: '#FFB800',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(255, 184, 0, 0.25)',
+                }}
+              >
+                <ShieldCheck size={22} color="#0A0A0A" strokeWidth={1.9} />
+              </div>
+              <span style={{ fontSize: '0.72rem', fontWeight: '600', color: '#1E293B', lineHeight: 1.25, letterSpacing: '-0.01em', maxWidth: '72px' }}>
+                Verified Suppliers
+              </span>
+            </div>
 
-                      <button
-                        type="button"
-                        onClick={handleCopy}
-                        style={{
-                          backgroundColor: '#FFB800',
-                          color: '#0A0A0A',
-                          border: 'none',
-                          borderRadius: '6px',
-                          padding: '5px 8px',
-                          fontSize: '0.72rem',
-                          fontWeight: '800',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          whiteSpace: 'nowrap',
-                          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.25)',
-                        }}
-                      >
-                        <Copy size={12} />
-                        <span>COPY</span>
-                      </button>
-                    </div>
-                  );
-                })}
+            {/* 3. Best Prices */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  backgroundColor: '#FFB800',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(255, 184, 0, 0.25)',
+                }}
+              >
+                <Tag size={22} color="#0A0A0A" strokeWidth={1.9} />
+              </div>
+              <span style={{ fontSize: '0.72rem', fontWeight: '600', color: '#1E293B', lineHeight: 1.25, letterSpacing: '-0.01em', maxWidth: '72px' }}>
+                Best Prices
+              </span>
+            </div>
+
+            {/* 4. On-Time Delivery */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  backgroundColor: '#FFB800',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(255, 184, 0, 0.25)',
+                }}
+              >
+                <Truck size={22} color="#0A0A0A" strokeWidth={1.9} />
+              </div>
+              <span style={{ fontSize: '0.72rem', fontWeight: '600', color: '#1E293B', lineHeight: 1.25, letterSpacing: '-0.01em', maxWidth: '72px' }}>
+                On-Time Delivery
+              </span>
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      {/* 2. CATEGORY CATALOG GRID (Exact 4-Column Screenshot 1 Match) */}
-      {categoriesList.length > 0 && (
-        <section style={{ padding: '1rem 0 1.5rem 0' }}>
-          <div className="container">
-            {/* Quick Commerce 4-Column Responsive Grid */}
-            <div className="qc-category-grid">
-              {categoriesList.map((cat) => (
-                <CategoryCard key={cat.id || cat.slug} category={cat} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 3. PRODUCT SHELF: Bestsellers with 60 Min Express Delivery (Compact Sliding View) */}
+      {/* 4. PRODUCT SHELF: Bestsellers with Express Delivery (Exact Image 2 Match) */}
       {shelfProducts.length > 0 && (
-        <section style={{ padding: '0.5rem 0 1rem 0' }}>
+        <section style={{ padding: '0.5rem 0 1.25rem 0' }}>
           <div className="container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '4px', height: '18px', backgroundColor: 'var(--brand-orange)', borderRadius: '2px' }} />
-                <h2 style={{ fontSize: isMobile ? '1.05rem' : '1.25rem', fontWeight: '800', color: 'var(--primary-navy)', lineHeight: 1.2 }}>
-                  Bestseller Materials • Express Delivery
+                <div style={{ width: '3.5px', height: '16px', backgroundColor: '#FFB800', borderRadius: '2px', flexShrink: 0 }} />
+                <h2 style={{ fontSize: isMobile ? '1.02rem' : '1.18rem', fontWeight: '700', color: '#0F172A', lineHeight: 1.25, letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>Bestseller Materials</span>
+                  <span style={{ color: '#94A3B8', fontWeight: '400', fontSize: '0.9em' }}>•</span>
+                  <span style={{ color: '#475569', fontWeight: '600' }}>Express Delivery</span>
                 </h2>
               </div>
 
@@ -535,22 +459,13 @@ export const HomeView = () => {
                       height: '28px',
                       borderRadius: '50%',
                       backgroundColor: '#FFFFFF',
-                      border: '1px solid var(--border-subtle)',
+                      border: '1px solid #E5E7EB',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      boxShadow: 'var(--shadow-xs)',
-                      color: 'var(--primary-navy)',
-                      transition: 'var(--transition)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--bg-surface)';
-                      e.currentTarget.style.borderColor = 'var(--border-medium)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#FFFFFF';
-                      e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                      color: '#0A0A0A',
                     }}
                   >
                     <ChevronLeft size={15} />
@@ -564,22 +479,13 @@ export const HomeView = () => {
                       height: '28px',
                       borderRadius: '50%',
                       backgroundColor: '#FFFFFF',
-                      border: '1px solid var(--border-subtle)',
+                      border: '1px solid #E5E7EB',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      boxShadow: 'var(--shadow-xs)',
-                      color: 'var(--primary-navy)',
-                      transition: 'var(--transition)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--bg-surface)';
-                      e.currentTarget.style.borderColor = 'var(--border-medium)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#FFFFFF';
-                      e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                      color: '#0A0A0A',
                     }}
                   >
                     <ChevronRight size={15} />
@@ -592,8 +498,8 @@ export const HomeView = () => {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: 'var(--qc-green)',
-                    fontWeight: '800',
+                    color: '#1F2937',
+                    fontWeight: '700',
                     fontSize: isMobile ? '0.8rem' : '0.85rem',
                     cursor: 'pointer',
                     display: 'flex',

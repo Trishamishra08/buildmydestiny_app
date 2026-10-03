@@ -1,7 +1,9 @@
 import React from 'react';
-import { Truck, Plus, Minus } from 'lucide-react';
+import { Truck, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { getProductOptions } from '../utils/pricing';
+
+import { resolveProductImage } from '../utils/productImages';
 
 /**
  * Quick Commerce Product Card (Compact & Mobile Responsive)
@@ -10,13 +12,13 @@ import { getProductOptions } from '../utils/pricing';
  * - Free Delivery Badge
  * - Product Title & Price / MRP
  * - Assured 2% Cashback Strip
- * - Crisp Green Add / Options / Increment-Decrement Buttons
+ * - Crisp Yellow Add / Stepper Button (No default 1 when not in cart)
  */
 export const ProductCard = ({ product }) => {
   const { navigateTo, addToCart, cart, updateCartQty, openOptionsModal } = useStore();
 
   const cartItem = cart.find(
-    (item) => item.product?.id === product.id || item.product?.slug === product.slug || item.id === product.id
+    (item) => item.product?.id === product.id || item.product?.slug === product.slug || item.id === product.id || (item.cartItemId && item.cartItemId.startsWith(product.id))
   );
   const qtyInCart = cartItem ? cartItem.quantity : 0;
 
@@ -62,112 +64,243 @@ export const ProductCard = ({ product }) => {
 
   const handleIncrement = (e) => {
     e.stopPropagation();
-    updateCartQty(product.id, qtyInCart + 1);
+    const targetKey = cartItem?.cartItemId || product.id;
+    updateCartQty(targetKey, qtyInCart + 1);
   };
 
   const handleDecrement = (e) => {
     e.stopPropagation();
-    updateCartQty(product.id, qtyInCart - 1);
+    const targetKey = cartItem?.cartItemId || product.id;
+    updateCartQty(targetKey, qtyInCart - 1);
   };
+
+  const getDisplaySpec = () => {
+    if (product.subtitle && product.subtitle.trim() && product.subtitle !== '(1)') {
+      return product.subtitle;
+    }
+    const name = product.name || '';
+    const match = name.match(/(\d+(\.\d+)?\s*(sq\s*mm|mm|kg|g|l|ml|m|cm|inch|ft|bag|roll|bucket|ltr|litre))/i);
+    if (match) return `(${match[0].trim()})`;
+
+    const u = (product.unit || '').trim();
+    if (u && u !== '1' && u !== '(1)') {
+      return u.startsWith('(') && u.endsWith(')') ? u : `(${u})`;
+    }
+    return '';
+  };
+
+  const displaySpec = getDisplaySpec();
 
   return (
     <div
       onClick={handleCardClick}
       className="qc-product-card"
+      style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '14px',
+        border: '1px solid #E5E7EB',
+        padding: '10px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        position: 'relative',
+        cursor: 'pointer',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
+        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+        userSelect: 'none',
+      }}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
+      <div>
         {/* Top Image Section */}
-        <div className="qc-product-img-wrap">
-          {/* Top-Right Green Discount Badge */}
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: '100px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '8px',
+          }}
+        >
+          {/* Top-Right Black Discount Badge */}
           {discountPercentage > 0 && (
-            <div className="qc-product-discount-tag-right">
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                backgroundColor: '#0F172A',
+                color: '#FFFFFF',
+                fontSize: '0.62rem',
+                fontWeight: '700',
+                padding: '2.5px 6px',
+                borderRadius: '6px',
+                letterSpacing: '0.02em',
+                lineHeight: 1.1,
+                zIndex: 2,
+              }}
+            >
               {discountPercentage}% OFF
             </div>
           )}
 
           {/* Product Image */}
           <img
-            src={product.image || 'https://images.unsplash.com/photo-1590069261209-f8e9b8642343?auto=format&fit=crop&q=80&w=400'}
+            src={resolveProductImage(product)}
             alt={product.name || 'Product'}
-            className="qc-product-img"
+            style={{
+              maxHeight: '100%',
+              maxWidth: '100%',
+              objectFit: 'contain',
+              display: 'block',
+            }}
             loading="lazy"
             onError={(e) => {
               e.currentTarget.onerror = null;
-              e.currentTarget.src = 'https://images.unsplash.com/photo-1590069261209-f8e9b8642343?auto=format&fit=crop&q=80&w=400';
+              e.currentTarget.src = '/images/products/prod_ultratech.png';
             }}
           />
         </div>
 
         {/* Content Body */}
-        <div className="qc-product-body">
+        <div>
           {/* Product Name */}
           <h3
-            className="qc-product-title"
+            style={{
+              fontSize: '0.82rem',
+              fontWeight: '600',
+              color: '#0F172A',
+              lineHeight: 1.3,
+              marginBottom: '2px',
+              letterSpacing: '-0.015em',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
             title={product.name}
           >
             {product.name}
           </h3>
 
+          {displaySpec && (
+            <div
+              style={{
+                fontSize: '0.70rem',
+                color: '#64748B',
+                marginBottom: '5px',
+                fontWeight: '500',
+                letterSpacing: '-0.005em',
+                lineHeight: 1.2,
+              }}
+            >
+              {displaySpec}
+            </div>
+          )}
+
           {/* Price & MRP Row */}
-          <div className="qc-product-price-row">
-            <span className="qc-price-val">
-              ₹ {(Number(product.price) || 0).toLocaleString('en-IN')}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px', marginBottom: '8px' }}>
+            <span style={{ fontSize: '0.90rem', fontWeight: '700', color: '#0F172A', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+              ₹{(Number(product.price) || 0).toLocaleString('en-IN')}
             </span>
             {product.mrp && Number(product.mrp) > (Number(product.price) || 0) && (
-              <span className="qc-mrp-val">
-                ₹ {Number(product.mrp).toLocaleString('en-IN')}
+              <span style={{ fontSize: '0.72rem', color: '#94A3AF', textDecoration: 'line-through', fontWeight: '400', fontVariantNumeric: 'tabular-nums' }}>
+                ₹{Number(product.mrp).toLocaleString('en-IN')}
               </span>
             )}
           </div>
         </div>
       </div>
 
-      {/* Action Button Section */}
-      <div className="qc-product-actions">
-        {product.hasOptions ? (
-          /* Multi-variant button e.g. "25 Options" or "6 Options" */
+      {/* Action Area: Crisp ADD Button by default, Stepper only when added to cart */}
+      <div style={{ width: '100%', marginTop: '4px' }}>
+        {qtyInCart === 0 ? (
           <button
             type="button"
             onClick={handleAddClick}
-            className="qc-options-btn"
+            style={{
+              width: '100%',
+              height: '32px',
+              backgroundColor: '#FFB800',
+              color: '#0A0A0A',
+              fontWeight: '800',
+              fontSize: '0.80rem',
+              borderRadius: '7px',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '5px',
+              cursor: 'pointer',
+              boxShadow: '0 1px 3px rgba(255, 184, 0, 0.25)',
+              transition: 'transform 0.1s ease',
+            }}
+            aria-label="Add to cart"
           >
-            <span>{product.optionsLabel || `${product.optionsCount || 4} Options`}</span>
+            <span>ADD</span>
+            <Plus size={13} strokeWidth={2.5} />
           </button>
-        ) : qtyInCart > 0 ? (
-          /* Quantity Increment / Decrement Counter */
+        ) : (
           <div
             onClick={(e) => e.stopPropagation()}
-            className="qc-qty-counter"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              backgroundColor: '#FFB800',
+              border: '1px solid #E6A600',
+              borderRadius: '7px',
+              padding: '0 6px',
+              height: '32px',
+              width: '100%',
+              boxShadow: '0 1px 3px rgba(255, 184, 0, 0.25)',
+            }}
           >
             <button
               type="button"
               onClick={handleDecrement}
-              className="qc-qty-btn-minus"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#0A0A0A',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px',
+              }}
               aria-label="Decrease quantity"
             >
-              <Minus size={12} strokeWidth={2.5} />
+              <Minus size={13} strokeWidth={2.5} />
             </button>
-            <span className="qc-qty-number">
+            <span
+              style={{
+                fontSize: '0.84rem',
+                fontWeight: '800',
+                color: '#0A0A0A',
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
               {qtyInCart}
             </span>
             <button
               type="button"
               onClick={handleIncrement}
-              className="qc-qty-btn-plus"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#0A0A0A',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px',
+              }}
               aria-label="Increase quantity"
             >
-              <Plus size={12} strokeWidth={2.5} />
+              <Plus size={13} strokeWidth={2.5} />
             </button>
           </div>
-        ) : (
-          /* Single SKU Crisp Green "Add" Button */
-          <button
-            type="button"
-            onClick={handleAddClick}
-            className="qc-add-btn"
-          >
-            <span>Add</span>
-          </button>
         )}
       </div>
     </div>

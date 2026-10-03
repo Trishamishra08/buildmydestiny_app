@@ -90,13 +90,13 @@ export const Header = () => {
   };
 
   return (
-    <header className="hide-on-mobile" style={{ backgroundColor: '#0A0A0A', borderBottom: '1px solid #1A1A1A', position: 'sticky', top: 0, zIndex: 1000, boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
+    <header className="hide-on-mobile" style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid #E5E7EB', position: 'sticky', top: 0, zIndex: 1000, boxShadow: '0 2px 10px rgba(0,0,0,0.04)' }}>
       {/* 2. Main Header Bar */}
       <div style={{ padding: '12px 0' }}>
         <div className="container flex items-center justify-between gap-6">
           {/* Build My Destiny Brand Logo */}
           <div style={{ flexShrink: 0 }}>
-            <Logo onClick={() => navigateTo('home')} size="medium" inverted />
+            <Logo onClick={() => navigateTo('home')} size="medium" inverted={false} />
           </div>
 
           {/* Location Delivery Selector */}

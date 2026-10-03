@@ -1,10 +1,11 @@
 import React from 'react';
-import buildMyDestinyLogoImg from '../assets/build-my-destiny-logo.png';
+import buildMyDestinyLogoDarkImg from '../assets/build-my-destiny-logo.png';
+import buildMyDestinyLogoLightImg from '../assets/build-my-destiny-logo-light.png';
 
 /**
  * Build My Destiny Brand Logo
  * Official Brand Logo Image:
- * - Direct asset: build-my-destiny-logo.png
+ * - Direct asset: build-my-destiny-logo-light.png (for light backgrounds)
  * - Tagline: "Construction Made Easy"
  */
 export const Logo = ({
@@ -20,15 +21,16 @@ export const Logo = ({
   // Preset dimensions based on size
   const sizeMap = {
     xs: { w: 90, h: 26 },
-    small: { w: 120, h: 34 },
-    medium: { w: 155, h: 44 },
-    large: { w: 210, h: 60 },
-    xlarge: { w: 270, h: 76 },
+    small: { w: 120, h: 36 },
+    medium: { w: 155, h: 46 },
+    large: { w: 210, h: 62 },
+    xlarge: { w: 270, h: 80 },
   };
 
   const currentSize = sizeMap[size] || sizeMap.medium;
   const calculatedWidth = width || currentSize.w;
   const calculatedHeight = height || currentSize.h;
+  const logoSrc = inverted ? buildMyDestinyLogoDarkImg : buildMyDestinyLogoLightImg;
 
   return (
     <div
@@ -51,14 +53,13 @@ export const Logo = ({
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: inverted ? '#FFFFFF' : 'transparent',
-            padding: inverted ? '4px 8px' : '0',
-            borderRadius: inverted ? '8px' : '0',
-            boxShadow: inverted ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
+            backgroundColor: 'transparent',
+            padding: 0,
+            borderRadius: 0,
           }}
         >
           <img
-            src={buildMyDestinyLogoImg}
+            src={logoSrc}
             alt="Build My Destiny – Construction Made Easy"
             style={{
               width: calculatedWidth,

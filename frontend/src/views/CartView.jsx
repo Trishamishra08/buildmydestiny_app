@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { getCartItemKey, couponDiscount } from '../utils/pricing';
+import { resolveProductImage } from '../utils/productImages';
 import BillDetailsCard from '../components/BillDetailsCard';
 import CancellationPolicyCard from '../components/CancellationPolicyCard';
 import UnloadingServiceCard from '../components/UnloadingServiceCard';
@@ -81,37 +82,36 @@ export const CartView = () => {
             backgroundColor: '#FFFFFF',
             borderBottom: '1px solid #E2E8F0',
             padding: '12px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button
-              type="button"
-              onClick={() => navigateTo('home')}
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '8px',
-                border: '1px solid #E2E8F0',
-                backgroundColor: '#FFFFFF',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-              }}
-            >
-              <ChevronLeft size={20} color="#0F172A" />
-            </button>
-            <div>
-              <h1 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', margin: 0, lineHeight: 1.2 }}>
-                Your Cart
-              </h1>
-              <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '500' }}>
-                0 items
-              </span>
+          <div style={{ maxWidth: '600px', margin: '0 auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button
+                type="button"
+                onClick={() => navigateTo('home')}
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '8px',
+                  border: '1px solid #E2E8F0',
+                  backgroundColor: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                }}
+              >
+                <ChevronLeft size={20} color="#0F172A" />
+              </button>
+              <div>
+                <h1 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', margin: 0, lineHeight: 1.2 }}>
+                  Your Cart
+                </h1>
+                <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '500' }}>
+                  0 items
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -188,56 +188,55 @@ export const CartView = () => {
           backgroundColor: '#FFFFFF',
           borderBottom: '1px solid #E2E8F0',
           padding: '12px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button
+              type="button"
+              onClick={() => navigateTo('home')}
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '8px',
+                border: '1px solid #E2E8F0',
+                backgroundColor: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              }}
+            >
+              <ChevronLeft size={20} color="#0F172A" />
+            </button>
+            <h1 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0F172A', margin: 0, lineHeight: 1.2 }}>
+              Your Cart
+            </h1>
+          </div>
+
           <button
             type="button"
-            onClick={() => navigateTo('home')}
+            onClick={clearCart}
             style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '8px',
+              background: '#FFFFFF',
               border: '1px solid #E2E8F0',
-              backgroundColor: '#FFFFFF',
+              borderRadius: '8px',
+              color: '#0F172A',
+              fontSize: '0.82rem',
+              fontWeight: '700',
+              padding: '6px 12px',
+              cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              gap: '6px',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
             }}
           >
-            <ChevronLeft size={20} color="#0F172A" />
+            <ShoppingCart size={15} color="#0F172A" />
+            <span>Clear</span>
           </button>
-          <h1 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0F172A', margin: 0, lineHeight: 1.2 }}>
-            Your Cart
-          </h1>
         </div>
-
-        <button
-          type="button"
-          onClick={clearCart}
-          style={{
-            background: '#FFFFFF',
-            border: '1px solid #E2E8F0',
-            borderRadius: '8px',
-            color: '#0F172A',
-            fontSize: '0.82rem',
-            fontWeight: '700',
-            padding: '6px 12px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-          }}
-        >
-          <ShoppingCart size={15} color="#0F172A" />
-          <span>Clear</span>
-        </button>
       </div>
 
       {/* Main Cart Content Container */}
@@ -311,7 +310,7 @@ export const CartView = () => {
                       }}
                     >
                       <img
-                        src={item.product?.image || 'https://images.unsplash.com/photo-1590069261209-f8e9b8642343?auto=format&fit=crop&q=80&w=400'}
+                        src={resolveProductImage(item.product)}
                         alt={cleanName}
                         style={{
                           width: '100%',
@@ -718,7 +717,7 @@ export const CartView = () => {
           zIndex: 1000,
         }}
       >
-        <div style={{ maxWidth: '540px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <button
             type="button"
             onClick={() => navigateTo('checkout')}

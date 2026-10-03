@@ -26,6 +26,7 @@ import UnloadingServiceCard from '../components/UnloadingServiceCard';
 import { getCartItemKey, couponDiscount } from '../utils/pricing';
 import { getDeliverySchedule } from '../utils/deliverySchedule';
 import { checkDeliveryServiceability } from '../utils/deliveryValidation';
+import { resolveProductImage } from '../utils/productImages';
 
 export const CheckoutView = () => {
   const {
@@ -232,43 +233,42 @@ export const CheckoutView = () => {
           backgroundColor: '#FFFFFF',
           borderBottom: '1px solid #E2E8F0',
           padding: '12px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button
-            type="button"
-            onClick={() => navigateTo('cart')}
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '8px',
-              border: '1px solid #E2E8F0',
-              backgroundColor: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-            }}
-          >
-            <ChevronLeft size={20} color="#0F172A" />
-          </button>
-          <div>
-            <h1 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', margin: 0, lineHeight: 1.2 }}>
-              Your cart
-            </h1>
-            <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '500' }}>
-              {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'} · ₹{(grandTotal || 0).toLocaleString('en-IN')}
-            </span>
+        <div style={{ maxWidth: '600px', margin: '0 auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button
+              type="button"
+              onClick={() => navigateTo('cart')}
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '8px',
+                border: '1px solid #E2E8F0',
+                backgroundColor: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              }}
+            >
+              <ChevronLeft size={20} color="#0F172A" />
+            </button>
+            <div>
+              <h1 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', margin: 0, lineHeight: 1.2 }}>
+                Your cart
+              </h1>
+              <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '500' }}>
+                {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'} · ₹{(grandTotal || 0).toLocaleString('en-IN')}
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#0A0A0A', fontSize: '0.75rem', fontWeight: '700' }}>
-          <ShieldCheck size={18} />
-          <span>100% Secure</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#0A0A0A', fontSize: '0.75rem', fontWeight: '700' }}>
+            <ShieldCheck size={18} />
+            <span>100% Secure</span>
+          </div>
         </div>
       </div>
 
@@ -642,7 +642,7 @@ export const CheckoutView = () => {
                       }}
                     >
                       <img
-                        src={item.product?.image || 'https://images.unsplash.com/photo-1590069261209-f8e9b8642343?auto=format&fit=crop&q=80&w=400'}
+                        src={resolveProductImage(item.product)}
                         alt={cleanName}
                         style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '4px' }}
                       />
@@ -1151,7 +1151,7 @@ export const CheckoutView = () => {
           zIndex: 1000,
         }}
       >
-        <div style={{ maxWidth: '540px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <SlideToOrder
             paymentMethod={paymentMethod}
             amount={grandTotal}
