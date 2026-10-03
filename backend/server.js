@@ -16,6 +16,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import categorySectionRoutes from './routes/categorySectionRoutes.js';
+import vendorRoutes from './routes/vendorRoutes.js';
 import {
   couponRoutes,
   settingsRoutes,
@@ -84,6 +85,7 @@ app.get(['/', '/api'], (req, res) => {
       admin: '/api/admin',
       payments: '/api/payments',
       upload: '/api/upload',
+      vendor: '/api/vendor',
     },
   });
 });
@@ -107,6 +109,7 @@ app.use('/api/support-messages', supportMessageRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/vendor', vendorRoutes);
 
 // Error Handling Middlewares
 app.use(notFound);

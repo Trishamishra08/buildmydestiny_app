@@ -18,7 +18,7 @@ export const MistriCard = ({ mistri, onHireDirectly }) => {
                 position: 'absolute',
                 bottom: 0,
                 right: 0,
-                background: '#10b981',
+                background: '#0A0A0A',
                 borderRadius: '50%',
                 width: '18px',
                 height: '18px',
@@ -57,8 +57,8 @@ export const MistriCard = ({ mistri, onHireDirectly }) => {
           marginBottom: '1rem',
         }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', color: '#fbbf24', fontWeight: '700', fontSize: '0.9rem' }}>
-              <Star size={13} fill="#fbbf24" strokeWidth={0} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px', color: '#E6A600', fontWeight: '700', fontSize: '0.9rem' }}>
+              <Star size={13} fill="#FFB800" strokeWidth={0} />
               <span>{mistri.rating}</span>
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Rating</div>
@@ -72,7 +72,7 @@ export const MistriCard = ({ mistri, onHireDirectly }) => {
           </div>
 
           <div>
-            <div style={{ fontWeight: '700', fontSize: '0.9rem', color: '#10b981' }}>
+            <div style={{ fontWeight: '700', fontSize: '0.9rem', color: '#0A0A0A' }}>
               {mistri.jobsCompleted}+
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Jobs Done</div>

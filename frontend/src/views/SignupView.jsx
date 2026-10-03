@@ -39,23 +39,23 @@ export const SignupView = () => {
   };
 
   return (
-    <div className="page-container" style={{ maxWidth: '480px' }}>
+    <div className="page-container no-bottom-nav" style={{ maxWidth: '480px' }}>
       <div
         style={{
           backgroundColor: '#FFFFFF',
           borderRadius: 'var(--radius-lg)',
           border: '1px solid var(--border-subtle)',
           boxShadow: 'var(--shadow-md)',
-          padding: '2rem 1.75rem',
+          padding: '1.5rem 1.25rem',
           overflow: 'hidden',
         }}
       >
         {/* Brand Header */}
-        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-            <Logo size="medium" />
+        <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.6rem' }}>
+            <Logo size="small" />
           </div>
-          <h1 style={{ fontSize: '1.45rem', color: 'var(--primary-navy)', fontWeight: '800', marginBottom: '4px' }}>
+          <h1 style={{ fontSize: '1.2rem', color: 'var(--primary-navy)', fontWeight: '800', marginBottom: '4px' }}>
             Create Your Account
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
@@ -64,7 +64,7 @@ export const SignupView = () => {
         </div>
 
         {errorMsg && (
-          <div style={{ backgroundColor: '#FEF3F2', border: '1px solid #FDA29B', color: '#D92D20', padding: '8px 12px', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '1rem', fontWeight: 600 }}>
+          <div style={{ backgroundColor: '#F2F2F2', border: '1px solid #CBD5E1', color: '#0A0A0A', padding: '8px 12px', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '1rem', fontWeight: 600 }}>
             {errorMsg}
           </div>
         )}
@@ -143,8 +143,8 @@ export const SignupView = () => {
         </form>
 
         {/* Redirect */}
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-          Already registered on MISTRI?{' '}
+        <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+          Already registered on BuildMyDestiny?{' '}
           <button
             type="button"
             onClick={() => navigateTo('login')}
@@ -158,8 +158,8 @@ export const SignupView = () => {
         <div
           style={{
             textAlign: 'center',
-            marginTop: '1.25rem',
-            paddingTop: '1rem',
+            marginTop: '1rem',
+            paddingTop: '0.85rem',
             borderTop: '1px solid #F1F5F9',
             fontSize: '0.78rem',
             color: '#64748B',
@@ -176,7 +176,7 @@ export const SignupView = () => {
             style={{
               background: 'none',
               border: 'none',
-              color: '#0284C7',
+              color: '#0A0A0A',
               fontWeight: '700',
               cursor: 'pointer',
               textDecoration: 'underline',

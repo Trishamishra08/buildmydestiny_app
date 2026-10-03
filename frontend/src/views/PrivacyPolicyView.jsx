@@ -68,7 +68,7 @@ export const PrivacyPolicyView = () => {
             Privacy Policy
           </h1>
           <p style={{ color: '#64748B', fontSize: '0.85rem', margin: 0 }}>
-            Effective Date: September 2026 • MISTRI Technologies & Building Logistics Pvt. Ltd.
+            Effective Date: September 2026 • BuildMyDestiny Technologies & Building Logistics Pvt. Ltd.
           </p>
         </div>
 
@@ -77,9 +77,9 @@ export const PrivacyPolicyView = () => {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '6px',
-            backgroundColor: '#F0FDF4',
-            color: '#16A34A',
-            border: '1px solid #BBF7D0',
+            backgroundColor: '#F2F2F2',
+            color: '#0A0A0A',
+            border: '1px solid #CBD5E1',
             padding: '6px 12px',
             borderRadius: '8px',
             fontSize: '0.78rem',
@@ -109,13 +109,13 @@ export const PrivacyPolicyView = () => {
       >
         <section>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
-            <Building size={20} color="#EA580C" />
+            <Building size={20} color="#FFB800" />
             <h2 style={{ fontSize: '1.15rem', color: '#0F172A', fontWeight: '800', margin: 0 }}>
               1. Information We Collect
             </h2>
           </div>
           <p style={{ color: '#475569', fontSize: '0.88rem', margin: 0 }}>
-            When you register an account or place bulk construction orders on MISTRI, we collect essential business and site information including:
+            When you register an account or place bulk construction orders on BuildMyDestiny, we collect essential business and site information including:
           </p>
           <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.25rem', color: '#475569', fontSize: '0.88rem' }}>
             <li><strong>Contractor & Builder Details:</strong> Full name, firm/company name, contact telephone number, and email.</li>
@@ -127,7 +127,7 @@ export const PrivacyPolicyView = () => {
 
         <section>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
-            <ShieldCheck size={20} color="#2563EB" />
+            <ShieldCheck size={20} color="#0A0A0A" />
             <h2 style={{ fontSize: '1.15rem', color: '#0F172A', fontWeight: '800', margin: 0 }}>
               2. How We Use Your Information
             </h2>
@@ -145,19 +145,19 @@ export const PrivacyPolicyView = () => {
 
         <section>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
-            <Lock size={20} color="#16A34A" />
+            <Lock size={20} color="#FFB800" />
             <h2 style={{ fontSize: '1.15rem', color: '#0F172A', fontWeight: '800', margin: 0 }}>
               3. Payment & Data Security
             </h2>
           </div>
           <p style={{ color: '#475569', fontSize: '0.88rem', margin: 0 }}>
-            All electronic payments (UPI, Credit/Debit Cards, Net Banking, RTGS/NEFT) are executed via RBI-authorized 256-bit SSL encrypted payment gateways (e.g. Razorpay). <strong>MISTRI does not store confidential card CVV or banking security PINs on our servers.</strong>
+            All electronic payments (UPI, Credit/Debit Cards, Net Banking, RTGS/NEFT) are executed via RBI-authorized 256-bit SSL encrypted payment gateways (e.g. Razorpay). <strong>BuildMyDestiny does not store confidential card CVV or banking security PINs on our servers.</strong>
           </p>
         </section>
 
         <section>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.5rem' }}>
-            <FileText size={20} color="#9333EA" />
+            <FileText size={20} color="#0A0A0A" />
             <h2 style={{ fontSize: '1.15rem', color: '#0F172A', fontWeight: '800', margin: 0 }}>
               4. Data Sharing & Third-Party Protections
             </h2>
@@ -176,10 +176,10 @@ export const PrivacyPolicyView = () => {
           </p>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '0.85rem', color: '#334155' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Mail size={16} color="#EA580C" /> support@mistri.com
+              <Mail size={16} color="#FFB800" /> support@buildmydestiny.com
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Phone size={16} color="#EA580C" /> +91 98260 11223
+              <Phone size={16} color="#FFB800" /> +91 98260 11223
             </span>
           </div>
         </section>
@@ -190,15 +190,15 @@ export const PrivacyPolicyView = () => {
             type="button"
             onClick={() => navigateTo(user ? 'home' : 'login')}
             style={{
-              backgroundColor: '#EA580C',
-              color: '#FFFFFF',
+              backgroundColor: '#FFB800',
+              color: '#0A0A0A',
               border: 'none',
               borderRadius: '8px',
               padding: '10px 24px',
               fontWeight: '700',
               fontSize: '0.9rem',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(234,88,12,0.25)',
+              boxShadow: '0 2px 6px rgba(255,184,0,0.35)',
             }}
           >
             {user ? 'Return to Home Store' : 'Return to Sign In'}

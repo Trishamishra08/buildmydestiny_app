@@ -86,7 +86,7 @@ export const ProfileView = () => {
     },
     {
       id: 'support',
-      title: 'MISTRI Support & FAQs',
+      title: 'BuildMyDestiny Support & FAQs',
       icon: Headphones,
       onClick: () => navigateTo('help'),
     },
@@ -215,7 +215,7 @@ export const ProfileView = () => {
                   width: '54px',
                   height: '54px',
                   borderRadius: '14px',
-                  backgroundColor: '#F0F7FA',
+                  backgroundColor: '#F2F2F2',
                   border: '1px solid #E2E8F0',
                   display: 'flex',
                   alignItems: 'center',
@@ -223,7 +223,7 @@ export const ProfileView = () => {
                   flexShrink: 0,
                 }}
               >
-                <User size={26} color="#08274C" strokeWidth={1.8} />
+                <User size={26} color="#0A0A0A" strokeWidth={1.8} />
               </div>
 
               {/* Name & Phone Number with Country Tag */}
@@ -306,14 +306,14 @@ export const ProfileView = () => {
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '16px',
-              border: '1.5px solid #FEDF89',
-              background: 'linear-gradient(135deg, #FFFDF0 0%, #FFFFFF 100%)',
+              border: '1.5px solid #FFE08A',
+              background: 'linear-gradient(135deg, #FFF8E1 0%, #FFFFFF 100%)',
               padding: '18px 16px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: '12px',
-              boxShadow: '0 2px 8px rgba(241,90,36,0.06)',
+              boxShadow: '0 2px 8px rgba(255,184,0,0.15)',
               marginBottom: '18px',
             }}
           >
@@ -323,7 +323,7 @@ export const ProfileView = () => {
                   width: '50px',
                   height: '50px',
                   borderRadius: '14px',
-                  backgroundColor: '#FFE8DE',
+                  backgroundColor: '#FFF8E1',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -377,8 +377,8 @@ export const ProfileView = () => {
                   userSelect: 'none',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = isDanger ? '#FECACA' : '#CBD5E1';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(8, 39, 76, 0.05)';
+                  e.currentTarget.style.borderColor = isDanger ? '#CBD5E1' : '#CBD5E1';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.05)';
                   e.currentTarget.style.transform = 'translateY(-1px)';
                 }}
                 onMouseLeave={(e) => {
@@ -395,8 +395,8 @@ export const ProfileView = () => {
                       width: '38px',
                       height: '38px',
                       borderRadius: '10px',
-                      backgroundColor: isDanger ? '#FEF2F2' : '#EFF6FF',
-                      border: isDanger ? '1px solid #FEE2E2' : '1px solid #DBEAFE',
+                      backgroundColor: isDanger ? '#F2F2F2' : '#FFF8E1',
+                      border: isDanger ? '1px solid #E2E8F0' : '1px solid #FFE08A',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -405,7 +405,7 @@ export const ProfileView = () => {
                   >
                     <IconComp
                       size={19}
-                      color={isDanger ? '#DC2626' : '#2563EB'}
+                      color={isDanger ? '#0A0A0A' : '#0A0A0A'}
                       strokeWidth={2.2}
                     />
                   </div>
@@ -414,7 +414,7 @@ export const ProfileView = () => {
                     style={{
                       fontSize: '0.94rem',
                       fontWeight: '600',
-                      color: isDanger ? '#DC2626' : '#1E293B',
+                      color: isDanger ? '#0A0A0A' : '#1E293B',
                       letterSpacing: '-0.01em',
                     }}
                   >
@@ -425,7 +425,7 @@ export const ProfileView = () => {
                 {/* Right Area: Chevron Arrow */}
                 <ChevronRight
                   size={18}
-                  color={isDanger ? '#F87171' : '#94A3B8'}
+                  color={isDanger ? '#94A3B8' : '#94A3B8'}
                   strokeWidth={2.2}
                 />
               </div>
@@ -566,7 +566,7 @@ export const ProfileView = () => {
                 </button>
                 <button
                   type="submit"
-                  style={{ flex: 1, height: '42px', borderRadius: '8px', border: 'none', backgroundColor: '#2563EB', color: '#FFFFFF', fontWeight: '700', cursor: 'pointer' }}
+                  style={{ flex: 1, height: '42px', borderRadius: '8px', border: 'none', backgroundColor: '#FFB800', color: '#0A0A0A', fontWeight: '700', cursor: 'pointer' }}
                 >
                   Save Changes
                 </button>
@@ -608,9 +608,9 @@ export const ProfileView = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {activePolicyModal === 'shipping' ? (
-                  <Truck size={22} color="#2563EB" />
+                  <Truck size={22} color="#0A0A0A" />
                 ) : (
-                  <RotateCcw size={22} color="#2563EB" />
+                  <RotateCcw size={22} color="#0A0A0A" />
                 )}
                 <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', margin: 0 }}>
                   {activePolicyModal === 'shipping' ? 'Shipping Policy' : 'Refund & Cancellation Policy'}
@@ -705,21 +705,21 @@ export const ProfileView = () => {
                 width: '48px',
                 height: '48px',
                 borderRadius: '50%',
-                backgroundColor: '#FEF2F2',
+                backgroundColor: '#F2F2F2',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 14px auto',
               }}
             >
-              <LogOut size={22} color="#DC2626" />
+              <LogOut size={22} color="#0A0A0A" />
             </div>
 
             <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', marginBottom: '6px' }}>
               Log Out of Account?
             </h3>
             <p style={{ fontSize: '0.84rem', color: '#64748B', marginBottom: '20px' }}>
-              Are you sure you want to sign out from your MISTRI contractor account?
+              Are you sure you want to sign out from your BuildMyDestiny contractor account?
             </p>
 
             <div style={{ display: 'flex', gap: '10px' }}>
@@ -733,7 +733,7 @@ export const ProfileView = () => {
               <button
                 type="button"
                 onClick={handleConfirmLogout}
-                style={{ flex: 1, height: '42px', borderRadius: '8px', border: 'none', backgroundColor: '#DC2626', color: '#FFFFFF', fontWeight: '700', cursor: 'pointer' }}
+                style={{ flex: 1, height: '42px', borderRadius: '8px', border: 'none', backgroundColor: '#0A0A0A', color: '#FFFFFF', fontWeight: '700', cursor: 'pointer' }}
               >
                 Log Out
               </button>
@@ -775,14 +775,14 @@ export const ProfileView = () => {
                 width: '48px',
                 height: '48px',
                 borderRadius: '50%',
-                backgroundColor: '#FEF2F2',
+                backgroundColor: '#F2F2F2',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 14px auto',
               }}
             >
-              <Trash2 size={22} color="#DC2626" />
+              <Trash2 size={22} color="#0A0A0A" />
             </div>
 
             <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', marginBottom: '6px' }}>
@@ -803,7 +803,7 @@ export const ProfileView = () => {
               <button
                 type="button"
                 onClick={handleConfirmDelete}
-                style={{ flex: 1, height: '42px', borderRadius: '8px', border: 'none', backgroundColor: '#DC2626', color: '#FFFFFF', fontWeight: '700', cursor: 'pointer' }}
+                style={{ flex: 1, height: '42px', borderRadius: '8px', border: 'none', backgroundColor: '#0A0A0A', color: '#FFFFFF', fontWeight: '700', cursor: 'pointer' }}
               >
                 Delete
               </button>

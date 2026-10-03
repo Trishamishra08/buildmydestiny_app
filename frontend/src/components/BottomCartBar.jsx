@@ -97,21 +97,21 @@ export const BottomCartBar = () => {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '9px',
-            background: 'linear-gradient(135deg, #E23744 0%, #D32F2F 100%)',
-            color: '#FFFFFF',
+            background: 'linear-gradient(135deg, #FFB800 0%, #E6A600 100%)',
+            color: '#0A0A0A',
             borderRadius: '9999px',
             padding: '5px 9px 5px 5px',
-            boxShadow: '0 6px 20px rgba(226, 55, 68, 0.52), 0 2px 6px rgba(0, 0, 0, 0.16)',
+            boxShadow: '0 6px 20px rgba(255, 184, 0, 0.52), 0 2px 6px rgba(0, 0, 0, 0.16)',
             userSelect: 'none',
             transition: 'transform 0.15s ease, box-shadow 0.15s ease',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.04)';
-            e.currentTarget.style.boxShadow = '0 8px 24px rgba(226, 55, 68, 0.65)';
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(255, 184, 0, 0.65)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(226, 55, 68, 0.52), 0 2px 6px rgba(0, 0, 0, 0.16)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 184, 0, 0.52), 0 2px 6px rgba(0, 0, 0, 0.16)';
           }}
           title="View Cart"
         >
@@ -153,7 +153,7 @@ export const BottomCartBar = () => {
               style={{
                 fontSize: '0.86rem',
                 fontWeight: '800',
-                color: '#FFFFFF',
+                color: '#0A0A0A',
                 lineHeight: '1.15',
                 letterSpacing: '-0.01em',
               }}
@@ -164,7 +164,7 @@ export const BottomCartBar = () => {
               style={{
                 fontSize: '0.68rem',
                 fontWeight: '600',
-                color: 'rgba(255, 255, 255, 0.92)',
+                color: 'rgba(10, 10, 10, 0.75)',
                 lineHeight: '1.1',
               }}
             >
@@ -178,12 +178,12 @@ export const BottomCartBar = () => {
               width: '26px',
               height: '26px',
               borderRadius: '50%',
-              backgroundColor: 'rgba(255, 255, 255, 0.28)',
+              backgroundColor: 'rgba(10, 10, 10, 0.15)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-              color: '#FFFFFF',
+              color: '#0A0A0A',
             }}
           >
             <ChevronRight size={15} strokeWidth={3} />

@@ -90,13 +90,13 @@ export const Header = () => {
   };
 
   return (
-    <header className="hide-on-mobile" style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid var(--border-subtle)', position: 'sticky', top: 0, zIndex: 1000, boxShadow: 'var(--shadow-xs)' }}>
+    <header className="hide-on-mobile" style={{ backgroundColor: '#0A0A0A', borderBottom: '1px solid #1A1A1A', position: 'sticky', top: 0, zIndex: 1000, boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
       {/* 2. Main Header Bar */}
       <div style={{ padding: '12px 0' }}>
         <div className="container flex items-center justify-between gap-6">
-          {/* MISTRI Brand Logo */}
+          {/* Build My Destiny Brand Logo */}
           <div style={{ flexShrink: 0 }}>
-            <Logo onClick={() => navigateTo('home')} size="medium" />
+            <Logo onClick={() => navigateTo('home')} size="medium" inverted />
           </div>
 
           {/* Location Delivery Selector */}
@@ -132,7 +132,7 @@ export const Header = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'var(--primary-orange)',
+                color: '#0A0A0A',
               }}
             >
               <Truck size={18} strokeWidth={2.2} />
@@ -186,7 +186,7 @@ export const Header = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#FFFFFF',
+                  color: '#0A0A0A',
                   cursor: 'pointer',
                   border: 'none',
                 }}
@@ -273,7 +273,7 @@ export const Header = () => {
                               <div style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--text-primary)' }}>{p.name}</div>
                               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{p.brand} • {p.unit}</div>
                             </div>
-                            <div style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--primary-orange)' }}>
+                            <div style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0A0A0A' }}>
                               ₹{p.price}
                             </div>
                           </div>
@@ -332,13 +332,13 @@ export const Header = () => {
                 gap: '2px',
                 background: 'none',
                 cursor: 'pointer',
-                color: currentView === 'wishlist' ? 'var(--primary-orange)' : 'var(--text-primary)',
+                color: currentView === 'wishlist' ? 'var(--primary-orange)' : '#FFFFFF',
                 position: 'relative',
                 padding: '4px 8px',
               }}
             >
               <div style={{ position: 'relative' }}>
-                <Heart size={22} fill={wishlist.length > 0 ? '#F47721' : 'none'} color={wishlist.length > 0 ? '#F47721' : 'currentColor'} />
+                <Heart size={22} fill={wishlist.length > 0 ? '#FFB800' : 'none'} color={wishlist.length > 0 ? '#FFB800' : 'currentColor'} />
                 {wishlist.length > 0 && (
                   <span
                     style={{
@@ -346,7 +346,7 @@ export const Header = () => {
                       top: '-6px',
                       right: '-8px',
                       backgroundColor: 'var(--primary-orange)',
-                      color: '#FFFFFF',
+                      color: '#0A0A0A',
                       fontSize: '0.65rem',
                       fontWeight: '800',
                       width: '16px',
@@ -374,7 +374,7 @@ export const Header = () => {
                 gap: '2px',
                 background: 'none',
                 cursor: 'pointer',
-                color: currentView === 'orders' ? 'var(--primary-orange)' : 'var(--text-primary)',
+                color: currentView === 'orders' ? 'var(--primary-orange)' : '#FFFFFF',
                 padding: '4px 8px',
               }}
             >
@@ -389,16 +389,16 @@ export const Header = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
-                backgroundColor: 'var(--primary-navy)',
-                color: '#FFFFFF',
+                backgroundColor: 'var(--primary-orange)',
+                color: '#0A0A0A',
                 padding: '8px 14px',
                 borderRadius: 'var(--radius-sm)',
                 cursor: 'pointer',
-                boxShadow: 'var(--shadow-xs)',
+                boxShadow: '0 2px 8px rgba(255, 184, 0, 0.3)',
                 transition: 'var(--transition)',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--dark-navy)')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary-navy)')}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary-orange-hover)')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary-orange)')}
             >
               <div style={{ position: 'relative' }}>
                 <ShoppingCart size={20} />
@@ -408,7 +408,7 @@ export const Header = () => {
                       position: 'absolute',
                       top: '-8px',
                       right: '-10px',
-                      backgroundColor: 'var(--primary-orange)',
+                      backgroundColor: '#0A0A0A',
                       color: '#FFFFFF',
                       fontSize: '0.68rem',
                       fontWeight: '800',
@@ -422,7 +422,7 @@ export const Header = () => {
                 )}
               </div>
               <div style={{ textAlign: 'left', lineHeight: '1.1' }}>
-                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--light-orange)' }}>Site Cart</div>
+                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'rgba(10,10,10,0.65)' }}>Site Cart</div>
                 <div style={{ fontSize: '0.85rem', fontWeight: '800' }}>₹{cartSubtotal.toLocaleString()}</div>
               </div>
             </button>
@@ -520,7 +520,7 @@ export const Header = () => {
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-surface)'}
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
-                        <MapPin size={15} color="#10B981" />
+                        <MapPin size={15} color="#0A0A0A" />
                         <span>Site Delivery Addresses</span>
                       </button>
 
@@ -528,8 +528,8 @@ export const Header = () => {
 
                       <button
                         onClick={() => { logout(); setAccountDropdownOpen(false); }}
-                        style={{ width: '100%', padding: '0.5rem 0.75rem', background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#DC2626', cursor: 'pointer', borderRadius: '6px' }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FEF2F2'}
+                        style={{ width: '100%', padding: '0.5rem 0.75rem', background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#0A0A0A', cursor: 'pointer', borderRadius: '6px' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F2F2F2'}
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
                         <span>Sign Out</span>
@@ -545,14 +545,14 @@ export const Header = () => {
                     alignItems: 'center',
                     gap: '6px',
                     backgroundColor: 'var(--primary-orange)',
-                    color: '#FFFFFF',
+                    color: '#0A0A0A',
                     border: 'none',
                     padding: '8px 14px',
                     borderRadius: 'var(--radius-sm)',
                     cursor: 'pointer',
                     fontWeight: '700',
                     fontSize: '0.82rem',
-                    boxShadow: '0 2px 6px rgba(241, 90, 36, 0.3)',
+                    boxShadow: '0 2px 6px rgba(255, 184, 0, 0.35)',
                     transition: 'var(--transition)',
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-orange-hover)'}
@@ -578,7 +578,7 @@ export const Header = () => {
               alignItems: 'center',
               gap: '6px',
               backgroundColor: 'var(--primary-orange)',
-              color: '#FFFFFF',
+              color: '#0A0A0A',
               padding: '10px 16px',
               fontWeight: '700',
               fontSize: '0.85rem',
@@ -600,7 +600,7 @@ export const Header = () => {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#E8EFF6',
+                  color: '#CCCCCC',
                   padding: '10px 12px',
                   fontSize: '0.835rem',
                   fontWeight: '600',
@@ -609,11 +609,11 @@ export const Header = () => {
                   transition: 'var(--transition)',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.color = '#F47721';
+                  e.currentTarget.style.color = '#FFB800';
                   e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = '#E8EFF6';
+                  e.currentTarget.style.color = '#CCCCCC';
                   e.currentTarget.style.backgroundColor = 'transparent';
                 }}
               >
@@ -639,8 +639,8 @@ export const Header = () => {
               alignItems: 'center',
               gap: '6px',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary-orange)')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)')}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--primary-orange)'; e.currentTarget.style.color = '#0A0A0A'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#FFF'; }}
           >
             <Sliders size={14} />
             <span>Admin Hub</span>

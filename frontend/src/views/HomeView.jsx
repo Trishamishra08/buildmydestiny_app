@@ -36,8 +36,8 @@ const MISTRI_PROMO_SLIDES = [
     desc: 'Cement, TMT steel, sand & bricks direct to your plot',
     cta: 'Order Now',
     target: 'products',
-    gradient: 'linear-gradient(135deg, #0B2947 0%, #163E68 60%, #0F172A 100%)',
-    accent: '#F59E0B',
+    gradient: 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 60%, #000000 100%)',
+    accent: '#FFB800',
   },
   {
     icon: HardHat,
@@ -46,8 +46,8 @@ const MISTRI_PROMO_SLIDES = [
     desc: 'Expert masons, plumbers, electricians & carpenters near you',
     cta: 'Book Mistri',
     target: 'mistris',
-    gradient: 'linear-gradient(135deg, #064E3B 0%, #065F46 60%, #022C22 100%)',
-    accent: '#34D399',
+    gradient: 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 60%, #000000 100%)',
+    accent: '#FFB800',
   },
   {
     icon: ShieldCheck,
@@ -56,8 +56,8 @@ const MISTRI_PROMO_SLIDES = [
     desc: 'Factory certified (MTC) with automated GST input tax credit',
     cta: 'View Brands',
     target: 'products',
-    gradient: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 60%, #0F172A 100%)',
-    accent: '#FACC15',
+    gradient: 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 60%, #000000 100%)',
+    accent: '#FFB800',
   },
   {
     icon: Zap,
@@ -66,8 +66,8 @@ const MISTRI_PROMO_SLIDES = [
     desc: 'Special depot rates for 500+ cement bags & bulk steel orders',
     cta: 'Get Quote',
     target: 'contact',
-    gradient: 'linear-gradient(135deg, #78350F 0%, #92400E 60%, #451A03 100%)',
-    accent: '#FBBF24',
+    gradient: 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 60%, #000000 100%)',
+    accent: '#FFB800',
   },
 ];
 
@@ -268,7 +268,7 @@ export const HomeView = () => {
                     width: '100%',
                     minHeight: isMobile ? '175px' : '240px',
                     height: isMobile ? '175px' : 'clamp(230px, 24vw, 320px)',
-                    backgroundColor: '#0B2947',
+                    backgroundColor: '#0A0A0A',
                     overflow: 'hidden',
                     cursor: 'pointer',
                     borderRadius: 'var(--radius-lg)',
@@ -300,8 +300,8 @@ export const HomeView = () => {
                         width: '100%',
                         height: '100%',
                         background: hasFullImage
-                          ? 'linear-gradient(90deg, rgba(11, 41, 71, 0.92) 0%, rgba(11, 41, 71, 0.68) 55%, rgba(11, 41, 71, 0.15) 100%)'
-                          : (slide.gradient || 'linear-gradient(105deg, #0B2947 0%, #163E68 60%, #0F172A 100%)'),
+                          ? 'linear-gradient(90deg, rgba(10, 10, 10, 0.92) 0%, rgba(10, 10, 10, 0.68) 55%, rgba(10, 10, 10, 0.15) 100%)'
+                          : (slide.gradient || 'linear-gradient(105deg, #0A0A0A 0%, #1A1A1A 60%, #000000 100%)'),
                         padding: isMobile ? '1.1rem 1.25rem' : '1.75rem 2.5rem',
                         display: 'flex',
                         flexDirection: 'column',
@@ -314,8 +314,8 @@ export const HomeView = () => {
                       {slide.badge && (
                         <span
                           style={{
-                            backgroundColor: '#EAB308',
-                            color: '#0B2947',
+                            backgroundColor: '#FFB800',
+                            color: '#0A0A0A',
                             padding: '3px 10px',
                             borderRadius: '4px',
                             fontWeight: '800',
@@ -343,8 +343,8 @@ export const HomeView = () => {
                       <div>
                         <span
                           style={{
-                            backgroundColor: '#064E3B',
-                            color: '#FFFFFF',
+                            backgroundColor: '#FFB800',
+                            color: '#0A0A0A',
                             padding: isMobile ? '5px 14px' : '7px 18px',
                             borderRadius: '9999px',
                             fontSize: '0.78rem',
@@ -352,7 +352,7 @@ export const HomeView = () => {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '6px',
-                            boxShadow: '0 3px 10px rgba(6, 78, 59, 0.4)',
+                            boxShadow: '0 3px 10px rgba(0, 0, 0, 0.3)',
                           }}
                         >
                           <ShoppingCart size={14} />
@@ -380,7 +380,7 @@ export const HomeView = () => {
                       width: activeSlide % heroBanners.length === idx ? '18px' : '6px',
                       height: '6px',
                       borderRadius: '3px',
-                      backgroundColor: activeSlide % heroBanners.length === idx ? '#064E3B' : 'rgba(0,0,0,0.25)',
+                      backgroundColor: activeSlide % heroBanners.length === idx ? '#0A0A0A' : 'rgba(0,0,0,0.25)',
                       border: 'none',
                       padding: 0,
                       cursor: 'pointer',
@@ -431,7 +431,7 @@ export const HomeView = () => {
                         minWidth: '260px',
                         maxWidth: '320px',
                         backgroundColor: '#FFFFFF',
-                        border: '1.5px dashed #FDBA74',
+                        border: '1.5px dashed #FFE08A',
                         borderRadius: '12px',
                         padding: '10px 14px',
                         display: 'flex',
@@ -447,8 +447,8 @@ export const HomeView = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                           <span
                             style={{
-                              backgroundColor: '#FFF7ED',
-                              color: '#C2410C',
+                              backgroundColor: '#FFF8E1',
+                              color: '#0A0A0A',
                               fontWeight: '800',
                               fontSize: '0.82rem',
                               padding: '2px 6px',
@@ -458,7 +458,7 @@ export const HomeView = () => {
                           >
                             {c.code}
                           </span>
-                          <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#15803D' }}>
+                          <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0A0A0A' }}>
                             {discountLabel}
                           </span>
                         </div>
@@ -471,8 +471,8 @@ export const HomeView = () => {
                         type="button"
                         onClick={handleCopy}
                         style={{
-                          backgroundColor: '#EA580C',
-                          color: '#FFFFFF',
+                          backgroundColor: '#FFB800',
+                          color: '#0A0A0A',
                           border: 'none',
                           borderRadius: '6px',
                           padding: '5px 8px',
@@ -483,7 +483,7 @@ export const HomeView = () => {
                           alignItems: 'center',
                           gap: '4px',
                           whiteSpace: 'nowrap',
-                          boxShadow: '0 1px 3px rgba(234, 88, 12, 0.3)',
+                          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.25)',
                         }}
                       >
                         <Copy size={12} />
@@ -629,7 +629,7 @@ export const HomeView = () => {
         <div className="container">
           <div
             style={{
-              background: 'linear-gradient(135deg, #1E3A8A 0%, #2563EB 50%, #38BDF8 100%)',
+              background: 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 50%, #262626 100%)',
               borderRadius: 'var(--radius-lg)',
               padding: isMobile ? '0.85rem 1rem' : '1.25rem 1.5rem',
               color: '#FFFFFF',
@@ -650,8 +650,8 @@ export const HomeView = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '5px',
-                  backgroundColor: '#FFFFFF',
-                  color: '#1E3A8A',
+                  backgroundColor: '#FFB800',
+                  color: '#0A0A0A',
                   padding: '2px 8px',
                   borderRadius: '9999px',
                   fontSize: '0.62rem',
@@ -666,10 +666,10 @@ export const HomeView = () => {
               <h3 style={{ fontSize: isMobile ? '1.05rem' : '1.35rem', fontWeight: '900', color: '#FFFFFF', lineHeight: '1.2', marginBottom: '3px' }}>
                 Mistri Guarantee
               </h3>
-              <div style={{ fontSize: isMobile ? '0.82rem' : '0.92rem', fontWeight: '800', color: '#FEF08A', marginBottom: '4px' }}>
+              <div style={{ fontSize: isMobile ? '0.82rem' : '0.92rem', fontWeight: '800', color: '#FFB800', marginBottom: '4px' }}>
                 100% Original Materials
               </div>
-              <p style={{ fontSize: isMobile ? '0.72rem' : '0.78rem', color: '#E0F2FE', lineHeight: '1.35', marginBottom: isMobile ? '8px' : '12px', maxWidth: '360px' }}>
+              <p style={{ fontSize: isMobile ? '0.72rem' : '0.78rem', color: '#F2F2F2', lineHeight: '1.35', marginBottom: isMobile ? '8px' : '12px', maxWidth: '360px' }}>
                 Verify product authenticity using official manufacturer apps and direct mill test reports.
               </p>
 
@@ -680,7 +680,7 @@ export const HomeView = () => {
                     key={bName}
                     style={{
                       backgroundColor: '#FFFFFF',
-                      color: '#0B2947',
+                      color: '#0A0A0A',
                       fontSize: isMobile ? '0.58rem' : '0.64rem',
                       fontWeight: '800',
                       padding: isMobile ? '2px 6px' : '3px 7px',
@@ -733,7 +733,7 @@ export const HomeView = () => {
                   <div style={{ margin: isMobile ? '2px 0' : '4px 0', padding: isMobile ? '2px' : '3px', backgroundColor: '#FFFFFF', borderRadius: '4px' }}>
                     <QrCode size={isMobile ? 28 : 38} color="#000000" />
                   </div>
-                  <span style={{ fontSize: isMobile ? '0.42rem' : '0.48rem', fontWeight: '800', color: '#038A53' }}>✓ VERIFIED GENUINE</span>
+                  <span style={{ fontSize: isMobile ? '0.42rem' : '0.48rem', fontWeight: '800', color: '#0A0A0A' }}>✓ VERIFIED GENUINE</span>
                 </div>
 
                 <div style={{ width: isMobile ? '16px' : '20px', height: '2px', backgroundColor: '#334155', borderRadius: '1px' }} />
@@ -774,8 +774,8 @@ export const HomeView = () => {
                 const imageUrl = typeof slide.image === 'object' ? slide.image?.url : slide.image;
                 const hasFullImage = Boolean(imageUrl);
                 const IconComp = slide.icon || Truck;
-                const accentColor = slide.accent || '#F59E0B';
-                const bgGradient = slide.gradient || 'linear-gradient(135deg, #0B2947 0%, #163E68 60%, #0F172A 100%)';
+                const accentColor = slide.accent || '#FFB800';
+                const bgGradient = slide.gradient || 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 60%, #000000 100%)';
                 const showTextOverlay = slide.showTextOverlay !== false && (slide.title || slide.subtitle || slide.badge || slide.ctaText);
                 return (
                   <div
@@ -834,7 +834,7 @@ export const HomeView = () => {
                           boxSizing: 'border-box',
                           height: '100%',
                           background: hasFullImage
-                            ? 'linear-gradient(90deg, rgba(11, 41, 71, 0.94) 0%, rgba(11, 41, 71, 0.72) 65%, rgba(11, 41, 71, 0.25) 100%)'
+                            ? 'linear-gradient(90deg, rgba(10, 10, 10, 0.94) 0%, rgba(10, 10, 10, 0.72) 65%, rgba(10, 10, 10, 0.25) 100%)'
                             : 'none',
                         }}
                       >
@@ -908,7 +908,7 @@ export const HomeView = () => {
                               fontSize: '0.82rem',
                               fontWeight: '800',
                               backgroundColor: accentColor,
-                              color: '#0B2947',
+                              color: '#0A0A0A',
                               padding: '8px 14px',
                               borderRadius: '8px',
                               display: 'inline-flex',
@@ -977,7 +977,7 @@ export const HomeView = () => {
           >
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--qc-ice-blue)', color: 'var(--primary-navy)', padding: '3px 10px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '800', marginBottom: '8px' }}>
-                <HardHat size={14} color="#F59E0B" />
+                <HardHat size={14} color="#FFB800" />
                 <span>COMMERCIAL CONTRACTORS & BUILDERS</span>
               </div>
               <h3 style={{ fontSize: '1.45rem', fontWeight: '800', color: 'var(--primary-navy)', marginBottom: '8px' }}>
@@ -990,7 +990,7 @@ export const HomeView = () => {
                 <button
                   onClick={() => navigateTo('contact')}
                   className="btn btn-primary"
-                  style={{ backgroundColor: '#F59E0B', color: '#0B2947', fontWeight: '800' }}
+                  style={{ backgroundColor: '#FFB800', color: '#0A0A0A', fontWeight: '800' }}
                 >
                   Request Bulk BOQ Quote
                 </button>
@@ -1076,7 +1076,7 @@ export const HomeView = () => {
                     e.currentTarget.style.borderColor = 'var(--border-subtle)';
                   }}
                 >
-                  <div style={{ width: '32px', height: '32px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {brand.logo ? (
                       <img src={brand.logo} alt={brand.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (

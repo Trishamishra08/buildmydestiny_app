@@ -38,7 +38,7 @@ export const OrderTimeline = ({ steps = [], currentStep = 1 }) => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: isDone ? '#FFFFFF' : isCurrent ? 'var(--primary-orange)' : 'var(--text-muted)',
+                  color: isDone ? '#0A0A0A' : isCurrent ? 'var(--primary-orange)' : 'var(--text-muted)',
                   zIndex: 2,
                   flexShrink: 0,
                   boxShadow: isCurrent ? '0 0 0 4px var(--orange-subtle)' : 'none',

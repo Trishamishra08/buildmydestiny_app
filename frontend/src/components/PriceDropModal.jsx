@@ -27,7 +27,7 @@ export const PriceDropModal = () => {
         {/* Header with High-Energy Electric Blue Gradient */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
+            background: 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%)',
             color: '#FFFFFF',
             padding: '1.25rem 1.5rem',
             display: 'flex',
@@ -47,10 +47,10 @@ export const PriceDropModal = () => {
                 justifyContent: 'center',
               }}
             >
-              <Flame size={20} color="#FEF08A" />
+              <Flame size={20} color="#FFB800" />
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#FEF08A', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#FFB800', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                 ⚡ Live Flash Drops
               </div>
               <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#FFFFFF' }}>
@@ -81,22 +81,22 @@ export const PriceDropModal = () => {
         {/* Timer Bar */}
         <div
           style={{
-            backgroundColor: '#EFF6FF',
+            backgroundColor: '#FFF8E1',
             padding: '8px 1.5rem',
-            borderBottom: '1px solid #DBEAFE',
+            borderBottom: '1px solid #FFE08A',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             fontSize: '0.8rem',
-            color: '#1E40AF',
+            color: '#0A0A0A',
             fontWeight: '600',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Clock size={14} color="#1D4ED8" />
+            <Clock size={14} color="#0A0A0A" />
             <span>Direct Manufacturer Subsidized Wholesale Rates</span>
           </div>
-          <span style={{ backgroundColor: '#1D4ED8', color: '#FFFFFF', padding: '2px 8px', borderRadius: '9999px', fontSize: '0.72rem', fontWeight: '800' }}>
+          <span style={{ backgroundColor: '#FFB800', color: '#0A0A0A', padding: '2px 8px', borderRadius: '9999px', fontSize: '0.72rem', fontWeight: '800' }}>
             Ends in 03h 42m
           </span>
         </div>
@@ -125,8 +125,8 @@ export const PriceDropModal = () => {
                     position: 'absolute',
                     top: '2px',
                     left: '2px',
-                    backgroundColor: '#EAB308',
-                    color: '#000',
+                    backgroundColor: '#FFB800',
+                    color: '#0A0A0A',
                     fontSize: '0.62rem',
                     fontWeight: '800',
                     padding: '1px 4px',

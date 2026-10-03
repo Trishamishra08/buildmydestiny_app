@@ -205,7 +205,7 @@ export const CheckoutView = () => {
         <button
           onClick={() => navigateTo('home')}
           style={{
-            backgroundColor: '#E11D48',
+            backgroundColor: '#0A0A0A',
             color: '#FFFFFF',
             border: 'none',
             borderRadius: '10px',
@@ -266,7 +266,7 @@ export const CheckoutView = () => {
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#10B981', fontSize: '0.75rem', fontWeight: '700' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#0A0A0A', fontSize: '0.75rem', fontWeight: '700' }}>
           <ShieldCheck size={18} />
           <span>100% Secure</span>
         </div>
@@ -275,8 +275,8 @@ export const CheckoutView = () => {
       {/* Dynamic Delivery Schedule Top Header Notice Banner */}
       <div
         style={{
-          backgroundColor: deliveryInfo.isAfter8PM ? '#FFF7ED' : '#F0FDF4',
-          borderBottom: deliveryInfo.isAfter8PM ? '1.5px solid #FED7AA' : '1px solid #DCFCE7',
+          backgroundColor: deliveryInfo.isAfter8PM ? '#FFF8E1' : '#F2F2F2',
+          borderBottom: deliveryInfo.isAfter8PM ? '1.5px solid #FFE08A' : '1px solid #E2E8F0',
           padding: '10px 16px',
           display: 'flex',
           alignItems: 'center',
@@ -284,7 +284,7 @@ export const CheckoutView = () => {
           gap: '8px',
           fontSize: '0.84rem',
           fontWeight: '700',
-          color: deliveryInfo.isAfter8PM ? '#C2410C' : '#15803D',
+          color: '#0A0A0A',
           textAlign: 'center',
         }}
       >
@@ -293,7 +293,7 @@ export const CheckoutView = () => {
           {deliveryInfo.isAfter8PM ? (
             <>
               🌙 <strong>Night Order:</strong> Your order will be delivered on{' '}
-              <strong style={{ textDecoration: 'underline', color: '#9A3412' }}>{deliveryInfo.deliveryDate}</strong> (Orders placed after 8:00 PM are delivered next day)
+              <strong style={{ textDecoration: 'underline', color: '#0A0A0A' }}>{deliveryInfo.deliveryDate}</strong> (Orders placed after 8:00 PM are delivered next day)
             </>
           ) : (
             <>
@@ -317,8 +317,8 @@ export const CheckoutView = () => {
         {/* Delivery Schedule Highlight Box */}
         <div
           style={{
-            backgroundColor: deliveryInfo.isAfter8PM ? '#FFFBEB' : '#F8FAFC',
-            border: deliveryInfo.isAfter8PM ? '1.5px solid #FDE68A' : '1px solid #E2E8F0',
+            backgroundColor: deliveryInfo.isAfter8PM ? '#FFF8E1' : '#F8FAFC',
+            border: deliveryInfo.isAfter8PM ? '1.5px solid #FFE08A' : '1px solid #E2E8F0',
             borderRadius: '12px',
             padding: '12px 14px',
             display: 'flex',
@@ -333,11 +333,11 @@ export const CheckoutView = () => {
                 width: '36px',
                 height: '36px',
                 borderRadius: '8px',
-                backgroundColor: deliveryInfo.isAfter8PM ? '#FEF3C7' : '#EFF6FF',
+                backgroundColor: '#FFF8E1',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: deliveryInfo.isAfter8PM ? '#D97706' : '#2563EB',
+                color: '#0A0A0A',
                 flexShrink: 0,
               }}
             >
@@ -356,8 +356,8 @@ export const CheckoutView = () => {
           </div>
           <span
             style={{
-              backgroundColor: deliveryInfo.isAfter8PM ? '#F59E0B' : '#10B981',
-              color: '#FFFFFF',
+              backgroundColor: '#FFB800',
+              color: '#0A0A0A',
               fontSize: '0.7rem',
               fontWeight: '800',
               padding: '3px 8px',
@@ -392,7 +392,7 @@ export const CheckoutView = () => {
             <span>Ordering for someone else?</span>
             <span
               onClick={() => setIsLocationModalOpen(true)}
-              style={{ color: '#E11D48', fontWeight: '700', cursor: 'pointer' }}
+              style={{ color: '#0A0A0A', fontWeight: '700', cursor: 'pointer' }}
             >
               Add details
             </span>
@@ -412,8 +412,8 @@ export const CheckoutView = () => {
           {/* Selected Address Box (Red/Rose Pill Border Matching Reference Image 3) */}
           <div
             style={{
-              border: '1.5px solid #FECDD3',
-              backgroundColor: '#FFF5F5',
+              border: '1.5px solid #E2E8F0',
+              backgroundColor: '#F2F2F2',
               borderRadius: '12px',
               padding: '12px 14px',
               display: 'flex',
@@ -421,8 +421,8 @@ export const CheckoutView = () => {
               gap: '10px',
             }}
           >
-            <div style={{ color: '#E11D48', marginTop: '2px', flexShrink: 0 }}>
-              <CheckCircle2 size={18} fill="#FFE4E6" color="#E11D48" />
+            <div style={{ color: '#0A0A0A', marginTop: '2px', flexShrink: 0 }}>
+              <CheckCircle2 size={18} fill="#F2F2F2" color="#0A0A0A" />
             </div>
 
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -441,7 +441,7 @@ export const CheckoutView = () => {
                   <button
                     type="button"
                     onClick={() => setIsAddressModalOpen(true)}
-                    style={{ background: 'none', border: 'none', color: '#E11D48', fontWeight: '700', cursor: 'pointer', padding: 0 }}
+                    style={{ background: 'none', border: 'none', color: '#0A0A0A', fontWeight: '700', cursor: 'pointer', padding: 0 }}
                   >
                     Change
                   </button>
@@ -463,8 +463,8 @@ export const CheckoutView = () => {
                       gap: '4px',
                       fontSize: '0.72rem',
                       fontWeight: '700',
-                      color: '#15803D',
-                      backgroundColor: '#DCFCE7',
+                      color: '#0A0A0A',
+                      backgroundColor: '#FFF8E1',
                       padding: '2px 8px',
                       borderRadius: '6px',
                     }}
@@ -479,8 +479,8 @@ export const CheckoutView = () => {
                       gap: '4px',
                       fontSize: '0.72rem',
                       fontWeight: '700',
-                      color: '#B91C1C',
-                      backgroundColor: '#FEE2E2',
+                      color: '#0A0A0A',
+                      backgroundColor: '#F2F2F2',
                       padding: '2px 8px',
                       borderRadius: '6px',
                     }}
@@ -497,12 +497,12 @@ export const CheckoutView = () => {
             <div
               style={{
                 marginTop: '10px',
-                backgroundColor: '#FFF1F2',
-                border: '1.5px solid #FECDD3',
+                backgroundColor: '#F2F2F2',
+                border: '1.5px solid #E2E8F0',
                 borderRadius: '10px',
                 padding: '10px 12px',
                 fontSize: '0.78rem',
-                color: '#9F1239',
+                color: '#0A0A0A',
               }}
             >
               <div style={{ fontWeight: '800', marginBottom: '3px' }}>⚠️ Location Not Serviceable</div>
@@ -514,7 +514,7 @@ export const CheckoutView = () => {
                 onClick={() => setIsLocationModalOpen(true)}
                 style={{
                   marginTop: '8px',
-                  backgroundColor: '#E11D48',
+                  backgroundColor: '#0A0A0A',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '6px',
@@ -538,8 +538,8 @@ export const CheckoutView = () => {
               width: '100%',
               marginTop: '12px',
               padding: '10px 14px',
-              backgroundColor: isDetectingLocation ? '#FFF5F5' : '#FFFFFF',
-              border: `1.5px dashed ${isDetectingLocation ? '#E11D48' : '#CBD5E1'}`,
+              backgroundColor: isDetectingLocation ? '#F2F2F2' : '#FFFFFF',
+              border: `1.5px dashed ${isDetectingLocation ? '#0A0A0A' : '#CBD5E1'}`,
               borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
@@ -547,7 +547,7 @@ export const CheckoutView = () => {
               gap: '8px',
               fontSize: '0.84rem',
               fontWeight: '700',
-              color: isDetectingLocation ? '#E11D48' : '#334155',
+              color: isDetectingLocation ? '#0A0A0A' : '#334155',
               cursor: isDetectingLocation ? 'wait' : 'pointer',
               transition: 'all 0.15s ease',
             }}
@@ -558,7 +558,7 @@ export const CheckoutView = () => {
                   style={{
                     width: '14px',
                     height: '14px',
-                    border: '2px solid #E11D48',
+                    border: '2px solid #0A0A0A',
                     borderTopColor: 'transparent',
                     borderRadius: '50%',
                     display: 'inline-block',
@@ -569,7 +569,7 @@ export const CheckoutView = () => {
               </>
             ) : (
               <>
-                <Navigation size={15} color="#E11D48" />
+                <Navigation size={15} color="#0A0A0A" />
                 <span>Use current location (from GPS)</span>
               </>
             )}
@@ -680,7 +680,7 @@ export const CheckoutView = () => {
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
-                        border: '1.5px solid #15803D',
+                        border: '1.5px solid #0A0A0A',
                         borderRadius: '8px',
                         height: '30px',
                         backgroundColor: '#FFFFFF',
@@ -689,19 +689,19 @@ export const CheckoutView = () => {
                       <button
                         type="button"
                         onClick={() => updateCartQty(itemKey, item.quantity - 1)}
-                        style={{ width: '28px', height: '28px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#15803D' }}
+                        style={{ width: '28px', height: '28px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A0A0A' }}
                       >
-                        {item.quantity === 1 ? <Trash2 size={13} color="#15803D" /> : <Minus size={13} color="#15803D" strokeWidth={2.5} />}
+                        {item.quantity === 1 ? <Trash2 size={13} color="#0A0A0A" /> : <Minus size={13} color="#0A0A0A" strokeWidth={2.5} />}
                       </button>
-                      <span style={{ minWidth: '24px', textAlign: 'center', fontWeight: '800', fontSize: '0.84rem', color: '#15803D' }}>
+                      <span style={{ minWidth: '24px', textAlign: 'center', fontWeight: '800', fontSize: '0.84rem', color: '#0A0A0A' }}>
                         {item.quantity}
                       </span>
                       <button
                         type="button"
                         onClick={() => updateCartQty(itemKey, item.quantity + 1)}
-                        style={{ width: '28px', height: '28px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#15803D' }}
+                        style={{ width: '28px', height: '28px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A0A0A' }}
                       >
-                        <Plus size={13} color="#15803D" strokeWidth={2.5} />
+                        <Plus size={13} color="#0A0A0A" strokeWidth={2.5} />
                       </button>
                     </div>
 
@@ -740,11 +740,11 @@ export const CheckoutView = () => {
                   width: '32px',
                   height: '32px',
                   borderRadius: '8px',
-                  backgroundColor: '#FFE4E6',
+                  backgroundColor: '#FFF8E1',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#E11D48',
+                  color: '#0A0A0A',
                 }}
               >
                 <Tag size={16} />
@@ -753,7 +753,7 @@ export const CheckoutView = () => {
                 <div style={{ fontWeight: '700', fontSize: '0.88rem', color: '#0F172A' }}>
                   Coupons & Offers
                 </div>
-                <div style={{ fontSize: '0.75rem', color: appliedCoupon ? '#15803D' : '#64748B', fontWeight: appliedCoupon ? '600' : '400' }}>
+                <div style={{ fontSize: '0.75rem', color: appliedCoupon ? '#0A0A0A' : '#64748B', fontWeight: appliedCoupon ? '600' : '400' }}>
                   {appliedCoupon ? `Applied: ${appliedCoupon.code} (${appliedCoupon.discountPercentage}% OFF)` : 'Have a coupon code?'}
                 </div>
               </div>
@@ -761,7 +761,7 @@ export const CheckoutView = () => {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748B' }}>
               {appliedCoupon && (
-                <span style={{ fontSize: '0.72rem', backgroundColor: '#DCFCE7', color: '#15803D', fontWeight: '700', padding: '2px 8px', borderRadius: '4px' }}>
+                <span style={{ fontSize: '0.72rem', backgroundColor: '#FFF8E1', color: '#0A0A0A', fontWeight: '700', padding: '2px 8px', borderRadius: '4px' }}>
                   APPLIED
                 </span>
               )}
@@ -772,14 +772,14 @@ export const CheckoutView = () => {
           {isCouponsOpen && (
             <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #F1F5F9' }} onClick={(e) => e.stopPropagation()}>
               {appliedCoupon ? (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#F0FDF4', border: '1.5px dashed #86EFAC', padding: '10px 14px', borderRadius: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFF8E1', border: '1.5px dashed #FFE08A', padding: '10px 14px', borderRadius: '10px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <CheckCircle2 size={18} color="#15803D" />
+                    <CheckCircle2 size={18} color="#0A0A0A" />
                     <div>
-                      <div style={{ fontSize: '0.86rem', color: '#15803D', fontWeight: '800' }}>
+                      <div style={{ fontSize: '0.86rem', color: '#0A0A0A', fontWeight: '800' }}>
                         '{appliedCoupon.code}' Applied!
                       </div>
-                      <div style={{ fontSize: '0.74rem', color: '#166534' }}>
+                      <div style={{ fontSize: '0.74rem', color: '#4B5563' }}>
                         Saved ₹{(discountAmount || appliedCoupon.discountAmount || 0).toLocaleString('en-IN')} on this order
                       </div>
                     </div>
@@ -787,7 +787,7 @@ export const CheckoutView = () => {
                   <button
                     type="button"
                     onClick={removeCoupon}
-                    style={{ background: 'none', border: 'none', color: '#DC2626', fontWeight: '700', fontSize: '0.78rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    style={{ background: 'none', border: 'none', color: '#0A0A0A', fontWeight: '700', fontSize: '0.78rem', cursor: 'pointer', textDecoration: 'underline' }}
                   >
                     Remove
                   </button>
@@ -815,7 +815,7 @@ export const CheckoutView = () => {
                     <button
                       type="submit"
                       style={{
-                        backgroundColor: '#0F172A',
+                        backgroundColor: '#0A0A0A',
                         color: '#FFFFFF',
                         border: 'none',
                         borderRadius: '8px',
@@ -830,7 +830,7 @@ export const CheckoutView = () => {
                   </form>
 
                   {couponError && (
-                    <div style={{ color: '#DC2626', fontSize: '0.74rem', fontWeight: '600' }}>
+                    <div style={{ color: '#0A0A0A', fontSize: '0.74rem', fontWeight: '600' }}>
                       {couponError}
                     </div>
                   )}
@@ -857,8 +857,8 @@ export const CheckoutView = () => {
                               <div
                                 key={coupon.code}
                                 style={{
-                                  border: `1.5px dashed ${isEligible ? '#86EFAC' : '#CBD5E1'}`,
-                                  backgroundColor: isEligible ? '#F0FDF4' : '#F8FAFC',
+                                  border: `1.5px dashed ${isEligible ? '#FFE08A' : '#CBD5E1'}`,
+                                  backgroundColor: isEligible ? '#FFF8E1' : '#F8FAFC',
                                   borderRadius: '10px',
                                   padding: '10px 12px',
                                   display: 'flex',
@@ -873,8 +873,8 @@ export const CheckoutView = () => {
                                       style={{
                                         fontWeight: '800',
                                         fontSize: '0.84rem',
-                                        color: isEligible ? '#15803D' : '#334155',
-                                        backgroundColor: isEligible ? '#DCFCE7' : '#E2E8F0',
+                                        color: isEligible ? '#0A0A0A' : '#334155',
+                                        backgroundColor: isEligible ? '#FFF8E1' : '#E2E8F0',
                                         padding: '2px 6px',
                                         borderRadius: '4px',
                                         letterSpacing: '0.5px',
@@ -882,11 +882,11 @@ export const CheckoutView = () => {
                                     >
                                       {coupon.code}
                                     </span>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#15803D' }}>
+                                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#0A0A0A' }}>
                                       {discountBadge}
                                     </span>
                                     {coupon.badge && (
-                                      <span style={{ fontSize: '0.65rem', fontWeight: '800', color: '#C2410C', backgroundColor: '#FFEDD5', padding: '1px 5px', borderRadius: '4px' }}>
+                                      <span style={{ fontSize: '0.65rem', fontWeight: '800', color: '#0A0A0A', backgroundColor: '#FFF8E1', padding: '1px 5px', borderRadius: '4px' }}>
                                         {coupon.badge}
                                       </span>
                                     )}
@@ -897,7 +897,7 @@ export const CheckoutView = () => {
                                   </div>
 
                                   {!isEligible && reason && (
-                                    <div style={{ fontSize: '0.7rem', color: '#D97706', fontWeight: '600', marginTop: '2px' }}>
+                                    <div style={{ fontSize: '0.7rem', color: '#4B5563', fontWeight: '600', marginTop: '2px' }}>
                                       • {reason}
                                     </div>
                                   )}
@@ -908,8 +908,8 @@ export const CheckoutView = () => {
                                   disabled={!isEligible}
                                   onClick={() => applyCoupon(coupon.code)}
                                   style={{
-                                    backgroundColor: isEligible ? '#15803D' : '#E2E8F0',
-                                    color: isEligible ? '#FFFFFF' : '#94A3B8',
+                                    backgroundColor: isEligible ? '#FFB800' : '#E2E8F0',
+                                    color: isEligible ? '#0A0A0A' : '#94A3B8',
                                     border: 'none',
                                     borderRadius: '6px',
                                     padding: '6px 12px',
@@ -917,7 +917,7 @@ export const CheckoutView = () => {
                                     fontWeight: '800',
                                     cursor: isEligible ? 'pointer' : 'not-allowed',
                                     whiteSpace: 'nowrap',
-                                    boxShadow: isEligible ? '0 2px 4px rgba(21, 128, 61, 0.2)' : 'none',
+                                    boxShadow: isEligible ? '0 2px 4px rgba(0, 0, 0, 0.2)' : 'none',
                                   }}
                                 >
                                   {isEligible ? `APPLY (Save ₹${potentialSavings})` : 'APPLY'}
@@ -954,11 +954,11 @@ export const CheckoutView = () => {
                   width: '32px',
                   height: '32px',
                   borderRadius: '8px',
-                  backgroundColor: '#EFF6FF',
+                  backgroundColor: '#FFF8E1',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#2563EB',
+                  color: '#0A0A0A',
                 }}
               >
                 <CreditCard size={16} />
@@ -972,7 +972,7 @@ export const CheckoutView = () => {
                 </div>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: '#15803D', fontWeight: '600', backgroundColor: '#DCFCE7', padding: '3px 8px', borderRadius: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: '#0A0A0A', fontWeight: '600', backgroundColor: '#FFF8E1', padding: '3px 8px', borderRadius: '6px' }}>
               <ShieldCheck size={13} />
               100% Safe
             </div>
@@ -983,8 +983,8 @@ export const CheckoutView = () => {
             <div
               onClick={() => setPaymentMethod('online')}
               style={{
-                border: isOnline ? '2px solid #15803D' : '1px solid #E2E8F0',
-                backgroundColor: isOnline ? '#F0FDF4' : '#FAFAFA',
+                border: isOnline ? '2px solid #0A0A0A' : '1px solid #E2E8F0',
+                backgroundColor: isOnline ? '#FFF8E1' : '#FAFAFA',
                 borderRadius: '12px',
                 padding: '14px',
                 cursor: 'pointer',
@@ -1001,7 +1001,7 @@ export const CheckoutView = () => {
                   checked={isOnline}
                   onChange={() => setPaymentMethod('online')}
                   style={{
-                    accentColor: '#15803D',
+                    accentColor: '#0A0A0A',
                     width: '18px',
                     height: '18px',
                     cursor: 'pointer',
@@ -1017,8 +1017,8 @@ export const CheckoutView = () => {
                   <span
                     style={{
                       fontSize: '0.68rem',
-                      backgroundColor: '#DCFCE7',
-                      color: '#15803D',
+                      backgroundColor: '#FFF8E1',
+                      color: '#0A0A0A',
                       fontWeight: '700',
                       padding: '2px 8px',
                       borderRadius: '4px',
@@ -1045,8 +1045,8 @@ export const CheckoutView = () => {
             <div
               onClick={() => setPaymentMethod('cash')}
               style={{
-                border: !isOnline ? '2px solid #15803D' : '1px solid #E2E8F0',
-                backgroundColor: !isOnline ? '#F0FDF4' : '#FAFAFA',
+                border: !isOnline ? '2px solid #0A0A0A' : '1px solid #E2E8F0',
+                backgroundColor: !isOnline ? '#FFF8E1' : '#FAFAFA',
                 borderRadius: '12px',
                 padding: '14px',
                 cursor: 'pointer',
@@ -1063,7 +1063,7 @@ export const CheckoutView = () => {
                   checked={!isOnline}
                   onChange={() => setPaymentMethod('cash')}
                   style={{
-                    accentColor: '#15803D',
+                    accentColor: '#0A0A0A',
                     width: '18px',
                     height: '18px',
                     cursor: 'pointer',
@@ -1079,8 +1079,8 @@ export const CheckoutView = () => {
                   <span
                     style={{
                       fontSize: '0.68rem',
-                      backgroundColor: '#FEF3C7',
-                      color: '#B45309',
+                      backgroundColor: '#FFF8E1',
+                      color: '#0A0A0A',
                       fontWeight: '700',
                       padding: '2px 8px',
                       borderRadius: '4px',
@@ -1122,13 +1122,13 @@ export const CheckoutView = () => {
         {!user && (
           <div
             style={{
-              backgroundColor: '#FFF1F2',
-              border: '1px solid #FFE4E6',
+              backgroundColor: '#F2F2F2',
+              border: '1px solid #E2E8F0',
               borderRadius: '10px',
               padding: '10px 12px',
               textAlign: 'center',
               fontSize: '0.78rem',
-              color: '#9F1239',
+              color: '#0A0A0A',
               fontWeight: '600',
             }}
           >
@@ -1215,8 +1215,8 @@ export const CheckoutView = () => {
                   style={{
                     padding: '12px 14px',
                     borderRadius: '10px',
-                    border: `1.5px solid ${selectedAddressId === addr.id ? '#E11D48' : '#E2E8F0'}`,
-                    backgroundColor: selectedAddressId === addr.id ? '#FFF5F5' : '#FFFFFF',
+                    border: `1.5px solid ${selectedAddressId === addr.id ? '#0A0A0A' : '#E2E8F0'}`,
+                    backgroundColor: selectedAddressId === addr.id ? '#FFF8E1' : '#FFFFFF',
                     cursor: 'pointer',
                   }}
                 >
@@ -1225,7 +1225,7 @@ export const CheckoutView = () => {
                       {addr.title}
                     </span>
                     {selectedAddressId === addr.id && (
-                      <span style={{ color: '#E11D48', fontSize: '0.75rem', fontWeight: '800' }}>Active</span>
+                      <span style={{ color: '#0A0A0A', fontSize: '0.75rem', fontWeight: '800' }}>Active</span>
                     )}
                   </div>
                   <div style={{ fontSize: '0.78rem', color: '#64748B' }}>
@@ -1245,7 +1245,7 @@ export const CheckoutView = () => {
               style={{
                 width: '100%',
                 padding: '12px',
-                backgroundColor: '#0F172A',
+                backgroundColor: '#0A0A0A',
                 color: '#FFFFFF',
                 borderRadius: '10px',
                 border: 'none',

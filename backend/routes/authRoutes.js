@@ -2,6 +2,7 @@ import express from 'express';
 import {
   registerUser,
   loginUser,
+  otpLogin,
   getMe,
   updateFcmToken,
   getFcmTokenStatus,
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+router.post('/otp-login', otpLogin);
 router.post('/firebase', firebaseLogin);
 router.get('/me', protect, getMe);
 

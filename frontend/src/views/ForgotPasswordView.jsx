@@ -24,27 +24,27 @@ export const ForgotPasswordView = () => {
   };
 
   return (
-    <div className="page-container" style={{ maxWidth: '480px' }}>
+    <div className="page-container no-bottom-nav" style={{ maxWidth: '480px' }}>
       <div
         style={{
           backgroundColor: '#FFFFFF',
           borderRadius: 'var(--radius-lg)',
           border: '1px solid var(--border-subtle)',
           boxShadow: 'var(--shadow-md)',
-          padding: '2rem',
+          padding: '1.5rem',
           overflow: 'hidden',
         }}
       >
         <button
           onClick={() => navigateTo('login')}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: 'var(--primary-navy)', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', marginBottom: '1.25rem' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: 'var(--primary-navy)', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', marginBottom: '1rem' }}
         >
           <ArrowLeft size={16} />
           <span>Back to Login</span>
         </button>
 
-        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-          <h1 style={{ fontSize: '1.45rem', color: 'var(--primary-navy)', fontWeight: '800', marginBottom: '4px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+          <h1 style={{ fontSize: '1.2rem', color: 'var(--primary-navy)', fontWeight: '800', marginBottom: '4px' }}>
             {isOtpSent ? 'Verify OTP & Reset PIN' : 'Recover Builder Account'}
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>

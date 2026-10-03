@@ -260,7 +260,7 @@ export const ProductOptionsModal = () => {
               alignItems: 'center',
               gap: '8px',
               cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(3, 138, 83, 0.3)',
+              boxShadow: '0 2px 8px rgba(10, 10, 10, 0.3)',
             }}
           >
             <ShoppingCart size={18} />

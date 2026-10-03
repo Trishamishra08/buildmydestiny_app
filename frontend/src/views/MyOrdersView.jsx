@@ -81,9 +81,9 @@ export const MyOrdersView = () => {
       return (
         <span
           style={{
-            backgroundColor: '#ECFDF5',
-            color: '#059669',
-            border: '1px solid #A7F3D0',
+            backgroundColor: '#0A0A0A',
+            color: '#FFFFFF',
+            border: '1px solid #0A0A0A',
             borderRadius: '9999px',
             fontSize: '0.66rem',
             fontWeight: '800',
@@ -105,9 +105,9 @@ export const MyOrdersView = () => {
       return (
         <span
           style={{
-            backgroundColor: '#F3E8FF',
-            color: '#7C3AED',
-            border: '1px solid #E9D5FF',
+            backgroundColor: '#FFB800',
+            color: '#0A0A0A',
+            border: '1px solid #E6A600',
             borderRadius: '9999px',
             fontSize: '0.66rem',
             fontWeight: '800',
@@ -129,9 +129,9 @@ export const MyOrdersView = () => {
       return (
         <span
           style={{
-            backgroundColor: '#FEF2F2',
-            color: '#DC2626',
-            border: '1px solid #FEE2E2',
+            backgroundColor: '#F2F2F2',
+            color: '#4B5563',
+            border: '1px solid #E2E8F0',
             borderRadius: '9999px',
             fontSize: '0.66rem',
             fontWeight: '800',
@@ -153,9 +153,9 @@ export const MyOrdersView = () => {
     return (
       <span
         style={{
-          backgroundColor: '#EEF2FF',
-          color: '#2563EB',
-          border: '1px solid #DBEAFE',
+          backgroundColor: '#F2F2F2',
+          color: '#0A0A0A',
+          border: '1px solid #E2E8F0',
           borderRadius: '9999px',
           fontSize: '0.66rem',
           fontWeight: '800',
@@ -460,9 +460,9 @@ export const MyOrdersView = () => {
                       >
                         <span
                           style={{
-                            backgroundColor: orderDeliveryInfo.isAfter8PM ? '#EFF6FF' : '#FFFBEB',
-                            color: orderDeliveryInfo.isAfter8PM ? '#1D4ED8' : '#D97706',
-                            border: orderDeliveryInfo.isAfter8PM ? '1px solid #BFDBFE' : '1px solid #FDE68A',
+                            backgroundColor: orderDeliveryInfo.isAfter8PM ? '#F2F2F2' : '#FFF8E1',
+                            color: '#0A0A0A',
+                            border: orderDeliveryInfo.isAfter8PM ? '1px solid #E2E8F0' : '1px solid #FFE08A',
                             borderRadius: '9999px',
                             fontSize: '0.66rem',
                             fontWeight: '800',

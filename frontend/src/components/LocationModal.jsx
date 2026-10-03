@@ -84,14 +84,14 @@ export const LocationModal = () => {
             style={{
               width: '100%',
               padding: '11px 16px',
-              backgroundColor: isDetectingLocation ? '#FFF5F5' : '#FFF1F2',
-              border: '1.5px solid #FECDD3',
+              backgroundColor: isDetectingLocation ? '#F2F2F2' : '#F2F2F2',
+              border: '1.5px solid #CBD5E1',
               borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              color: '#E11D48',
+              color: '#0A0A0A',
               fontWeight: '700',
               fontSize: '0.88rem',
               cursor: isDetectingLocation ? 'wait' : 'pointer',
@@ -105,7 +105,7 @@ export const LocationModal = () => {
                   style={{
                     width: '14px',
                     height: '14px',
-                    border: '2px solid #E11D48',
+                    border: '2px solid #0A0A0A',
                     borderTopColor: 'transparent',
                     borderRadius: '50%',
                     display: 'inline-block',
@@ -116,7 +116,7 @@ export const LocationModal = () => {
               </>
             ) : (
               <>
-                <Navigation size={16} color="#E11D48" />
+                <Navigation size={16} color="#0A0A0A" />
                 <span>Use Current Location (Automatic GPS)</span>
               </>
             )}
@@ -157,7 +157,7 @@ export const LocationModal = () => {
               }}
             >
               <div style={{ fontWeight: '700', color: '#334155', marginBottom: '3px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <ShieldCheck size={14} color="#10B981" />
+                <ShieldCheck size={14} color="#0A0A0A" />
                 <span>Serviceable Cities & Dispatch Hubs</span>
               </div>
               <div>

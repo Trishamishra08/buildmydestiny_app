@@ -37,7 +37,9 @@ export const SYNC_COLLECTIONS = [
   },
   { name: 'orders', path: '/orders', key: 'id', read: 'owner', write: 'owner', poll: true },
   { name: 'bookings', path: '/bookings', key: 'id', read: 'owner', write: 'owner', poll: true },
-  { name: 'quotations', path: '/quotations', key: 'id', read: 'owner', write: 'owner', poll: true },
+  // Guests may submit a quotation without signing in, so writes must be 'public' (not
+  // 'owner') or an anonymous submission is silently dropped. Only admins ever list them.
+  { name: 'quotations', path: '/quotations', key: 'id', read: 'admin', write: 'public', poll: true },
   { name: 'supportMessages', path: '/support-messages', key: 'id', read: 'admin', write: 'public', poll: true },
   { name: 'adminNotifications', path: '/admin/notifications', key: 'id', read: 'admin', write: 'admin', poll: true },
   { name: 'usersList', path: '/admin/users', key: 'id', read: 'admin', write: 'admin', poll: true },

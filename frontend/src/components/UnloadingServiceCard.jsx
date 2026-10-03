@@ -22,10 +22,10 @@ export const UnloadingServiceCard = () => {
   return (
     <div
       style={{
-        backgroundColor: '#DCFCE7', // Soft green background matching Image 2
+        backgroundColor: '#FFF8E1', // Soft yellow background matching brand theme
         borderRadius: '14px',
         padding: '12px 14px',
-        border: '1px solid #BBF7D0',
+        border: '1px solid #FFE08A',
         marginBottom: '4px',
       }}
     >
@@ -70,25 +70,25 @@ export const UnloadingServiceCard = () => {
           >
             <svg width="40" height="32" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
               {/* Truck Cargo Box */}
-              <rect x="8" y="4" width="18" height="18" rx="2" fill="#EAB308" stroke="#713F12" strokeWidth="1.5" />
-              <line x1="14" y1="4" x2="14" y2="22" stroke="#713F12" strokeWidth="1" strokeDasharray="2 1" />
-              <line x1="20" y1="4" x2="20" y2="22" stroke="#713F12" strokeWidth="1" strokeDasharray="2 1" />
-              
+              <rect x="8" y="4" width="18" height="18" rx="2" fill="#FFB800" stroke="#0A0A0A" strokeWidth="1.5" />
+              <line x1="14" y1="4" x2="14" y2="22" stroke="#0A0A0A" strokeWidth="1" strokeDasharray="2 1" />
+              <line x1="20" y1="4" x2="20" y2="22" stroke="#0A0A0A" strokeWidth="1" strokeDasharray="2 1" />
+
               {/* Truck Cabin */}
-              <path d="M26 10H32L35 15V22H26V10Z" fill="#3B82F6" stroke="#1E3A8A" strokeWidth="1.5" />
+              <path d="M26 10H32L35 15V22H26V10Z" fill="#0A0A0A" stroke="#0A0A0A" strokeWidth="1.5" />
               {/* Window */}
-              <path d="M28 12H31.5L33.5 15H28V12Z" fill="#93C5FD" />
+              <path d="M28 12H31.5L33.5 15H28V12Z" fill="#F2F2F2" />
               {/* Bumper */}
-              <rect x="34" y="19" width="3" height="3" rx="1" fill="#EF4444" />
-              
+              <rect x="34" y="19" width="3" height="3" rx="1" fill="#0A0A0A" />
+
               {/* Chassis */}
               <rect x="5" y="21" width="31" height="3" rx="1" fill="#475569" />
-              
+
               {/* Wheels */}
-              <circle cx="12" cy="24" r="3.5" fill="#1E293B" stroke="#0F172A" strokeWidth="1" />
+              <circle cx="12" cy="24" r="3.5" fill="#0A0A0A" stroke="#0F172A" strokeWidth="1" />
               <circle cx="12" cy="24" r="1.5" fill="#94A3B8" />
-              
-              <circle cx="29" cy="24" r="3.5" fill="#1E293B" stroke="#0F172A" strokeWidth="1" />
+
+              <circle cx="29" cy="24" r="3.5" fill="#0A0A0A" stroke="#0F172A" strokeWidth="1" />
               <circle cx="29" cy="24" r="1.5" fill="#94A3B8" />
 
               {/* Speed lines on left */}
@@ -128,9 +128,9 @@ export const UnloadingServiceCard = () => {
             style={{
               padding: isUnloadingSelected ? '4px 12px' : '4px 20px',
               borderRadius: '8px',
-              border: '1.5px solid #16A34A',
-              backgroundColor: isUnloadingSelected ? '#16A34A' : '#FFFFFF',
-              color: isUnloadingSelected ? '#FFFFFF' : '#16A34A',
+              border: '1.5px solid #0A0A0A',
+              backgroundColor: isUnloadingSelected ? '#FFB800' : '#FFFFFF',
+              color: '#0A0A0A',
               fontSize: '0.82rem',
               fontWeight: '700',
               cursor: 'pointer',
@@ -139,7 +139,7 @@ export const UnloadingServiceCard = () => {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '4px',
-              boxShadow: isUnloadingSelected ? '0 1px 3px rgba(22, 163, 74, 0.25)' : 'none',
+              boxShadow: isUnloadingSelected ? '0 1px 3px rgba(255, 184, 0, 0.35)' : 'none',
             }}
           >
             {isUnloadingSelected ? 'Added ✓' : 'Add'}
@@ -153,7 +153,7 @@ export const UnloadingServiceCard = () => {
             }}
           >
             {isFree ? (
-              <span style={{ color: '#16A34A' }}>FREE</span>
+              <span style={{ color: '#0A0A0A' }}>FREE</span>
             ) : (
               `₹${standardFee.toLocaleString('en-IN')}`
             )}

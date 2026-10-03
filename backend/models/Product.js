@@ -22,6 +22,9 @@ const Product = createAppModel('Product', {
     gallery: [Mixed],
     isFeatured: Mixed,
     isPopular: Mixed,
+    // Multivendor marketplace: set when a vendor (not the platform admin) lists this product.
+    vendorId: { type: String, index: true },
+    vendorName: Mixed,
   },
 });
 

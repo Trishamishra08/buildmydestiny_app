@@ -19,7 +19,7 @@ export const OrderTrackingView = () => {
     liveEtaMinutes: 35,
     steps: [
       { title: 'Order Placed', time: '10 Sep, 11:30 AM', done: true, desc: 'Material order verified & invoice generated' },
-      { title: 'Order Confirmed', time: '10 Sep, 11:45 AM', done: true, desc: 'Confirmed by MISTRI Central Logistics Hub' },
+      { title: 'Order Confirmed', time: '10 Sep, 11:45 AM', done: true, desc: 'Confirmed by BuildMyDestiny Central Logistics Hub' },
       { title: 'Warehouse Dispatch', time: '10 Sep, 01:15 PM', done: true, desc: 'Loaded onto 12T crane-assist truck' },
       { title: 'In Transit', time: '10 Sep, 02:00 PM', done: true, desc: 'En route via Super Corridor Bypass' },
       { title: 'Out for Delivery', time: '10 Sep, 02:45 PM', done: true, desc: 'Driver 4.2 km away from construction site' },
@@ -41,8 +41,8 @@ export const OrderTrackingView = () => {
       {/* Dynamic Delivery Date Notice Banner */}
       <div
         style={{
-          backgroundColor: '#EFF6FF',
-          border: '1.5px solid #BFDBFE',
+          backgroundColor: '#FFF8E1',
+          border: '1.5px solid #FFE08A',
           borderRadius: '12px',
           padding: '12px 18px',
           marginBottom: '1rem',
@@ -59,21 +59,21 @@ export const OrderTrackingView = () => {
               width: '38px',
               height: '38px',
               borderRadius: '8px',
-              backgroundColor: '#DBEAFE',
+              backgroundColor: '#FFB800',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#1D4ED8',
+              color: '#0A0A0A',
               flexShrink: 0,
             }}
           >
             <Truck size={20} />
           </div>
           <div>
-            <div style={{ fontSize: '0.94rem', fontWeight: '800', color: '#1E3A8A' }}>
+            <div style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0A0A0A' }}>
               Your order will be delivered on {order.deliveryDate || deliveryInfo.deliveryDate}
             </div>
-            <div style={{ fontSize: '0.76rem', color: '#3B82F6', fontWeight: '500' }}>
+            <div style={{ fontSize: '0.76rem', color: '#4B5563', fontWeight: '500' }}>
               {deliveryInfo.isAfter8PM
                 ? `Night Order · Scheduled for Next Day Delivery (${order.deliveryDate || deliveryInfo.deliveryDate})`
                 : `Active express delivery assignment`}
@@ -82,8 +82,8 @@ export const OrderTrackingView = () => {
         </div>
         <span
           style={{
-            backgroundColor: '#DBEAFE',
-            color: '#1E40AF',
+            backgroundColor: '#FFE08A',
+            color: '#0A0A0A',
             fontSize: '0.74rem',
             fontWeight: '800',
             padding: '4px 10px',
@@ -156,7 +156,7 @@ export const OrderTrackingView = () => {
                 position: 'absolute',
                 inset: 0,
                 backgroundImage:
-                  'linear-gradient(rgba(244, 119, 33, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(244, 119, 33, 0.08) 1px, transparent 1px)',
+                  'linear-gradient(rgba(255, 184, 0, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 184, 0, 0.08) 1px, transparent 1px)',
                 backgroundSize: '30px 30px',
                 pointerEvents: 'none',
               }}
@@ -164,11 +164,11 @@ export const OrderTrackingView = () => {
 
             {/* Top Map HUD */}
             <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-              <div style={{ backgroundColor: 'rgba(11, 41, 71, 0.85)', padding: '5px 10px', borderRadius: '4px', color: '#FFF1E7', fontSize: '0.75rem', fontWeight: '700', border: '1px solid rgba(244,119,33,0.3)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Navigation size={13} color="#F47721" />
+              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', padding: '5px 10px', borderRadius: '4px', color: '#FFFFFF', fontSize: '0.75rem', fontWeight: '700', border: '1px solid rgba(255,184,0,0.3)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Navigation size={13} color="#FFB800" />
                 <span>Super Corridor Expressway (4.2 km away)</span>
               </div>
-              <div style={{ backgroundColor: '#10b981', color: '#FFFFFF', padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '800' }}>
+              <div style={{ backgroundColor: '#FFB800', color: '#0A0A0A', padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '800' }}>
                 ACTIVE DISPATCH
               </div>
             </div>
@@ -185,25 +185,25 @@ export const OrderTrackingView = () => {
                 </div>
 
                 {/* Connecting Track Line */}
-                <div style={{ flex: 1, height: '4px', background: 'linear-gradient(90deg, #10b981 0%, #F47721 70%, #64748B 100%)', margin: '0 8px', borderRadius: '2px', position: 'relative' }}>
+                <div style={{ flex: 1, height: '4px', background: 'linear-gradient(90deg, #0A0A0A 0%, #FFB800 70%, #64748B 100%)', margin: '0 8px', borderRadius: '2px', position: 'relative' }}>
                   {/* Animated Moving Truck */}
-                  <div style={{ position: 'absolute', top: '-13px', left: '62%', width: '30px', height: '30px', borderRadius: '50%', background: 'var(--primary-orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 0 10px #F47721' }}>
+                  <div style={{ position: 'absolute', top: '-13px', left: '62%', width: '30px', height: '30px', borderRadius: '50%', background: 'var(--primary-orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A0A0A', boxShadow: '0 0 10px #FFB800' }}>
                     <Truck size={15} />
                   </div>
                 </div>
 
                 {/* Destination Site Pin */}
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#F47721', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 4px auto', color: '#fff' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#FFB800', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 4px auto', color: '#0A0A0A' }}>
                     <MapPin size={16} />
                   </div>
-                  <div style={{ fontSize: '0.7rem', color: '#FFF1E7', fontWeight: '700' }}>Site #44B</div>
+                  <div style={{ fontSize: '0.7rem', color: '#FFFFFF', fontWeight: '700' }}>Site #44B</div>
                 </div>
               </div>
             </div>
 
             {/* Bottom Map Info */}
-            <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', backgroundColor: 'rgba(11, 41, 71, 0.9)', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)', flexWrap: 'wrap', gap: '8px' }}>
+            <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', backgroundColor: 'rgba(255, 255, 255, 0.08)', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)', flexWrap: 'wrap', gap: '8px' }}>
               <div>
                 <div style={{ fontSize: '0.7rem', color: '#94A3B8' }}>Delivery Vehicle:</div>
                 <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#FFFFFF' }}>{tracking.vehicleNumber}</div>

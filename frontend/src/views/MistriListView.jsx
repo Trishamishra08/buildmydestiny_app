@@ -57,7 +57,7 @@ export const MistriListView = ({
             onChange={(e) => setCity(e.target.value === 'All Cities' ? '' : e.target.value)}
           >
             {cities.map((c) => (
-              <option key={c} value={c} style={{ background: '#1e293b' }}>
+              <option key={c} value={c} style={{ background: '#1A1A1A' }}>
                 {c}
               </option>
             ))}
@@ -75,7 +75,7 @@ export const MistriListView = ({
             onChange={(e) => setProfession(e.target.value === 'All Professions' ? '' : e.target.value)}
           >
             {professions.map((p) => (
-              <option key={p} value={p} style={{ background: '#1e293b' }}>
+              <option key={p} value={p} style={{ background: '#1A1A1A' }}>
                 {p}
               </option>
             ))}

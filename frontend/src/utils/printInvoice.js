@@ -1,5 +1,5 @@
 /**
- * MISTRI – Professional Single-Page Tax Invoice & Delivery Challan Generator
+ * Build My Destiny – Professional Single-Page Tax Invoice & Delivery Challan Generator
  * Generates an isolated, pixel-perfect A4 printable GST Tax Invoice.
  */
 
@@ -229,10 +229,10 @@ export function printTaxInvoice(order, siteSettings = {}) {
         <td style="width: 55%; vertical-align: middle;">
           <!-- MASTER BRAND LOGO IMAGE -->
           <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-            <img src="/mistri-logo.jpg" alt="MISTRI - From Foundation to Finish" style="width: 160px; height: 46px; object-fit: contain; display: block;" />
+            <img src="/build-my-destiny-logo.png" alt="Build My Destiny - Construction Made Easy" style="width: 160px; height: 46px; object-fit: contain; display: block;" />
           </div>
           <div style="font-size: 10px; color: #475569; line-height: 1.35; margin-top: 4px;">
-            <strong>MISTRI INFRA & CONSTRUCTION MATERIALS PVT. LTD.</strong><br/>
+            <strong>BUILD MY DESTINY INFRA & CONSTRUCTION MATERIALS PVT. LTD.</strong><br/>
             Central Logistics Depot #14, Super Corridor Park, Indore, MP - 452005<br/>
             GSTIN: <strong>23AAECM5541Q1ZG</strong> | Support: ${siteSettings.supportPhone || '+91 98260 11223'}
           </div>
@@ -361,7 +361,7 @@ export function printTaxInvoice(order, siteSettings = {}) {
         </td>
         <td style="width: 50%; padding-left: 10px;">
           <div class="sig-box" style="text-align: right;">
-            <div style="font-size: 9.5px; color: #64748B; font-weight: 700; text-transform: uppercase;">For MISTRI Infra & Materials Pvt. Ltd.</div>
+            <div style="font-size: 9.5px; color: #64748B; font-weight: 700; text-transform: uppercase;">For Build My Destiny Infra & Materials Pvt. Ltd.</div>
             <div style="font-size: 10px; color: #08274C; font-weight: 700; border-top: 1px dashed #CBD5E1; padding-top: 4px;">
               Authorized Logistics Signatory
             </div>
@@ -371,7 +371,7 @@ export function printTaxInvoice(order, siteSettings = {}) {
     </table>
 
     <div class="footer-note">
-      This is a digitally generated Tax Invoice & Delivery Challan issued by MISTRI Construction Materials System.
+      This is a digitally generated Tax Invoice & Delivery Challan issued by Build My Destiny Construction Materials System.
     </div>
   </div>
 </body>

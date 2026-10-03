@@ -1,11 +1,11 @@
 import React from 'react';
-import mistriLogoImg from '../assets/mistri-logo.png';
+import buildMyDestinyLogoImg from '../assets/build-my-destiny-logo.png';
 
 /**
- * MISTRI Brand Logo
+ * Build My Destiny Brand Logo
  * Official Brand Logo Image:
- * - Direct asset: mistri-logo.png
- * - Tagline: "FROM FOUNDATION TO FINISH"
+ * - Direct asset: build-my-destiny-logo.png
+ * - Tagline: "Construction Made Easy"
  */
 export const Logo = ({
   size = 'medium',
@@ -43,7 +43,7 @@ export const Logo = ({
         lineHeight: 1,
         transition: 'opacity 0.15s ease, transform 0.15s ease',
       }}
-      title="MISTRI - From Foundation to Finish"
+      title="Build My Destiny - Construction Made Easy"
     >
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
         <div
@@ -58,8 +58,8 @@ export const Logo = ({
           }}
         >
           <img
-            src={mistriLogoImg}
-            alt="MISTRI – From Foundation to Finish"
+            src={buildMyDestinyLogoImg}
+            alt="Build My Destiny – Construction Made Easy"
             style={{
               width: calculatedWidth,
               height: calculatedHeight,
@@ -76,9 +76,9 @@ export const Logo = ({
             style={{
               fontSize: size === 'xs' || size === 'small' ? '0.58rem' : '0.68rem',
               fontWeight: '800',
-              backgroundColor: '#FFF1EB',
-              color: '#F15A24',
-              border: '1px solid #FDC3A9',
+              backgroundColor: '#FFF8E1',
+              color: '#0A0A0A',
+              border: '1px solid #FFE08A',
               padding: '1.5px 5px',
               borderRadius: '5px',
               letterSpacing: '0.03em',

@@ -505,18 +505,18 @@ export const CategoryCard = ({ category }) => {
         e.currentTarget.style.transform = 'translateY(-3px)';
         const box = e.currentTarget.querySelector('.qc-tile-box');
         if (box) {
-          box.style.backgroundColor = 'var(--qc-category-hover, #D8ECF8)';
-          box.style.boxShadow = '0 6px 16px rgba(8, 39, 76, 0.1)';
-          box.style.borderColor = '#BCE0F5';
+          box.style.backgroundColor = 'var(--qc-category-hover, #FFEFC2)';
+          box.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.1)';
+          box.style.borderColor = '#FFD84D';
         }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateY(0)';
         const box = e.currentTarget.querySelector('.qc-tile-box');
         if (box) {
-          box.style.backgroundColor = 'var(--qc-category-bg, #EAF4FA)';
+          box.style.backgroundColor = 'var(--qc-category-bg, #FFF8E1)';
           box.style.boxShadow = 'none';
-          box.style.borderColor = 'var(--qc-category-border, #D1E7F4)';
+          box.style.borderColor = 'var(--qc-category-border, #FFE08A)';
         }
       }}
     >
@@ -527,7 +527,7 @@ export const CategoryCard = ({ category }) => {
           width: '100%',
           aspectRatio: '1 / 1',
           maxWidth: '110px',
-          backgroundColor: 'var(--qc-category-bg, #EAF4FA)',
+          backgroundColor: 'var(--qc-category-bg, #FFF8E1)',
           borderRadius: '18px',
           padding: '8px',
           display: 'flex',
@@ -536,7 +536,7 @@ export const CategoryCard = ({ category }) => {
           position: 'relative',
           overflow: 'hidden',
           transition: 'all 0.2s ease',
-          border: '1px solid var(--qc-category-border, #D1E7F4)',
+          border: '1px solid var(--qc-category-border, #FFE08A)',
         }}
       >
         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

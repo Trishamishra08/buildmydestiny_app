@@ -1,56 +1,56 @@
 /* =========================================================
-   MISTRI – CONSTRUCTION MATERIAL E-COMMERCE DESIGN SYSTEM
+   BUILD MY DESTINY – CONSTRUCTION MATERIAL E-COMMERCE DESIGN SYSTEM
    Tagline: "FROM FOUNDATION TO FINISH"
    ========================================================= */
 
 :root {
-  /* Brand Color System (Exact Reference Match to MISTRI Logo) */
-  --primary-navy: #08274C;
-  --dark-navy: #04162C;
-  --light-navy: #0F3A6E;
-  --navy-subtle: #EEF4FA;
+  /* Brand Color System — Black / White / Yellow */
+  --primary-navy: #0A0A0A;
+  --dark-navy: #000000;
+  --light-navy: #262626;
+  --navy-subtle: #F2F2F2;
 
-  /* Brand Signature Construction Orange (from MISTRI Logo Dots) */
-  --primary-orange: #F15A24;
-  --primary-orange-hover: #D84A16;
-  --light-orange: #FFF1EB;
-  --orange-subtle: rgba(241, 90, 36, 0.12);
+  /* Brand Signature Yellow (replaces construction orange) */
+  --primary-orange: #FFB800;
+  --primary-orange-hover: #E6A600;
+  --light-orange: #FFF8E1;
+  --orange-subtle: rgba(255, 184, 0, 0.14);
 
-  --brand-orange: #F15A24;
-  --brand-orange-hover: #D84A16;
-  --brand-orange-light: #FFF1EB;
+  --brand-orange: #FFB800;
+  --brand-orange-hover: #E6A600;
+  --brand-orange-light: #FFF8E1;
 
-  --brand-yellow: #F15A24;
-  --brand-yellow-hover: #D84A16;
-  --light-yellow: #FFF1EB;
-  --yellow-subtle: rgba(241, 90, 36, 0.14);
+  --brand-yellow: #FFB800;
+  --brand-yellow-hover: #E6A600;
+  --light-yellow: #FFF8E1;
+  --yellow-subtle: rgba(255, 184, 0, 0.16);
 
-  /* Quick Commerce Spec Colors (Crisp Light Blue Squircles) */
-  --qc-category-bg: #EAF4FA;
-  --qc-category-hover: #D8ECF8;
-  --qc-category-border: #D1E7F4;
-  --qc-ice-blue: #EAF4FA;
-  --qc-ice-blue-hover: #D8ECF8;
-  --qc-ice-border: #D1E7F4;
-  --qc-green: #038A53;
-  --qc-green-hover: #026C41;
-  --qc-green-bg: #E8F8F0;
-  --qc-teal-tag: #0D9488;
-  --qc-teal-bg: #E6FFFA;
-  --qc-gold-coin: #EA580C;
-  --qc-gold-bg: #FFF5EE;
-  --qc-gold-border: #FED7AA;
-  --qc-blue-drop: #08274C;
-  --qc-blue-drop-hover: #04162C;
-  --qc-dark-green-surface: #043628;
-  --qc-dark-green-card: #064E3B;
+  /* Quick Commerce Spec Colors — remapped to black/white/yellow */
+  --qc-category-bg: #F5F5F5;
+  --qc-category-hover: #ECECEC;
+  --qc-category-border: #E2E2E2;
+  --qc-ice-blue: #F5F5F5;
+  --qc-ice-blue-hover: #ECECEC;
+  --qc-ice-border: #E2E2E2;
+  --qc-green: #0A0A0A;
+  --qc-green-hover: #000000;
+  --qc-green-bg: #FFF8E1;
+  --qc-teal-tag: #0A0A0A;
+  --qc-teal-bg: #FFF8E1;
+  --qc-gold-coin: #FFB800;
+  --qc-gold-bg: #FFF8E1;
+  --qc-gold-border: #FFE08A;
+  --qc-blue-drop: #0A0A0A;
+  --qc-blue-drop-hover: #000000;
+  --qc-dark-green-surface: #0A0A0A;
+  --qc-dark-green-card: #1A1A1A;
 
   /* Backgrounds & Surfaces */
-  --bg-main: #F5F7FA;
+  --bg-main: #F7F7F7;
   --bg-card: #FFFFFF;
-  --bg-card-hover: #FAFBFC;
-  --bg-surface: #F0F4F8;
-  --bg-dark-surface: #08274C;
+  --bg-card-hover: #FAFAFA;
+  --bg-surface: #F2F2F2;
+  --bg-dark-surface: #0A0A0A;
 
   /* Typography Colors */
   --text-primary: #0F172A;
@@ -58,29 +58,29 @@
   --text-muted: #8E9CAE;
   --text-inverse: #FFFFFF;
 
-  /* Accent & Status */
-  --success: #038A53;
-  --success-bg: #E8F8F0;
-  --warning: #EA580C;
-  --warning-bg: #FFF5EE;
-  --danger: #DC2626;
-  --danger-bg: #FEF2F2;
-  --info: #0284C7;
-  --info-bg: #F0F9FF;
+  /* Accent & Status — monochrome (no green/red) */
+  --success: #0A0A0A;
+  --success-bg: #FFF8E1;
+  --warning: #0A0A0A;
+  --warning-bg: #F2F2F2;
+  --danger: #0A0A0A;
+  --danger-bg: #F2F2F2;
+  --info: #0A0A0A;
+  --info-bg: #F2F2F2;
 
   /* Borders & Dividers */
   --border-subtle: #E2E8F0;
   --border-medium: #CBD5E1;
-  --border-focus: #F15A24;
+  --border-focus: #FFB800;
 
   /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(8, 39, 76, 0.04);
-  --shadow-sm: 0 2px 4px rgba(8, 39, 76, 0.06), 0 1px 2px rgba(8, 39, 76, 0.04);
-  --shadow-md: 0 4px 14px -2px rgba(8, 39, 76, 0.08), 0 2px 6px -2px rgba(8, 39, 76, 0.04);
-  --shadow-lg: 0 14px 28px -4px rgba(8, 39, 76, 0.12), 0 6px 12px -2px rgba(8, 39, 76, 0.06);
-  --shadow-card: 0 2px 10px rgba(8, 39, 76, 0.05);
-  --shadow-yellow: 0 8px 20px -4px rgba(241, 90, 36, 0.3);
-  --shadow-orange: 0 8px 20px -4px rgba(241, 90, 36, 0.35);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 14px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 14px 28px -4px rgba(0, 0, 0, 0.12), 0 6px 12px -2px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --shadow-yellow: 0 8px 20px -4px rgba(255, 184, 0, 0.35);
+  --shadow-orange: 0 8px 20px -4px rgba(255, 184, 0, 0.35);
 
   /* Border Radii */
   --radius-xs: 6px;
@@ -148,6 +148,16 @@ button, input, select, textarea {
   font-family: inherit;
   outline: none;
   border: none;
+}
+
+/* Prevent iOS Safari from auto-zooming the whole page when a form field
+   is focused — it requires font-size >= 16px on inputs, which several
+   inline styles across the app set below (e.g. 0.925rem). This overrides
+   those safely on mobile widths only, without touching layout. */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
 }
 
 img {
@@ -354,8 +364,8 @@ img {
   position: absolute;
   top: 0;
   left: 0;
-  background-color: #FEF08A;
-  color: #854D0E;
+  background-color: #FFB800;
+  color: #0A0A0A;
   font-size: 0.65rem;
   font-weight: 800;
   padding: 2.5px 7px;
@@ -369,14 +379,14 @@ img {
   position: absolute;
   top: 6px;
   right: 6px;
-  background-color: #15803D;
+  background-color: #0A0A0A;
   color: #FFFFFF;
   font-size: 0.65rem;
   font-weight: 800;
   padding: 2px 6px;
   border-radius: 4px;
   letter-spacing: 0.02em;
-  box-shadow: 0 1px 3px rgba(21, 128, 61, 0.25);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   z-index: 2;
   text-transform: uppercase;
   line-height: 1.2;
@@ -467,28 +477,28 @@ img {
 }
 
 .qc-stock-strip.in-stock {
-  background-color: #ECFDF5;
-  border: 1px solid #A7F3D0;
-  color: #065F46;
+  background-color: #FFF8E1;
+  border: 1px solid #FFE08A;
+  color: #0A0A0A;
 }
 
 .qc-stock-strip.out-of-stock {
-  background-color: #FEF2F2;
-  border: 1px solid #FECACA;
-  color: #991B1B;
+  background-color: #F2F2F2;
+  border: 1px solid #D9D9D9;
+  color: #4B5563;
 }
 
 .qc-stock-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #10B981;
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+  background-color: #FFB800;
+  box-shadow: 0 0 6px rgba(255, 184, 0, 0.6);
   flex-shrink: 0;
 }
 
 .qc-stock-dot.out {
-  background-color: #EF4444;
+  background-color: #9CA3AF;
   box-shadow: none;
 }
 
@@ -716,8 +726,8 @@ img {
 
 .btn-primary {
   background-color: var(--primary-orange);
-  color: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(244, 119, 33, 0.25);
+  color: #0A0A0A;
+  box-shadow: 0 2px 8px rgba(255, 184, 0, 0.3);
 }
 
 .btn-primary:hover {
@@ -747,7 +757,7 @@ img {
 
 .btn-outline-orange {
   background-color: transparent;
-  color: var(--primary-orange);
+  color: #0A0A0A;
   border: 1.5px solid var(--primary-orange);
 }
 
@@ -816,32 +826,32 @@ img {
 
 .badge-orange {
   background-color: var(--light-orange);
-  color: var(--primary-orange);
-  border: 1px solid rgba(244, 119, 33, 0.25);
+  color: #0A0A0A;
+  border: 1px solid rgba(255, 184, 0, 0.4);
 }
 
 .badge-navy {
   background-color: var(--navy-subtle);
   color: var(--primary-navy);
-  border: 1px solid rgba(18, 58, 99, 0.2);
+  border: 1px solid rgba(10, 10, 10, 0.15);
 }
 
 .badge-success {
   background-color: var(--success-bg);
   color: var(--success);
-  border: 1px solid rgba(3, 152, 85, 0.2);
+  border: 1px solid rgba(10, 10, 10, 0.15);
 }
 
 .badge-warning {
   background-color: var(--warning-bg);
   color: var(--warning);
-  border: 1px solid rgba(247, 144, 9, 0.2);
+  border: 1px solid rgba(10, 10, 10, 0.15);
 }
 
 .badge-danger {
   background-color: var(--danger-bg);
   color: var(--danger);
-  border: 1px solid rgba(217, 45, 32, 0.2);
+  border: 1px solid rgba(10, 10, 10, 0.15);
 }
 
 /* Forms & Inputs */
@@ -1059,6 +1069,13 @@ img {
     padding: 1.25rem 0.85rem 5.5rem 0.85rem !important;
   }
 
+  /* Auth pages (login/signup/forgot-password) have no bottom nav bar,
+     so they don't need the extra bottom clearance — keeps the card
+     compact instead of leaving a tall empty gap under it on mobile. */
+  .page-container.no-bottom-nav {
+    padding: 1rem 0.85rem 1.5rem 0.85rem !important;
+  }
+
   .responsive-split-equal {
     grid-template-columns: 1fr !important;
     gap: 1rem !important;
@@ -1143,7 +1160,7 @@ img {
   }
 }
 
-/* Mistri Assured Slider Enhancements */
+/* Build My Destiny Assured Slider Enhancements */
 .assured-slider-viewport {
   touch-action: pan-y;
   user-select: none;
@@ -1243,7 +1260,7 @@ img {
 .product-current-price {
   font-size: clamp(1.75rem, 5.5vw, 2.15rem);
   font-weight: 800;
-  color: var(--primary-orange);
+  color: #0A0A0A;
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -1369,7 +1386,7 @@ img {
 .qc-cashback-box {
   background-color: #FFFDF0;
   border: 1px solid #FEF3C7;
-  border-left: 3.5px solid #F59E0B;
+  border-left: 3.5px solid #FFB800;
   border-radius: 8px;
   padding: 10px 12px;
   display: flex;
@@ -1382,12 +1399,12 @@ img {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #1E293B;
+  background-color: #0A0A0A;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.95rem;
-  color: #F59E0B;
+  color: #FFB800;
   flex-shrink: 0;
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
@@ -1505,8 +1522,8 @@ img {
 }
 
 .qc-bottom-discount-badge {
-  background-color: #FEF08A;
-  color: #854D0E;
+  background-color: #FFB800;
+  color: #0A0A0A;
   font-size: 0.65rem;
   font-weight: 800;
   padding: 1px 5px;
@@ -1539,26 +1556,26 @@ img {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background-color: #F59E0B;
-  color: #FFFFFF;
+  background-color: #0A0A0A;
+  color: #FFB800;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .qc-cashback-title {
   font-size: 0.88rem;
   font-weight: 800;
-  color: #92400E;
+  color: #0A0A0A;
   line-height: 1.2;
 }
 
 .qc-cashback-subtitle {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #B45309;
+  color: #475569;
   line-height: 1.3;
   margin-top: 2px;
 }
@@ -1604,21 +1621,21 @@ img {
 
 .qc-variant-pill-btn:hover {
   border-color: var(--primary-orange);
-  color: var(--primary-orange);
-  background-color: #FFF8F5;
+  color: #0A0A0A;
+  background-color: #FFF8E1;
 }
 
 .qc-variant-pill-btn.selected {
   background-color: var(--primary-orange);
   border-color: var(--primary-orange);
-  color: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(241, 90, 36, 0.30);
+  color: #0A0A0A;
+  box-shadow: 0 2px 8px rgba(255, 184, 0, 0.30);
 }
 
 .qc-variant-pill-btn.selected:hover {
   background-color: var(--primary-orange-hover);
   border-color: var(--primary-orange-hover);
-  color: #FFFFFF;
+  color: #0A0A0A;
 }
 
 /* ── Free Delivery Pill ──────────────────────────────────── */
@@ -1626,15 +1643,15 @@ img {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background-color: #F0FDF4;
-  border: 1px solid #BBF7D0;
+  background-color: #FFF8E1;
+  border: 1px solid #FFE08A;
   border-radius: 6px;
   padding: 6px 12px;
   margin-bottom: 12px;
 }
 
 .qc-free-delivery-tag {
-  background-color: #0D9488;
+  background-color: #0A0A0A;
   color: #FFFFFF;
   font-size: 0.72rem;
   font-weight: 800;
@@ -1648,7 +1665,7 @@ img {
 .qc-free-delivery-text {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #0F766E;
+  color: #0A0A0A;
 }
 
 /* Trust Badges Grid */

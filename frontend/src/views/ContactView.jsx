@@ -47,7 +47,7 @@ export const ContactView = () => {
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
         <h1 className="page-title" style={{ fontSize: '2.2rem', marginBottom: '0.5rem' }}>
-          Contact MISTRI & Request Project BOQ Quote
+          Contact BuildMyDestiny & Request Project BOQ Quote
         </h1>
         <p className="page-subtitle" style={{ maxWidth: '680px', margin: '0 auto' }}>
           Connect with our structural material engineers for project estimates, bulk volume discounts, and site delivery coordination.
@@ -191,7 +191,7 @@ export const ContactView = () => {
                 </div>
                 <div>
                   <div style={{ fontWeight: '700', color: 'var(--primary-navy)' }}>Contractor Sales Email</div>
-                  <div style={{ color: 'var(--text-secondary)' }}>contractor-sales@mistri.com</div>
+                  <div style={{ color: 'var(--text-secondary)' }}>contractor-sales@buildmydestiny.com</div>
                 </div>
               </div>
 

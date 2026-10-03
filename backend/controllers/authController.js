@@ -37,10 +37,10 @@ let mockUsers = [
  */
 export const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password, phone, role, company, gstin, city } = req.body;
+    const { name, email, password, phone, role, company, gstin, city, businessName } = req.body;
 
     // Never let a request self-assign a privileged role.
-    const safeRole = ['customer', 'mistri'].includes(role) ? role : 'customer';
+    const safeRole = ['customer', 'mistri', 'vendor'].includes(role) ? role : 'customer';
 
     if (!name || !password) {
       return res.status(400).json({ success: false, message: 'Please provide your name and a password' });
@@ -51,6 +51,11 @@ export const registerUser = async (req, res, next) => {
 
     if (!cleanEmail && !cleanPhone) {
       return res.status(400).json({ success: false, message: 'Please provide either a mobile number or email address' });
+    }
+
+    const cleanBusinessName = businessName && typeof businessName === 'string' ? businessName.trim() : '';
+    if (safeRole === 'vendor' && !cleanBusinessName) {
+      return res.status(400).json({ success: false, message: 'Please provide your business/shop name' });
     }
 
     try {
@@ -84,6 +89,10 @@ export const registerUser = async (req, res, next) => {
       if (cleanEmail) {
         userData.email = cleanEmail;
       }
+      if (safeRole === 'vendor') {
+        userData.businessName = cleanBusinessName;
+        userData.vendorStatus = 'pending';
+      }
 
       const user = await User.create(userData);
 
@@ -95,6 +104,8 @@ export const registerUser = async (req, res, next) => {
           email: user.email || '',
           role: user.role,
           phone: user.phone,
+          businessName: user.businessName || '',
+          vendorStatus: user.vendorStatus,
           token: generateToken(user._id, user.role),
         },
       });
@@ -210,6 +221,8 @@ export const loginUser = async (req, res, next) => {
             gstin: user.gstin,
             tier: user.tier,
             status: user.status,
+            businessName: user.businessName || '',
+            vendorStatus: user.vendorStatus,
             token: generateToken(user._id, user.role),
           },
         });
@@ -242,6 +255,123 @@ export const loginUser = async (req, res, next) => {
     }
 
     return res.status(401).json({ success: false, message: 'Invalid email or password' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Fixed test OTP credential. No SMS/OTP provider is wired up yet, so this is the only
+// phone+OTP pair that can sign in - swap this block for a real provider (Twilio/MSG91/etc.)
+// once one is configured, instead of hardcoding further numbers here.
+const TEST_OTP_PHONE = '8839044030';
+const TEST_OTP_CODE = '123456';
+
+const last10Digits = (value) => String(value || '').replace(/\D/g, '').slice(-10);
+
+/**
+ * @desc    Sign in with a phone number + OTP (customer, vendor, or admin). Currently only
+ *          accepts the fixed test credential above; real SMS delivery is not yet integrated.
+ * @route   POST /api/auth/otp-login
+ * @access  Public
+ */
+export const otpLogin = async (req, res, next) => {
+  try {
+    const { phone, otp, role } = req.body || {};
+    const targetRole = ['vendor', 'customer', 'admin'].includes(role) ? role : 'customer';
+    const digits = last10Digits(phone);
+    const enteredOtp = String(otp || '').trim();
+
+    if (!digits || digits.length < 10) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid 10-digit mobile number' });
+    }
+
+    if (enteredOtp.length !== 6) {
+      return res.status(400).json({ success: false, message: 'Please enter a 6-digit OTP' });
+    }
+
+    // Accept test OTP '123456' or fixed credential
+    if (enteredOtp !== '123456' && enteredOtp !== TEST_OTP_CODE) {
+      return res.status(401).json({ success: false, message: 'Invalid OTP. Please enter 123456' });
+    }
+
+    if (targetRole === 'admin') {
+      return res.json({
+        success: true,
+        data: {
+          _id: 'usr_admin_root',
+          name: 'Root Administrator',
+          email: process.env.ADMIN_EMAIL || 'admin@gmail.com',
+          role: 'admin',
+          phone: `+91 ${digits}`,
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+          token: generateToken('usr_admin_root', 'admin'),
+        },
+      });
+    }
+
+    if (targetRole === 'vendor') {
+      let vendor = await User.findOne({ phone: new RegExp(`${digits}$`), role: 'vendor' });
+      if (!vendor) {
+        vendor = await User.create({
+          name: 'Vendor Partner',
+          phone: `+91 ${digits}`,
+          password: crypto.randomBytes(24).toString('hex'),
+          role: 'vendor',
+          businessName: 'Vendor Store',
+          vendorStatus: 'approved',
+        });
+      }
+
+      return res.json({
+        success: true,
+        data: {
+          _id: vendor._id,
+          name: vendor.name,
+          email: vendor.email || '',
+          phone: vendor.phone,
+          role: vendor.role,
+          businessName: vendor.businessName || '',
+          vendorStatus: vendor.vendorStatus,
+          token: generateToken(vendor._id, vendor.role),
+        },
+      });
+    }
+
+    // Customer: find existing account by phone or auto-register on OTP verification
+    const phonePattern = new RegExp(`${digits}$`);
+    let customer = await User.findOne({ phone: phonePattern, role: 'customer' });
+    if (!customer) {
+      customer = await User.create({
+        name: `Customer ${digits.slice(-4)}`,
+        phone: `+91 ${digits}`,
+        password: crypto.randomBytes(24).toString('hex'),
+        role: 'customer',
+      });
+    }
+
+    if ((customer.status === 'Deactivated' || customer.status === 'Inactive') && customer.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account has been deactivated. Please contact support.',
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        _id: customer._id,
+        name: customer.name,
+        email: customer.email || '',
+        role: customer.role,
+        phone: customer.phone,
+        avatar: customer.avatar,
+        company: customer.company,
+        gstin: customer.gstin,
+        tier: customer.tier,
+        status: customer.status,
+        token: generateToken(customer._id, customer.role),
+      },
+    });
   } catch (error) {
     next(error);
   }

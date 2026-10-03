@@ -23,7 +23,8 @@ export const faqCrud = buildCrud(Faq, { sort: { _id: 1 } });
 export const cityCrud = buildCrud(City, { sort: { _id: 1 } });
 export const notificationCrud = buildCrud(Notification);
 export const supportMessageCrud = buildCrud(SupportMessage, { onCreate: notifyNewSupportMessage });
-export const quotationCrud = buildCrud(Quotation, { scopeToOwner: true, onCreate: notifyNewQuotation });
+// Anyone (including guests) may submit a quotation inquiry; only admins list/manage them.
+export const quotationCrud = buildCrud(Quotation, { onCreate: notifyNewQuotation });
 
 /**
  * @desc Coupons. Shoppers need active coupons to apply them at checkout; the admin

@@ -106,7 +106,7 @@ export const QuotationModal = () => {
       });
     }
 
-    const message = `🏗️ *MISTRI - MATERIAL QUOTATION REQUEST*
+    const message = `🏗️ *BuildMyDestiny - MATERIAL QUOTATION REQUEST*
 ----------------------------------------
 👤 *Customer:* ${clientName || 'Valued Customer'}
 📞 *Contact / WhatsApp:* ${phoneNumber || user?.phone || 'Not provided'}
@@ -140,7 +140,7 @@ Please send the best discounted wholesale quotation with site delivery freight c
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(8, 39, 76, 0.65)',
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -159,7 +159,7 @@ Please send the best discounted wholesale quotation with site delivery freight c
           overflowY: 'auto',
           borderRadius: '20px',
           backgroundColor: '#FFFFFF',
-          boxShadow: '0 25px 50px -12px rgba(8, 39, 76, 0.25)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -167,7 +167,7 @@ Please send the best discounted wholesale quotation with site delivery freight c
         {/* 1. Header with Vibrant Emerald & Navy Theme */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+            background: 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%)',
             color: '#FFFFFF',
             padding: '18px 20px',
             display: 'flex',
@@ -191,7 +191,7 @@ Please send the best discounted wholesale quotation with site delivery freight c
                 flexShrink: 0,
               }}
             >
-              <MessageSquare size={22} color="#FEF08A" />
+              <MessageSquare size={22} color="#FFB800" />
             </div>
 
             <div>
@@ -199,7 +199,7 @@ Please send the best discounted wholesale quotation with site delivery freight c
                 style={{
                   fontSize: '0.72rem',
                   fontWeight: '800',
-                  color: '#FEF08A',
+                  color: '#FFB800',
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
                   marginBottom: '2px',
@@ -238,18 +238,18 @@ Please send the best discounted wholesale quotation with site delivery freight c
           {/* Info Banner */}
           <div
             style={{
-              backgroundColor: '#ECFDF5',
-              border: '1px solid #A7F3D0',
+              backgroundColor: '#FFF8E1',
+              border: '1px solid #FFE08A',
               borderRadius: '12px',
               padding: '10px 14px',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
               fontSize: '0.82rem',
-              color: '#065F46',
+              color: '#0A0A0A',
             }}
           >
-            <Clock size={18} color="#059669" style={{ flexShrink: 0 }} />
+            <Clock size={18} color="#0A0A0A" style={{ flexShrink: 0 }} />
             <div>
               <strong>Fast Response:</strong> Send your material requirements to our client sales team. You will receive customized wholesale prices and delivery schedules directly on WhatsApp within <strong>15 mins</strong>.
             </div>
@@ -310,7 +310,7 @@ Please send the best discounted wholesale quotation with site delivery freight c
               Project / Delivery Site Location
             </label>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <MapPin size={16} color="#059669" style={{ position: 'absolute', left: '12px', pointerEvents: 'none' }} />
+              <MapPin size={16} color="#0A0A0A" style={{ position: 'absolute', left: '12px', pointerEvents: 'none' }} />
               <input
                 type="text"
                 value={siteLocation}
@@ -348,9 +348,9 @@ Please send the best discounted wholesale quotation with site delivery freight c
                       borderRadius: '9999px',
                       fontSize: '0.76rem',
                       fontWeight: '700',
-                      border: isSelected ? '1.5px solid #059669' : '1px solid #E2E8F0',
-                      backgroundColor: isSelected ? '#ECFDF5' : '#FFFFFF',
-                      color: isSelected ? '#065F46' : '#475569',
+                      border: isSelected ? '1.5px solid #FFB800' : '1px solid #E2E8F0',
+                      backgroundColor: isSelected ? '#FFF8E1' : '#FFFFFF',
+                      color: isSelected ? '#0A0A0A' : '#475569',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
                       display: 'inline-flex',
@@ -358,7 +358,7 @@ Please send the best discounted wholesale quotation with site delivery freight c
                       gap: '4px',
                     }}
                   >
-                    {isSelected && <CheckCircle2 size={12} color="#059669" />}
+                    {isSelected && <CheckCircle2 size={12} color="#0A0A0A" />}
                     <span>{cat}</span>
                   </button>
                 );
@@ -380,7 +380,7 @@ Please send the best discounted wholesale quotation with site delivery freight c
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#059669',
+                    color: '#0A0A0A',
                     fontSize: '0.75rem',
                     fontWeight: '700',
                     cursor: 'pointer',
@@ -429,11 +429,11 @@ Please send the best discounted wholesale quotation with site delivery freight c
                     gap: '8px',
                     padding: '8px 12px',
                     borderRadius: '8px',
-                    backgroundColor: urgency === opt ? '#F0FDF4' : '#F8FAFC',
-                    border: urgency === opt ? '1.5px solid #10B981' : '1px solid #E2E8F0',
+                    backgroundColor: urgency === opt ? '#FFF8E1' : '#F8FAFC',
+                    border: urgency === opt ? '1.5px solid #FFB800' : '1px solid #E2E8F0',
                     fontSize: '0.82rem',
                     fontWeight: urgency === opt ? '700' : '500',
-                    color: urgency === opt ? '#065F46' : '#475569',
+                    color: urgency === opt ? '#0A0A0A' : '#475569',
                     cursor: 'pointer',
                   }}
                 >
@@ -443,7 +443,7 @@ Please send the best discounted wholesale quotation with site delivery freight c
                     value={opt}
                     checked={urgency === opt}
                     onChange={(e) => setUrgency(e.target.value)}
-                    style={{ accentColor: '#059669' }}
+                    style={{ accentColor: '#FFB800' }}
                   />
                   <span>{opt}</span>
                 </label>
@@ -459,7 +459,7 @@ Please send the best discounted wholesale quotation with site delivery freight c
               height: '50px',
               borderRadius: '12px',
               border: 'none',
-              backgroundColor: '#25D366',
+              backgroundColor: '#0A0A0A',
               color: '#FFFFFF',
               fontSize: '1rem',
               fontWeight: '800',
@@ -468,16 +468,16 @@ Please send the best discounted wholesale quotation with site delivery freight c
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              boxShadow: '0 4px 14px rgba(37, 211, 102, 0.4)',
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.3)',
               transition: 'all 0.18s ease',
               marginTop: '4px',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#20BD5A';
+              e.currentTarget.style.backgroundColor = '#1A1A1A';
               e.currentTarget.style.transform = 'translateY(-1px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#25D366';
+              e.currentTarget.style.backgroundColor = '#0A0A0A';
               e.currentTarget.style.transform = 'none';
             }}
           >
@@ -493,7 +493,7 @@ Please send the best discounted wholesale quotation with site delivery freight c
               fontWeight: '500',
             }}
           >
-            Direct sales line: <strong>{siteSettings?.whatsappNumber || siteSettings?.supportPhone || '+91 96309 38487'}</strong> • MISTRI Certified Wholesale Desk
+            Direct sales line: <strong>{siteSettings?.whatsappNumber || siteSettings?.supportPhone || '+91 96309 38487'}</strong> • BuildMyDestiny Certified Wholesale Desk
           </div>
         </form>
       </div>

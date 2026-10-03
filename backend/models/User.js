@@ -37,8 +37,16 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['customer', 'mistri', 'admin'],
+      enum: ['customer', 'mistri', 'vendor', 'admin'],
       default: 'customer',
+    },
+
+    // Vendor / seller profile (multivendor marketplace)
+    businessName: { type: String, trim: true, default: '' },
+    vendorStatus: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending',
     },
     avatar: {
       type: String,

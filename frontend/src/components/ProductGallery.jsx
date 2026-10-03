@@ -47,7 +47,7 @@ export const ProductGallery = ({ images = [], alt = '' }) => {
             position: 'absolute',
             bottom: '10px',
             right: '10px',
-            backgroundColor: 'rgba(8, 39, 76, 0.75)',
+            backgroundColor: 'rgba(10, 10, 10, 0.75)',
             color: '#FFFFFF',
             padding: '4px 8px',
             borderRadius: '6px',

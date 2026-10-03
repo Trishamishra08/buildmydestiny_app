@@ -132,12 +132,12 @@ export const CartView = () => {
                 width: '64px',
                 height: '64px',
                 borderRadius: '50%',
-                backgroundColor: '#DCFCE7',
+                backgroundColor: '#FFF8E1',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 1.25rem auto',
-                color: '#15803D',
+                color: '#0A0A0A',
               }}
             >
               <ShoppingCart size={32} />
@@ -155,15 +155,15 @@ export const CartView = () => {
                 gap: '8px',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#15803D',
-                color: '#FFFFFF',
+                backgroundColor: '#FFB800',
+                color: '#0A0A0A',
                 border: 'none',
                 borderRadius: '10px',
                 padding: '12px 24px',
                 fontSize: '0.92rem',
                 fontWeight: '700',
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(21, 128, 61, 0.25)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
               }}
             >
               <span>Explore Materials & Products</span>
@@ -385,11 +385,11 @@ export const CartView = () => {
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          backgroundColor: '#15803D',
+                          backgroundColor: '#0A0A0A',
                           borderRadius: '8px',
                           height: '32px',
                           padding: '0 4px',
-                          boxShadow: '0 2px 6px rgba(21, 128, 61, 0.25)',
+                          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.25)',
                         }}
                       >
                         <button
@@ -495,12 +495,12 @@ export const CartView = () => {
                   width: '36px',
                   height: '36px',
                   borderRadius: '8px',
-                  backgroundColor: appliedCoupon ? '#DCFCE7' : '#F8FAFC',
+                  backgroundColor: appliedCoupon ? '#FFF8E1' : '#F8FAFC',
                   border: '1px solid #E2E8F0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: appliedCoupon ? '#15803D' : '#0F172A',
+                  color: appliedCoupon ? '#0A0A0A' : '#0F172A',
                 }}
               >
                 <Tag size={18} />
@@ -509,7 +509,7 @@ export const CartView = () => {
                 <div style={{ fontWeight: '700', fontSize: '0.88rem', color: '#0F172A' }}>
                   Coupons & Offers
                 </div>
-                <div style={{ fontSize: '0.75rem', color: appliedCoupon ? '#15803D' : '#64748B', fontWeight: appliedCoupon ? '600' : '400' }}>
+                <div style={{ fontSize: '0.75rem', color: appliedCoupon ? '#0A0A0A' : '#64748B', fontWeight: appliedCoupon ? '600' : '400' }}>
                   {appliedCoupon ? `Applied: ${appliedCoupon.code} (Saved ₹${(discountAmount || 0).toLocaleString('en-IN')})` : 'Have a coupon or promo code?'}
                 </div>
               </div>
@@ -517,7 +517,7 @@ export const CartView = () => {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748B' }}>
               {appliedCoupon && (
-                <span style={{ fontSize: '0.72rem', backgroundColor: '#DCFCE7', color: '#15803D', fontWeight: '700', padding: '2px 8px', borderRadius: '4px' }}>
+                <span style={{ fontSize: '0.72rem', backgroundColor: '#FFF8E1', color: '#0A0A0A', fontWeight: '700', padding: '2px 8px', borderRadius: '4px' }}>
                   APPLIED
                 </span>
               )}
@@ -528,14 +528,14 @@ export const CartView = () => {
           {isCouponsOpen && (
             <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #F1F5F9' }} onClick={(e) => e.stopPropagation()}>
               {appliedCoupon ? (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#F0FDF4', border: '1.5px dashed #86EFAC', padding: '10px 14px', borderRadius: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFF8E1', border: '1.5px dashed #FFE08A', padding: '10px 14px', borderRadius: '10px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <CheckCircle2 size={18} color="#15803D" />
+                    <CheckCircle2 size={18} color="#0A0A0A" />
                     <div>
-                      <div style={{ fontSize: '0.86rem', color: '#15803D', fontWeight: '800' }}>
+                      <div style={{ fontSize: '0.86rem', color: '#0A0A0A', fontWeight: '800' }}>
                         '{appliedCoupon.code}' Applied!
                       </div>
-                      <div style={{ fontSize: '0.74rem', color: '#166534' }}>
+                      <div style={{ fontSize: '0.74rem', color: '#4B5563' }}>
                         Saved ₹{(discountAmount || appliedCoupon.discountAmount || 0).toLocaleString('en-IN')} on your cart
                       </div>
                     </div>
@@ -543,7 +543,7 @@ export const CartView = () => {
                   <button
                     type="button"
                     onClick={removeCoupon}
-                    style={{ background: 'none', border: 'none', color: '#DC2626', fontWeight: '700', fontSize: '0.78rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    style={{ background: 'none', border: 'none', color: '#0A0A0A', fontWeight: '700', fontSize: '0.78rem', cursor: 'pointer', textDecoration: 'underline' }}
                   >
                     Remove
                   </button>
@@ -571,7 +571,7 @@ export const CartView = () => {
                     <button
                       type="submit"
                       style={{
-                        backgroundColor: '#0F172A',
+                        backgroundColor: '#0A0A0A',
                         color: '#FFFFFF',
                         border: 'none',
                         borderRadius: '8px',
@@ -586,7 +586,7 @@ export const CartView = () => {
                   </form>
 
                   {couponError && (
-                    <div style={{ color: '#DC2626', fontSize: '0.74rem', fontWeight: '600' }}>
+                    <div style={{ color: '#0A0A0A', fontSize: '0.74rem', fontWeight: '600' }}>
                       {couponError}
                     </div>
                   )}
@@ -613,8 +613,8 @@ export const CartView = () => {
                               <div
                                 key={coupon.code}
                                 style={{
-                                  border: `1.5px dashed ${isEligible ? '#86EFAC' : '#CBD5E1'}`,
-                                  backgroundColor: isEligible ? '#F0FDF4' : '#F8FAFC',
+                                  border: `1.5px dashed ${isEligible ? '#FFE08A' : '#CBD5E1'}`,
+                                  backgroundColor: isEligible ? '#FFF8E1' : '#F8FAFC',
                                   borderRadius: '10px',
                                   padding: '10px 12px',
                                   display: 'flex',
@@ -629,8 +629,8 @@ export const CartView = () => {
                                       style={{
                                         fontWeight: '800',
                                         fontSize: '0.84rem',
-                                        color: isEligible ? '#15803D' : '#334155',
-                                        backgroundColor: isEligible ? '#DCFCE7' : '#E2E8F0',
+                                        color: isEligible ? '#0A0A0A' : '#334155',
+                                        backgroundColor: isEligible ? '#FFF8E1' : '#E2E8F0',
                                         padding: '2px 6px',
                                         borderRadius: '4px',
                                         letterSpacing: '0.5px',
@@ -638,11 +638,11 @@ export const CartView = () => {
                                     >
                                       {coupon.code}
                                     </span>
-                                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#15803D' }}>
+                                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#0A0A0A' }}>
                                       {discountBadge}
                                     </span>
                                     {coupon.badge && (
-                                      <span style={{ fontSize: '0.65rem', fontWeight: '800', color: '#C2410C', backgroundColor: '#FFEDD5', padding: '1px 5px', borderRadius: '4px' }}>
+                                      <span style={{ fontSize: '0.65rem', fontWeight: '800', color: '#0A0A0A', backgroundColor: '#FFF8E1', padding: '1px 5px', borderRadius: '4px' }}>
                                         {coupon.badge}
                                       </span>
                                     )}
@@ -653,7 +653,7 @@ export const CartView = () => {
                                   </div>
 
                                   {!isEligible && reason && (
-                                    <div style={{ fontSize: '0.7rem', color: '#D97706', fontWeight: '600', marginTop: '2px' }}>
+                                    <div style={{ fontSize: '0.7rem', color: '#4B5563', fontWeight: '600', marginTop: '2px' }}>
                                       • {reason}
                                     </div>
                                   )}
@@ -664,8 +664,8 @@ export const CartView = () => {
                                   disabled={!isEligible}
                                   onClick={() => applyCoupon(coupon.code)}
                                   style={{
-                                    backgroundColor: isEligible ? '#15803D' : '#E2E8F0',
-                                    color: isEligible ? '#FFFFFF' : '#94A3B8',
+                                    backgroundColor: isEligible ? '#FFB800' : '#E2E8F0',
+                                    color: isEligible ? '#0A0A0A' : '#94A3B8',
                                     border: 'none',
                                     borderRadius: '6px',
                                     padding: '6px 12px',
@@ -673,7 +673,7 @@ export const CartView = () => {
                                     fontWeight: '800',
                                     cursor: isEligible ? 'pointer' : 'not-allowed',
                                     whiteSpace: 'nowrap',
-                                    boxShadow: isEligible ? '0 2px 4px rgba(21, 128, 61, 0.2)' : 'none',
+                                    boxShadow: isEligible ? '0 2px 4px rgba(0, 0, 0, 0.2)' : 'none',
                                   }}
                                 >
                                   {isEligible ? `APPLY (Save ₹${potentialSavings})` : 'APPLY'}
@@ -725,8 +725,8 @@ export const CartView = () => {
             style={{
               width: '100%',
               height: '46px',
-              backgroundColor: '#15803D',
-              color: '#FFFFFF',
+              backgroundColor: '#FFB800',
+              color: '#0A0A0A',
               borderRadius: '10px',
               border: 'none',
               fontWeight: '800',
@@ -736,7 +736,7 @@ export const CartView = () => {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '6px',
-              boxShadow: '0 3px 10px rgba(21, 128, 61, 0.3)',
+              boxShadow: '0 3px 10px rgba(0, 0, 0, 0.25)',
               transition: 'transform 0.15s ease, opacity 0.15s ease',
             }}
             onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}

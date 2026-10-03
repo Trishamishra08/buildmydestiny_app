@@ -26,9 +26,9 @@ export const ToastContainer = () => {
           key={toast.id}
           style={{
             pointerEvents: 'auto',
-            background: toast.type === 'danger' ? '#FEF3F2' : toast.type === 'info' ? '#F0F9FF' : '#FFFFFF',
-            border: `1.5px solid ${toast.type === 'danger' ? '#FDA29B' : toast.type === 'info' ? '#B2DDFF' : '#F47721'}`,
-            boxShadow: '0 10px 25px -5px rgba(11, 41, 71, 0.15)',
+            background: toast.type === 'danger' ? '#F2F2F2' : toast.type === 'info' ? '#FFF8E1' : '#FFFFFF',
+            border: `1.5px solid ${toast.type === 'danger' ? '#D4D4D4' : toast.type === 'info' ? '#FFE08A' : '#FFB800'}`,
+            boxShadow: '0 10px 25px -5px rgba(10, 10, 10, 0.15)',
             borderRadius: 'var(--radius-sm)',
             padding: '12px 16px',
             display: 'flex',
@@ -38,11 +38,11 @@ export const ToastContainer = () => {
           }}
         >
           {toast.type === 'danger' ? (
-            <AlertCircle size={20} color="#D92D20" />
+            <AlertCircle size={20} color="#0A0A0A" />
           ) : toast.type === 'info' ? (
-            <Info size={20} color="#026AA2" />
+            <Info size={20} color="#0A0A0A" />
           ) : (
-            <CheckCircle2 size={20} color="#F47721" />
+            <CheckCircle2 size={20} color="#FFB800" />
           )}
 
           <div style={{ flex: 1, fontSize: '0.875rem', fontWeight: '600', color: 'var(--text-primary)' }}>

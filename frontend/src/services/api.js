@@ -11,8 +11,9 @@ const API_BASE = import.meta.env.DEV
 function getAuthToken(auth) {
   try {
     if (auth === 'admin') return localStorage.getItem('mistri_admin_token');
+    if (auth === 'vendor') return localStorage.getItem('mistri_vendor_token');
     if (auth === 'user') return localStorage.getItem('mistri_token');
-    return localStorage.getItem('mistri_admin_token') || localStorage.getItem('mistri_token');
+    return localStorage.getItem('mistri_admin_token') || localStorage.getItem('mistri_vendor_token') || localStorage.getItem('mistri_token');
   } catch (err) {
     return null;
   }
@@ -83,6 +84,7 @@ export const api = {
   // Authentication
   // Callers show these errors to the person signing in, so they are not logged here.
   login: (email, password) => request('/auth/login', json('POST', { email, password }, { quiet: true })),
+  otpLogin: (phone, otp, role) => request('/auth/otp-login', json('POST', { phone, otp, role }, { quiet: true })),
   register: (userData) => request('/auth/register', json('POST', userData, { quiet: true })),
   firebaseLogin: (idToken) => request('/auth/firebase', json('POST', { idToken }, { quiet: true })),
   getMe: (auth) => request('/auth/me', { auth, quiet: true }),
@@ -152,6 +154,22 @@ export const api = {
   // Always the shopper's session: the payment must belong to the account placing the order.
   createPaymentOrder: (data) => request('/payments/create-order', json('POST', data, { auth: 'user', quiet: true })),
   verifyPayment: (data) => request('/payments/verify', json('POST', data, { auth: 'user' })),
+
+  // Vendor Panel
+  getVendorProfile: () => request('/vendor/me', { auth: 'vendor', quiet: true }),
+  updateVendorProfile: (data) => request('/vendor/me', json('PUT', data, { auth: 'vendor' })),
+  getVendorStats: () => request('/vendor/stats', { auth: 'vendor' }),
+  getVendorProducts: () => request('/vendor/products', { auth: 'vendor' }),
+  createVendorProduct: (data) => request('/vendor/products', json('POST', data, { auth: 'vendor' })),
+  updateVendorProduct: (id, data) => request(`/vendor/products/${encodeURIComponent(id)}`, json('PATCH', data, { auth: 'vendor' })),
+  deleteVendorProduct: (id) => request(`/vendor/products/${encodeURIComponent(id)}`, { method: 'DELETE', auth: 'vendor' }),
+  getVendorOrders: () => request('/vendor/orders', { auth: 'vendor' }),
+  updateVendorOrderItemStatus: (orderId, productId, status) =>
+    request(`/vendor/orders/${encodeURIComponent(orderId)}/items/${encodeURIComponent(productId)}/status`, json('PATCH', { status }, { auth: 'vendor' })),
+
+  // Admin: vendor account approval
+  getVendors: () => request('/vendor/admin/list', { auth: 'admin' }),
+  setVendorStatus: (id, status) => request(`/vendor/admin/${encodeURIComponent(id)}/status`, json('PATCH', { status }, { auth: 'admin' })),
 
   // Media & Cloudinary Uploads
   uploadImage: async (file, folder = 'mistri/general') => {

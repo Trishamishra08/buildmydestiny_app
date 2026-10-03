@@ -63,9 +63,9 @@ export const OrderDetailsView = () => {
       return (
         <span
           style={{
-            backgroundColor: '#ECFDF5',
-            color: '#059669',
-            border: '1px solid #A7F3D0',
+            backgroundColor: '#0A0A0A',
+            color: '#FFFFFF',
+            border: '1px solid #0A0A0A',
             borderRadius: '9999px',
             fontSize: '0.72rem',
             fontWeight: '800',
@@ -87,9 +87,9 @@ export const OrderDetailsView = () => {
       return (
         <span
           style={{
-            backgroundColor: '#F3E8FF',
-            color: '#7C3AED',
-            border: '1px solid #E9D5FF',
+            backgroundColor: '#FFB800',
+            color: '#0A0A0A',
+            border: '1px solid #E6A600',
             borderRadius: '9999px',
             fontSize: '0.72rem',
             fontWeight: '800',
@@ -111,9 +111,9 @@ export const OrderDetailsView = () => {
       return (
         <span
           style={{
-            backgroundColor: '#FEF2F2',
-            color: '#DC2626',
-            border: '1px solid #FEE2E2',
+            backgroundColor: '#F2F2F2',
+            color: '#4B5563',
+            border: '1px solid #E2E8F0',
             borderRadius: '9999px',
             fontSize: '0.72rem',
             fontWeight: '800',
@@ -134,9 +134,9 @@ export const OrderDetailsView = () => {
     return (
       <span
         style={{
-          backgroundColor: '#EEF2FF',
-          color: '#2563EB',
-          border: '1px solid #DBEAFE',
+          backgroundColor: '#F2F2F2',
+          color: '#0A0A0A',
+          border: '1px solid #E2E8F0',
           borderRadius: '9999px',
           fontSize: '0.72rem',
           fontWeight: '800',
@@ -233,8 +233,8 @@ export const OrderDetailsView = () => {
         {/* Dynamic Delivery Date Notice Banner */}
         <div
           style={{
-            backgroundColor: '#EFF6FF',
-            border: '1.5px solid #BFDBFE',
+            backgroundColor: '#FFF8E1',
+            border: '1.5px solid #FFE08A',
             borderRadius: '14px',
             padding: '12px 16px',
             marginBottom: '14px',
@@ -250,21 +250,21 @@ export const OrderDetailsView = () => {
                 width: '36px',
                 height: '36px',
                 borderRadius: '8px',
-                backgroundColor: '#DBEAFE',
+                backgroundColor: '#FFB800',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#1D4ED8',
+                color: '#0A0A0A',
                 flexShrink: 0,
               }}
             >
               <Truck size={18} />
             </div>
             <div>
-              <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#1E3A8A' }}>
+              <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#0A0A0A' }}>
                 Your order will be delivered on {order.deliveryDate || deliveryInfo.deliveryDate}
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#3B82F6', fontWeight: '500' }}>
+              <div style={{ fontSize: '0.75rem', color: '#4B5563', fontWeight: '500' }}>
                 {deliveryInfo.isAfter8PM
                   ? `Night Order · Scheduled for next day priority delivery (${order.deliveryDate || deliveryInfo.deliveryDate})`
                   : `Express daytime delivery active`}
@@ -273,8 +273,8 @@ export const OrderDetailsView = () => {
           </div>
           <span
             style={{
-              backgroundColor: '#DBEAFE',
-              color: '#1E40AF',
+              backgroundColor: '#FFE08A',
+              color: '#0A0A0A',
               fontSize: '0.72rem',
               fontWeight: '800',
               padding: '4px 9px',
@@ -311,11 +311,11 @@ export const OrderDetailsView = () => {
                   width: '32px',
                   height: '32px',
                   borderRadius: '8px',
-                  backgroundColor: '#EFF6FF',
+                  backgroundColor: '#FFF8E1',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#2563EB',
+                  color: '#0A0A0A',
                 }}
               >
                 <Truck size={18} />
@@ -379,7 +379,7 @@ export const OrderDetailsView = () => {
                         top: '22px',
                         bottom: 0,
                         width: '2px',
-                        backgroundColor: step.done ? '#10B981' : '#E2E8F0',
+                        backgroundColor: step.done ? '#0A0A0A' : '#E2E8F0',
                       }}
                     />
                   )}
@@ -390,8 +390,8 @@ export const OrderDetailsView = () => {
                       width: '24px',
                       height: '24px',
                       borderRadius: '50%',
-                      backgroundColor: step.done ? '#10B981' : '#F1F5F9',
-                      border: step.done ? '2px solid #10B981' : '2px solid #CBD5E1',
+                      backgroundColor: step.done ? '#0A0A0A' : '#F1F5F9',
+                      border: step.done ? '2px solid #0A0A0A' : '2px solid #CBD5E1',
                       color: step.done ? '#FFFFFF' : '#94A3B8',
                       display: 'flex',
                       alignItems: 'center',
@@ -481,7 +481,7 @@ export const OrderDetailsView = () => {
                     textDecoration: 'none',
                   }}
                 >
-                  <Phone size={12} color="#2563EB" />
+                  <Phone size={12} color="#0A0A0A" />
                   <span>Call Rider</span>
                 </a>
               )}
@@ -515,9 +515,9 @@ export const OrderDetailsView = () => {
             </h3>
             <span
               style={{
-                backgroundColor: '#FFFBEB',
-                color: '#D97706',
-                border: '1px solid #FDE68A',
+                backgroundColor: '#FFF8E1',
+                color: '#0A0A0A',
+                border: '1px solid #FFE08A',
                 borderRadius: '9999px',
                 fontSize: '0.66rem',
                 fontWeight: '800',
@@ -527,7 +527,7 @@ export const OrderDetailsView = () => {
                 gap: '3px',
               }}
             >
-              <Zap size={10} fill="#D97706" /> EXPRESS
+              <Zap size={10} fill="#0A0A0A" /> EXPRESS
             </span>
           </div>
 
@@ -575,7 +575,7 @@ export const OrderDetailsView = () => {
                     style={{
                       fontSize: '0.7rem',
                       fontWeight: '700',
-                      color: '#2563EB',
+                      color: '#0A0A0A',
                       textTransform: 'uppercase',
                       letterSpacing: '0.02em',
                     }}
@@ -636,11 +636,11 @@ export const OrderDetailsView = () => {
                 width: '28px',
                 height: '28px',
                 borderRadius: '8px',
-                backgroundColor: '#FFF7ED',
+                backgroundColor: '#FFF8E1',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#EA580C',
+                color: '#0A0A0A',
               }}
             >
               <MapPin size={16} />
@@ -709,11 +709,11 @@ export const OrderDetailsView = () => {
                   width: '28px',
                   height: '28px',
                   borderRadius: '8px',
-                  backgroundColor: '#F0FDF4',
+                  backgroundColor: '#F2F2F2',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#16A34A',
+                  color: '#0A0A0A',
                 }}
               >
                 <CreditCard size={16} />
@@ -725,9 +725,9 @@ export const OrderDetailsView = () => {
 
             <span
               style={{
-                backgroundColor: '#ECFDF5',
-                color: '#059669',
-                border: '1px solid #A7F3D0',
+                backgroundColor: '#0A0A0A',
+                color: '#FFFFFF',
+                border: '1px solid #0A0A0A',
                 borderRadius: '9999px',
                 fontSize: '0.66rem',
                 fontWeight: '800',
@@ -753,7 +753,7 @@ export const OrderDetailsView = () => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: '#64748B' }}>GST Invoice Ref:</span>
-              <span style={{ fontWeight: '600', color: '#2563EB' }}>
+              <span style={{ fontWeight: '600', color: '#0A0A0A' }}>
                 MST-INV-{order.id}
               </span>
             </div>
@@ -804,7 +804,7 @@ export const OrderDetailsView = () => {
                 gap: '6px',
               }}
             >
-              <ShieldCheck size={14} color="#16A34A" />
+              <ShieldCheck size={14} color="#0A0A0A" />
               <span>MTC Certificate</span>
             </button>
           </div>
@@ -843,7 +843,7 @@ export const OrderDetailsView = () => {
             </div>
 
             {order.summary?.bulkDiscount > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#EA580C', fontWeight: '700' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#0A0A0A', fontWeight: '700' }}>
                 <span>Contractor Volume Rebate:</span>
                 <span>- ₹{order.summary.bulkDiscount.toLocaleString()}</span>
               </div>
@@ -852,7 +852,7 @@ export const OrderDetailsView = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748B' }}>
               <span>Site Delivery Freight:</span>
               {(order.summary?.deliveryCharge || 0) === 0 ? (
-                <span style={{ color: '#16A34A', fontWeight: '700' }}>FREE</span>
+                <span style={{ color: '#0A0A0A', fontWeight: '700' }}>FREE</span>
               ) : (
                 <span style={{ color: '#0F172A', fontWeight: '700' }}>₹{order.summary.deliveryCharge.toLocaleString('en-IN')}</span>
               )}

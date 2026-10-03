@@ -58,11 +58,11 @@ export const MobileHeader = () => {
     <header
       className="hide-on-desktop"
       style={{
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#0A0A0A',
         position: 'sticky',
         top: 0,
         zIndex: 900,
-        boxShadow: isScrolled ? '0 3px 12px rgba(8,39,76,0.08)' : '0 2px 8px rgba(0,0,0,0.04)',
+        boxShadow: isScrolled ? '0 3px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.15)',
         transition: 'box-shadow 0.25s ease',
       }}
     >
@@ -78,7 +78,7 @@ export const MobileHeader = () => {
       >
         {/* Left: Brand Logo + Location Pincode Pill */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-          <Logo onClick={() => navigateTo('home')} size="small" showTagline={false} />
+          <Logo onClick={() => navigateTo('home')} size="small" showTagline={false} inverted />
 
           {/* Location Pincode Pill (Shifted Left next to Logo) */}
           <div
@@ -89,18 +89,18 @@ export const MobileHeader = () => {
               alignItems: 'center',
               gap: '3px',
               padding: '3px 8px',
-              backgroundColor: '#F1F5F9',
+              backgroundColor: '#1A1A1A',
               borderRadius: '9999px',
-              border: '1px solid #E2E8F0',
+              border: '1px solid #333333',
               height: '26px',
               transition: 'var(--transition)',
             }}
             title="Change Delivery Location"
           >
-            <span style={{ fontSize: '0.72rem', color: 'var(--primary-navy)', fontWeight: '700', letterSpacing: '-0.01em' }}>
+            <span style={{ fontSize: '0.72rem', color: '#FFFFFF', fontWeight: '700', letterSpacing: '-0.01em' }}>
               {currentPincode || '452005'}
             </span>
-            <ChevronDown size={11} color="var(--primary-navy)" strokeWidth={2.5} />
+            <ChevronDown size={11} color="var(--primary-orange)" strokeWidth={2.5} />
           </div>
         </div>
 
@@ -108,7 +108,7 @@ export const MobileHeader = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
 
 
-          {/* Dark Cart Circle Button with Bright Green Notification Badge (Exact Screenshot 1) */}
+          {/* Yellow Cart Circle Button with Black Notification Badge */}
           <button
             onClick={() => navigateTo('cart')}
             style={{
@@ -116,14 +116,14 @@ export const MobileHeader = () => {
               width: '32px',
               height: '32px',
               borderRadius: '50%',
-              backgroundColor: '#1E293B',
+              backgroundColor: 'var(--primary-orange)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#FFFFFF',
+              color: '#0A0A0A',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 2px 5px rgba(0,0,0,0.12)',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.3)',
               flexShrink: 0,
             }}
           >
@@ -134,7 +134,7 @@ export const MobileHeader = () => {
                   position: 'absolute',
                   top: '-4px',
                   right: '-4px',
-                  backgroundColor: 'var(--qc-green)',
+                  backgroundColor: '#0A0A0A',
                   color: '#FFFFFF',
                   fontSize: '0.58rem',
                   fontWeight: '900',
@@ -144,7 +144,7 @@ export const MobileHeader = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  border: '1.5px solid #FFFFFF',
+                  border: '1.5px solid #0A0A0A',
                   lineHeight: 1,
                   padding: '1px',
                 }}
@@ -161,7 +161,7 @@ export const MobileHeader = () => {
         style={{
           padding: isScrolled ? '8px 12px 8px 12px' : '0 12px 8px 12px',
           transition: 'padding 0.2s ease',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#0A0A0A',
         }}
       >
         <form onSubmit={handleSearchSubmit} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>

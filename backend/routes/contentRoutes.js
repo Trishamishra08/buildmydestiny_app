@@ -11,7 +11,7 @@ import {
   getSettings,
   updateSettings,
 } from '../controllers/adminController.js';
-import { catalogRouter, ownedRouter, inboxRouter, optionalProtect } from './routeFactory.js';
+import { catalogRouter, inboxRouter, optionalProtect } from './routeFactory.js';
 
 const adminOnly = [protect, authorize('admin')];
 
@@ -34,5 +34,6 @@ export const settingsRoutes = settings;
 export const bannerRoutes = catalogRouter(bannerCrud);
 export const faqRoutes = catalogRouter(faqCrud);
 export const cityRoutes = catalogRouter(cityCrud);
-export const quotationRoutes = ownedRouter(quotationCrud);
+// Guests and shoppers alike may submit a quotation inquiry; only admins list/manage them.
+export const quotationRoutes = inboxRouter(quotationCrud);
 export const supportMessageRoutes = inboxRouter(supportMessageCrud);

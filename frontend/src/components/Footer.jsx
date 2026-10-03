@@ -21,7 +21,7 @@ export const Footer = () => {
         <div className="container">
           <div className="footer-slider-container">
             <div className="footer-slider-card flex items-center gap-3">
-              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(241, 90, 36, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F15A24', flexShrink: 0 }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(255, 184, 0, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFB800', flexShrink: 0 }}>
                 <Truck size={22} />
               </div>
               <div>
@@ -31,7 +31,7 @@ export const Footer = () => {
             </div>
 
             <div className="footer-slider-card flex items-center gap-3">
-              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10b981', flexShrink: 0 }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(255, 184, 0, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFB800', flexShrink: 0 }}>
                 <ShieldCheck size={22} />
               </div>
               <div>
@@ -41,7 +41,7 @@ export const Footer = () => {
             </div>
 
             <div className="footer-slider-card flex items-center gap-3">
-              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(14, 165, 233, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0ea5e9', flexShrink: 0 }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(255, 184, 0, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFB800', flexShrink: 0 }}>
                 <Award size={22} />
               </div>
               <div>
@@ -51,7 +51,7 @@ export const Footer = () => {
             </div>
 
             <div className="footer-slider-card flex items-center gap-3">
-              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(245, 158, 11, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b', flexShrink: 0 }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(255, 184, 0, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFB800', flexShrink: 0 }}>
                 <FileText size={22} />
               </div>
               <div>
@@ -75,15 +75,15 @@ export const Footer = () => {
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.84rem', color: '#CBD5E1' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Phone size={15} color="#F15A24" />
+                  <Phone size={15} color="#FFB800" />
                   <span>+91 1800 200 8899 (Toll Free)</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Mail size={15} color="#F15A24" />
-                  <span>contractor-sales@mistri.com</span>
+                  <Mail size={15} color="#FFB800" />
+                  <span>contractor-sales@buildmydestiny.com</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <MapPin size={15} color="#F15A24" />
+                  <MapPin size={15} color="#FFB800" />
                   <span>Central Depot: Super Corridor, Indore - 452005</span>
                 </div>
               </div>
@@ -128,7 +128,8 @@ export const Footer = () => {
                   Company Info
                 </h4>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.55rem', fontSize: '0.84rem', color: '#94A3B8' }}>
-                  <li><button onClick={() => navigateTo('about')} style={{ background: 'none', color: '#CBD5E1', cursor: 'pointer', textAlign: 'left' }}>About MISTRI</button></li>
+                  <li><button onClick={() => navigateTo('about')} style={{ background: 'none', color: '#CBD5E1', cursor: 'pointer', textAlign: 'left' }}>About BuildMyDestiny</button></li>
+                  <li><button onClick={() => navigateTo('vendor')} style={{ background: 'none', color: '#FFB800', fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}>Sell on BuildMyDestiny</button></li>
                   <li><button onClick={() => navigateTo('contact')} style={{ background: 'none', color: '#CBD5E1', cursor: 'pointer', textAlign: 'left' }}>Headquarters</button></li>
                   <li><button onClick={() => navigateTo('terms')} style={{ background: 'none', color: '#CBD5E1', cursor: 'pointer', textAlign: 'left' }}>Terms & Conditions</button></li>
                   <li><button onClick={() => navigateTo('privacy')} style={{ background: 'none', color: '#CBD5E1', cursor: 'pointer', textAlign: 'left' }}>Privacy Policy</button></li>
@@ -153,11 +154,11 @@ export const Footer = () => {
             }}
           >
             <div>
-              © 2026 MISTRI Technologies Pvt. Ltd. All rights reserved.
+              © 2026 BuildMyDestiny Technologies Pvt. Ltd. All rights reserved.
             </div>
 
             <div style={{ color: 'var(--light-orange)', fontWeight: '700', letterSpacing: '0.1em' }}>
-              MISTRI – FROM FOUNDATION TO FINISH
+              BUILDMYDESTINY – FROM FOUNDATION TO FINISH
             </div>
 
             <div style={{ display: 'flex', gap: '1rem' }}>

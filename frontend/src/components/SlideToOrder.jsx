@@ -104,14 +104,14 @@ export const SlideToOrder = ({
   // Thumb offset in pixels
   const thumbOffset = sliderPosition * (maxDragRef.current || 200);
 
-  // Colors & Themes (Vibrant Red Capsule matching screenshot)
+  // Colors & Themes (Brand Yellow Capsule)
   const baseBg = isOnline
-    ? 'linear-gradient(90deg, #EA384C 0%, #E11D48 100%)'
-    : 'linear-gradient(90deg, #EA384C 0%, #E11D48 100%)';
+    ? 'linear-gradient(90deg, #FFB800 0%, #E6A600 100%)'
+    : 'linear-gradient(90deg, #FFB800 0%, #E6A600 100%)';
 
-  const progressBg = 'linear-gradient(90deg, #BE123C 0%, #9F1239 100%)';
+  const progressBg = 'linear-gradient(90deg, #E6A600 0%, #CC9200 100%)';
 
-  const thumbBg = isSuccess ? '#10B981' : '#FFFFFF';
+  const thumbBg = isSuccess ? '#0A0A0A' : '#FFFFFF';
 
   return (
     <div style={{ width: '100%', userSelect: 'none' }}>
@@ -129,8 +129,8 @@ export const SlideToOrder = ({
           boxShadow: disabled
             ? 'none'
             : isDragging
-            ? '0 6px 20px -3px rgba(225, 29, 72, 0.45), inset 0 2px 4px rgba(0,0,0,0.1)'
-            : '0 3px 12px rgba(225, 29, 72, 0.28)',
+            ? '0 6px 20px -3px rgba(255, 184, 0, 0.45), inset 0 2px 4px rgba(0,0,0,0.1)'
+            : '0 3px 12px rgba(255, 184, 0, 0.28)',
           overflow: 'hidden',
           cursor: disabled ? 'not-allowed' : isDragging ? 'grabbing' : 'grab',
           transition: isDragging ? 'none' : 'box-shadow 0.3s ease',
@@ -164,7 +164,7 @@ export const SlideToOrder = ({
             alignItems: 'center',
             justifyContent: 'center',
             gap: '6px',
-            color: disabled ? '#94A3B8' : '#FFFFFF',
+            color: disabled ? '#94A3B8' : '#0A0A0A',
             fontWeight: '800',
             fontSize: '0.82rem',
             letterSpacing: '0.5px',
@@ -181,11 +181,11 @@ export const SlideToOrder = ({
             <span>{disabledMessage || 'Select Address to Order'}</span>
           ) : isLoading ? (
             <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '14px', height: '14px', border: '2px solid #FFFFFF', borderRightColor: 'transparent', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
+              <span style={{ width: '14px', height: '14px', border: '2px solid #0A0A0A', borderRightColor: 'transparent', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
               {isOnline ? 'Connecting Payment...' : 'Placing Order...'}
             </span>
           ) : isSuccess ? (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#FFFFFF' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0A0A0A' }}>
               <Check size={16} strokeWidth={3} />
               Order Confirmed!
             </span>
@@ -216,7 +216,7 @@ export const SlideToOrder = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: isSuccess ? '#FFFFFF' : '#E11D48',
+            color: isSuccess ? '#FFFFFF' : '#0A0A0A',
             boxShadow: disabled ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.18)',
             zIndex: 3,
             cursor: disabled ? 'not-allowed' : isDragging ? 'grabbing' : 'grab',
@@ -230,7 +230,7 @@ export const SlideToOrder = ({
               style={{
                 width: '16px',
                 height: '16px',
-                border: '2px solid #E11D48',
+                border: '2px solid #0A0A0A',
                 borderTopColor: 'transparent',
                 borderRadius: '50%',
                 animation: 'spin 0.8s linear infinite',
@@ -238,7 +238,7 @@ export const SlideToOrder = ({
             />
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ChevronRight size={19} color="#E11D48" strokeWidth={3} />
+              <ChevronRight size={19} color="#0A0A0A" strokeWidth={3} />
             </div>
           )}
         </div>
@@ -257,10 +257,10 @@ export const SlideToOrder = ({
         }}
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <ShieldCheck size={13} style={{ color: '#10B981' }} />
+          <ShieldCheck size={13} style={{ color: '#0A0A0A' }} />
           <span>{isOnline ? '100% Secure Payment' : 'Pay on Site Unloading'}</span>
         </span>
-        <span style={{ fontWeight: '600', color: isOnline ? '#10B981' : '#EA580C' }}>
+        <span style={{ fontWeight: '600', color: isOnline ? '#0A0A0A' : '#0A0A0A' }}>
           {isOnline ? 'Instant Digital Invoice' : 'No Pre-Payment'}
         </span>
       </div>

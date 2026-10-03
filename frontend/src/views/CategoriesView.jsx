@@ -104,7 +104,7 @@ export const CategoriesView = () => {
               backgroundColor: '#FFFFFF',
               borderRadius: '14px',
               border: '1.5px solid #E2E8F0',
-              boxShadow: '0 2px 10px rgba(8, 39, 76, 0.05)',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
               padding: '2px 8px 2px 14px',
               height: '48px',
             }}
@@ -150,7 +150,7 @@ export const CategoriesView = () => {
                   <span>Search for</span>
                   <span
                     style={{
-                      color: '#059669',
+                      color: '#0A0A0A',
                       fontWeight: '700',
                       transition: 'all 0.3s ease',
                     }}
@@ -227,25 +227,25 @@ export const CategoriesView = () => {
                           width: '100%',
                           aspectRatio: '1 / 1',
                           borderRadius: '18px',
-                          backgroundColor: '#E6F5F8',
+                          backgroundColor: '#FFF8E1',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           padding: '8px',
-                          border: '1px solid rgba(8, 39, 76, 0.04)',
-                          boxShadow: '0 1px 4px rgba(8, 39, 76, 0.03)',
+                          border: '1px solid rgba(0, 0, 0, 0.04)',
+                          boxShadow: '0 1px 4px rgba(0, 0, 0, 0.03)',
                           transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                           overflow: 'hidden',
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
-                          e.currentTarget.style.backgroundColor = '#DEF0F4';
-                          e.currentTarget.style.boxShadow = '0 6px 16px rgba(8, 39, 76, 0.12)';
+                          e.currentTarget.style.backgroundColor = '#FFEFC2';
+                          e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.12)';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.transform = 'none';
-                          e.currentTarget.style.backgroundColor = '#E6F5F8';
-                          e.currentTarget.style.boxShadow = '0 1px 4px rgba(8, 39, 76, 0.03)';
+                          e.currentTarget.style.backgroundColor = '#FFF8E1';
+                          e.currentTarget.style.boxShadow = '0 1px 4px rgba(0, 0, 0, 0.03)';
                         }}
                       >
                         <img

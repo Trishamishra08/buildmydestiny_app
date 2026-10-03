@@ -41,7 +41,7 @@ export const Navbar = ({ currentTab, setCurrentTab, onOpenAuthModal }) => {
           </div>
           <div>
             <div style={{ fontSize: '1.4rem', fontWeight: '800', letterSpacing: '-0.03em', background: 'linear-gradient(to right, #ffffff, #cbd5e1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              MISTRI<span style={{ color: '#f59e0b', WebkitTextFillColor: '#f59e0b' }}>.</span>
+              BUILD MY DESTINY<span style={{ color: '#f59e0b', WebkitTextFillColor: '#f59e0b' }}>.</span>
             </div>
             <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '-4px' }}>
               Expert Handyman Network

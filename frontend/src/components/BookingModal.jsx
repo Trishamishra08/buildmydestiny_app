@@ -101,7 +101,7 @@ export const BookingModal = ({ service, mistri, onClose, onBookingSuccess, onOpe
         <div style={{ padding: '1.5rem' }}>
           {success ? (
             <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-              <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto' }}>
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#FFF8E1', color: '#0A0A0A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto' }}>
                 <CheckCircle size={36} />
               </div>
               <h4 style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '0.5rem' }}>
@@ -118,9 +118,9 @@ export const BookingModal = ({ service, mistri, onClose, onBookingSuccess, onOpe
             <form onSubmit={handleSubmit}>
               {errorMsg && (
                 <div style={{
-                  background: 'rgba(239, 68, 68, 0.15)',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                  color: '#ef4444',
+                  background: '#F2F2F2',
+                  border: '1px solid #D4D4D4',
+                  color: '#0A0A0A',
                   padding: '0.75rem',
                   borderRadius: 'var(--radius-sm)',
                   fontSize: '0.85rem',
@@ -156,7 +156,7 @@ export const BookingModal = ({ service, mistri, onClose, onBookingSuccess, onOpe
                     onChange={(e) => setFormData({ ...formData, timeSlot: e.target.value })}
                   >
                     {timeSlots.map((slot) => (
-                      <option key={slot} value={slot} style={{ background: '#1e293b' }}>
+                      <option key={slot} value={slot} style={{ background: '#1A1A1A' }}>
                         {slot}
                       </option>
                     ))}

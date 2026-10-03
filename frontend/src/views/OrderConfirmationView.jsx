@@ -30,7 +30,7 @@ export const OrderConfirmationView = () => {
         {/* Success Header Banner */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #0B2947 0%, #123A63 100%)',
+            background: 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%)',
             color: '#FFFFFF',
             padding: '2rem 1.5rem',
             textAlign: 'center',
@@ -58,7 +58,7 @@ export const OrderConfirmationView = () => {
             Order Placed Successfully!
           </h1>
           <p style={{ color: '#CBD5E1', fontSize: '0.925rem', marginBottom: '1rem' }}>
-            Thank you for ordering with MISTRI. Your structural materials are allocated at our central logistics depot.
+            Thank you for ordering with BuildMyDestiny. Your structural materials are allocated at our central logistics depot.
           </p>
 
           <div
@@ -71,7 +71,7 @@ export const OrderConfirmationView = () => {
               fontSize: '0.875rem',
               fontWeight: '800',
               letterSpacing: '0.04em',
-              color: '#FFF1E7',
+              color: '#FFFFFF',
             }}
           >
             Order Reference ID: {order.id}
@@ -83,8 +83,8 @@ export const OrderConfirmationView = () => {
           {/* Prominent Delivery Date Notice Banner */}
           <div
             style={{
-              backgroundColor: '#EFF6FF',
-              border: '1.5px solid #BFDBFE',
+              backgroundColor: '#FFF8E1',
+              border: '1.5px solid #FFE08A',
               borderRadius: '12px',
               padding: '14px 18px',
               marginBottom: '1.5rem',
@@ -98,21 +98,21 @@ export const OrderConfirmationView = () => {
                 width: '42px',
                 height: '42px',
                 borderRadius: '10px',
-                backgroundColor: '#DBEAFE',
+                backgroundColor: '#FFB800',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#1D4ED8',
+                color: '#0A0A0A',
                 flexShrink: 0,
               }}
             >
               <Truck size={22} />
             </div>
             <div>
-              <div style={{ fontSize: '1rem', fontWeight: '800', color: '#1E3A8A' }}>
+              <div style={{ fontSize: '1rem', fontWeight: '800', color: '#0A0A0A' }}>
                 Your order will be delivered on {order.deliveryDate || deliveryInfo.deliveryDate}
               </div>
-              <div style={{ fontSize: '0.82rem', color: '#3B82F6', marginTop: '2px', fontWeight: '600' }}>
+              <div style={{ fontSize: '0.82rem', color: '#4B5563', marginTop: '2px', fontWeight: '600' }}>
                 {deliveryInfo.isAfter8PM
                   ? `Placed after 8:00 PM (${order.date || deliveryInfo.orderDate}) · Scheduled for priority delivery tomorrow.`
                   : `Dispatched from nearest hub for same-day delivery today.`}

@@ -29,10 +29,10 @@ export const ServiceCard = ({ service, onBookNow }) => {
             alignItems: 'center',
             gap: '4px',
             fontSize: '0.8rem',
-            color: '#fbbf24',
+            color: '#FFB800',
             fontWeight: '600',
           }}>
-            <Star size={14} fill="#fbbf24" strokeWidth={0} />
+            <Star size={14} fill="#FFB800" strokeWidth={0} />
             <span>{service.rating}</span>
             <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>({service.reviewCount})</span>
           </div>
@@ -51,7 +51,7 @@ export const ServiceCard = ({ service, onBookNow }) => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginBottom: '1.25rem' }}>
             {service.features.slice(0, 3).map((feat, idx) => (
               <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                <CheckCircle2 size={14} color="#10b981" />
+                <CheckCircle2 size={14} color="#0A0A0A" />
                 <span>{feat}</span>
               </div>
             ))}

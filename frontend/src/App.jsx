@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StoreProvider, useStore } from './context/StoreContext';
 
 // Components
+import SplashScreen from './components/SplashScreen';
 import Header from './components/Header';
 import MobileHeader from './components/MobileHeader';
 import MobileBottomNav from './components/MobileBottomNav';
@@ -38,17 +39,30 @@ import HelpFaqView from './views/HelpFaqView';
 import TermsView from './views/TermsView';
 import PrivacyPolicyView from './views/PrivacyPolicyView';
 import AdminView from './views/AdminView';
+import VendorView from './views/VendorView';
 
 function MainAppLayout() {
   const { currentView, user } = useStore();
 
   const isAdminView = currentView === 'admin';
+  const isVendorView = currentView === 'vendor';
 
   if (isAdminView) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <main style={{ flex: 1 }}>
           <AdminView />
+        </main>
+        <ToastContainer />
+      </div>
+    );
+  }
+
+  if (isVendorView) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <main style={{ flex: 1 }}>
+          <VendorView />
         </main>
         <ToastContainer />
       </div>
@@ -204,8 +218,11 @@ function MainAppLayout() {
 }
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <StoreProvider>
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
       <MainAppLayout />
     </StoreProvider>
   );

@@ -25,7 +25,7 @@ export const logAnalyticsEvent = (eventName, eventParams = {}) => {
  */
 export const trackPageView = (viewName, params = {}) => {
   logAnalyticsEvent('page_view', {
-    page_title: `Mistri - ${viewName}`,
+    page_title: `Build My Destiny - ${viewName}`,
     page_location: window.location.href,
     page_path: window.location.pathname,
     view_name: viewName,

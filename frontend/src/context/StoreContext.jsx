@@ -102,7 +102,7 @@ const INITIAL_USERS_LIST = [];
 // Initial Coupons & Promos
 const INITIAL_COUPONS = [
   {
-    code: 'MISTRI100',
+    code: 'BUILDMYDESTINY100',
     description: 'Flat ₹100 Instant Discount on your material orders',
     discountType: 'flat',
     flatAmount: 100,
@@ -160,11 +160,11 @@ const INITIAL_BANNERS = [];
 
 // Initial Site Settings
 const INITIAL_SETTINGS = {
-  storeName: 'MISTRI – Construction Material & Technician Booking Platform',
+  storeName: 'BuildMyDestiny – Construction Material & Technician Booking Platform',
   tagline: 'From Foundation to Finish',
   supportPhone: '+91 96309 38487',
   whatsappNumber: '+91 96309 38487',
-  supportEmail: 'care@mistri.com',
+  supportEmail: 'care@buildmydestiny.com',
   depotAddress: 'Central Logistics Park, Near Vavdimohala, Kod, Dist- Dhar, MP - 454001',
   depotCity: 'Dhar',
   depotPincode: '454001',
@@ -403,6 +403,9 @@ export const StoreProvider = ({ children }) => {
   // Exclusive Admin Authentication State
   const [adminUser, setAdminUser] = useState(() => getStored('admin_user', null));
 
+  // Exclusive Vendor Authentication State (multivendor marketplace)
+  const [vendorUser, setVendorUser] = useState(() => getStored('vendor_user', null));
+
   // Cart State (Initialized from storage or starts empty for real shopping)
   const [cart, setCart] = useState(() => getStored('cart', []));
 
@@ -488,6 +491,7 @@ export const StoreProvider = ({ children }) => {
   // Persistent storage sync effects
   useEffect(() => { setStored('current_user', user); }, [user]);
   useEffect(() => { setStored('admin_user', adminUser); }, [adminUser]);
+  useEffect(() => { setStored('vendor_user', vendorUser); }, [vendorUser]);
   useEffect(() => { setStored('admin_notifications', adminNotifications); }, [adminNotifications]);
   useEffect(() => { setStored('cart', cart); }, [cart]);
   useEffect(() => { setStored('applied_coupon', appliedCoupon); }, [appliedCoupon]);
@@ -607,11 +611,14 @@ export const StoreProvider = ({ children }) => {
     const notify = Date.now() - lastSessionNotice.current > 5000;
     lastSessionNotice.current = Date.now();
     try {
-      localStorage.removeItem(kind === 'admin' ? 'mistri_admin_token' : 'mistri_token');
+      localStorage.removeItem(kind === 'admin' ? 'mistri_admin_token' : kind === 'vendor' ? 'mistri_vendor_token' : 'mistri_token');
     } catch (e) {}
     if (kind === 'admin') {
       setAdminUser(null);
       if (notify) addToast('Your admin session has expired. Please sign in again - changes made since then were not saved.', 'warning', 10000);
+    } else if (kind === 'vendor') {
+      setVendorUser(null);
+      if (notify) addToast('Your vendor session has expired. Please sign in again.', 'warning', 8000);
     } else {
       setUser(null);
       if (notify) addToast('Your session has expired. Please sign in again.', 'warning', 8000);
@@ -638,6 +645,21 @@ export const StoreProvider = ({ children }) => {
       if (err?.status === 401) endExpiredSession('user');
     });
   }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!vendorUser || !hasToken('mistri_vendor_token')) return;
+    api
+      .getVendorProfile()
+      .then((res) => {
+        if (res?.data?.role !== 'vendor') return endExpiredSession('vendor');
+        // Keep the local copy of approval status fresh (an admin may approve/reject
+        // between visits) without forcing the vendor to re-authenticate.
+        setVendorUser((prev) => (prev ? { ...prev, vendorStatus: res.data.vendorStatus, businessName: res.data.businessName } : prev));
+      })
+      .catch((err) => {
+        if (err?.status === 401 || err?.status === 403) endExpiredSession('vendor');
+      });
+  }, [vendorUser?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // URL change listener for browser Back/Forward & popstate
   useEffect(() => {
@@ -1025,7 +1047,7 @@ export const StoreProvider = ({ children }) => {
         authProvider: 'firebase_google',
       });
       trackUserLogin('google');
-      return completeSignIn(profile, res.data.token, callback, `Welcome to MISTRI, ${profile.name}! (Signed in via Google)`);
+      return completeSignIn(profile, res.data.token, callback, `Welcome to BuildMyDestiny, ${profile.name}! (Signed in via Google)`);
     } catch (err) {
       signOut(auth).catch(() => {});
       const message =
@@ -1035,6 +1057,25 @@ export const StoreProvider = ({ children }) => {
       addToast(message, 'error');
       throw new Error(message);
     }
+  };
+
+  const userOtpLogin = async (phone, otp, callback = null) => {
+    let res;
+    try {
+      res = await api.otpLogin(phone, otp, 'customer');
+    } catch (err) {
+      const message =
+        err?.status === 0
+          ? 'Cannot reach the server. Please check your connection and try again.'
+          : err?.status === 401
+            ? 'Invalid phone number or OTP.'
+            : err?.message || 'OTP login failed. Please try again.';
+      throw new Error(message);
+    }
+
+    const profile = profileFromServer(res.data);
+    trackUserLogin('otp');
+    return completeSignIn(profile, res.data.token, callback, `Welcome back, ${profile.name}!`);
   };
 
   const login = async (emailOrPhone, password, callback = null) => {
@@ -1096,7 +1137,7 @@ export const StoreProvider = ({ children }) => {
 
     const profile = profileFromServer(res.data, { company: formData.company || '', gstin: formData.gstin || '' });
     trackUserSignUp('email_or_form');
-    return completeSignIn(profile, res.data.token, callback, `Account created successfully! Welcome to MISTRI, ${profile.name}.`);
+    return completeSignIn(profile, res.data.token, callback, `Account created successfully! Welcome to BuildMyDestiny, ${profile.name}.`);
   };
 
   const logout = () => {
@@ -1106,7 +1147,7 @@ export const StoreProvider = ({ children }) => {
       localStorage.removeItem('mistri_current_user');
       localStorage.removeItem('mistri_token');
     } catch (e) {}
-    addToast('Logged out of your MISTRI account', 'info');
+    addToast('Logged out of your BuildMyDestiny account', 'info');
   };
 
   // Exclusive Admin Authentication Handler
@@ -1133,7 +1174,7 @@ export const StoreProvider = ({ children }) => {
       const authAdmin = {
         id: String(data._id),
         name: data.name || 'Administrator',
-        company: 'MISTRI Platform Admin HQ',
+        company: 'BuildMyDestiny Platform Admin HQ',
         email: data.email,
         phone: data.phone || '',
         role: 'Admin',
@@ -1153,6 +1194,39 @@ export const StoreProvider = ({ children }) => {
     }
   };
 
+  const adminOtpLogin = async (phone, otp) => {
+    try {
+      const res = await api.otpLogin(phone, otp, 'admin');
+      const data = res?.data;
+      if (!data?.token || data.role !== 'admin') {
+        addToast('Access Denied: invalid phone number or OTP', 'error');
+        return { success: false, message: 'Invalid phone number or OTP' };
+      }
+
+      localStorage.setItem('mistri_admin_token', data.token);
+      const authAdmin = {
+        id: String(data._id),
+        name: data.name || 'Administrator',
+        company: 'BuildMyDestiny Platform Admin HQ',
+        email: data.email,
+        phone: data.phone || '',
+        role: 'Admin',
+        tier: 'Root Administrator (Full Access)',
+        status: 'Active',
+      };
+      setAdminUser(authAdmin);
+      addToast('Administrator authenticated successfully! Welcome back.', 'success');
+      return { success: true, user: authAdmin };
+    } catch (err) {
+      const message =
+        err?.status === 0
+          ? 'Cannot reach the server. Please check your connection and try again.'
+          : 'Access Denied: Invalid phone number or OTP';
+      addToast(message, 'error');
+      return { success: false, message };
+    }
+  };
+
   const adminLogout = () => {
     setAdminUser(null);
     try {
@@ -1160,6 +1234,110 @@ export const StoreProvider = ({ children }) => {
       localStorage.removeItem('mistri_admin_user');
     } catch (e) {}
     addToast('Administrator session ended', 'info');
+  };
+
+  // Exclusive Vendor Authentication Handlers (multivendor marketplace)
+  const vendorToProfile = (data) => ({
+    id: String(data._id),
+    name: data.name || 'Vendor',
+    email: data.email || '',
+    phone: data.phone || '',
+    businessName: data.businessName || '',
+    vendorStatus: data.vendorStatus || 'pending',
+  });
+
+  const vendorLogin = async (emailOrPhone, password) => {
+    const identifier = String(emailOrPhone || '').trim();
+    try {
+      const res = await api.login(identifier, password);
+      const data = res?.data;
+      if (!data?.token || data.role !== 'vendor') {
+        addToast('Access Denied: this account is not a registered vendor', 'error');
+        return { success: false, message: 'This account is not a registered vendor' };
+      }
+
+      localStorage.setItem('mistri_vendor_token', data.token);
+      const profile = vendorToProfile(data);
+      setVendorUser(profile);
+      addToast(`Welcome back, ${profile.businessName || profile.name}!`, 'success');
+      return { success: true, user: profile };
+    } catch (err) {
+      const message =
+        err?.status === 0
+          ? 'Cannot reach the server. Please check your connection and try again.'
+          : 'Access Denied: Invalid vendor email or password';
+      addToast(message, 'error');
+      return { success: false, message };
+    }
+  };
+
+  const vendorSignup = async (formData) => {
+    if (!formData.password) {
+      addToast('Please choose a password.', 'warning');
+      return { success: false, message: 'Please choose a password.' };
+    }
+    if (!formData.businessName) {
+      addToast('Please provide your business/shop name.', 'warning');
+      return { success: false, message: 'Please provide your business/shop name.' };
+    }
+
+    try {
+      const res = await api.register({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        role: 'vendor',
+        businessName: formData.businessName,
+        city: formData.city || currentCity,
+      });
+      const data = res?.data;
+      localStorage.setItem('mistri_vendor_token', data.token);
+      const profile = vendorToProfile(data);
+      setVendorUser(profile);
+      addToast('Vendor account created! An admin will review and approve your account shortly.', 'success', 6000);
+      return { success: true, user: profile };
+    } catch (err) {
+      const message =
+        err?.status === 0
+          ? 'Cannot reach the server. Please check your connection and try again.'
+          : err?.message || 'Vendor registration failed. Please try again.';
+      addToast(message, 'error');
+      return { success: false, message };
+    }
+  };
+
+  const vendorOtpLogin = async (phone, otp) => {
+    try {
+      const res = await api.otpLogin(phone, otp, 'vendor');
+      const data = res?.data;
+      if (!data?.token || data.role !== 'vendor') {
+        addToast('Access Denied: invalid phone number or OTP', 'error');
+        return { success: false, message: 'Invalid phone number or OTP' };
+      }
+
+      localStorage.setItem('mistri_vendor_token', data.token);
+      const profile = vendorToProfile(data);
+      setVendorUser(profile);
+      addToast(`Welcome back, ${profile.businessName || profile.name}!`, 'success');
+      return { success: true, user: profile };
+    } catch (err) {
+      const message =
+        err?.status === 0
+          ? 'Cannot reach the server. Please check your connection and try again.'
+          : 'Access Denied: Invalid phone number or OTP';
+      addToast(message, 'error');
+      return { success: false, message };
+    }
+  };
+
+  const vendorLogout = () => {
+    setVendorUser(null);
+    try {
+      localStorage.removeItem('mistri_vendor_token');
+      localStorage.removeItem('mistri_vendor_user');
+    } catch (e) {}
+    addToast('Vendor session ended', 'info');
   };
 
   // Auth Gate: Checks if user is logged in before proceeding with ordering / bookings
@@ -1537,89 +1715,93 @@ export const StoreProvider = ({ children }) => {
   };
 
   // 3. ORDERS & LIVE LOGISTICS CRUD
-  const updateOrderStatus = (orderId, status, statusCode) => {
+  // Shared tail for the order-mutation helpers below: apply the local update, wait for the
+  // server PATCH to actually confirm, and report success/failure honestly (rather than the
+  // instant "success" toast that only reflected local state).
+  const patchOrder = async (orderId, buildPatch, { successMessage, failMessage }) => {
+    let updatedDoc = null;
     setOrders((prev) =>
       prev.map((o) => {
-        if (o.id === orderId) {
-          return {
-            ...o,
-            status,
-            statusCode: statusCode || status.toLowerCase().replace(/\s+/g, '-'),
-          };
-        }
-        return o;
+        if (o.id !== orderId) return o;
+        updatedDoc = buildPatch(o);
+        return updatedDoc;
       })
     );
-    addToast(`Order ${orderId} status set to "${status}"`, 'success');
+    if (!updatedDoc) return;
+
+    try {
+      await api.updateOrder(orderId, updatedDoc);
+      markSynced('orders', updatedDoc);
+      addToast(successMessage, 'success');
+    } catch (err) {
+      console.warn('Backend order update warning:', err);
+      if (err?.status === 401 || err?.status === 403) {
+        addToast(`${failMessage} Admin session expired - please re-login to save to the database.`, 'warning', 7000);
+      } else if (err?.status === 0) {
+        addToast(`${failMessage} Cannot reach the server; will retry automatically.`, 'warning', 6000);
+      } else {
+        addToast(`${failMessage} ${err?.message || 'Server rejected the change.'}`, 'error', 6000);
+      }
+    }
   };
 
-  const updateOrderTracking = (orderId, currentStep, customSteps = null) => {
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id === orderId) {
-          const updatedSteps = customSteps || o.tracking?.steps?.map((step, idx) => ({
-            ...step,
-            done: idx < currentStep,
-            time: idx === currentStep - 1 ? 'Updated Live' : (idx < currentStep ? 'Completed' : 'Pending'),
-          })) || [];
-
-          return {
-            ...o,
-            tracking: {
-              ...(o.tracking || {}),
-              currentStep,
-              steps: updatedSteps,
-            },
-          };
-        }
-        return o;
-      })
+  const updateOrderStatus = (orderId, status, statusCode) =>
+    patchOrder(
+      orderId,
+      (o) => ({ ...o, status, statusCode: statusCode || status.toLowerCase().replace(/\s+/g, '-') }),
+      { successMessage: `Order ${orderId} status set to "${status}" and saved`, failMessage: `Order ${orderId} status change was not saved.` }
     );
-    addToast(`Live tracking step for ${orderId} set to step ${currentStep}`, 'success');
-  };
 
-  const updateOrderDriver = (orderId, driverData) => {
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id === orderId) {
-          return {
-            ...o,
-            tracking: {
-              ...(o.tracking || {}),
-              driverName: driverData.driverName || o.tracking?.driverName,
-              driverPhone: driverData.driverPhone || o.tracking?.driverPhone,
-              vehicleNumber: driverData.vehicleNumber || o.tracking?.vehicleNumber,
-              liveEtaMinutes: driverData.liveEtaMinutes || o.tracking?.liveEtaMinutes,
-            },
-          };
-        }
-        return o;
-      })
+  const updateOrderTracking = (orderId, currentStep, customSteps = null) =>
+    patchOrder(
+      orderId,
+      (o) => {
+        const updatedSteps = customSteps || o.tracking?.steps?.map((step, idx) => ({
+          ...step,
+          done: idx < currentStep,
+          time: idx === currentStep - 1 ? 'Updated Live' : (idx < currentStep ? 'Completed' : 'Pending'),
+        })) || [];
+        return { ...o, tracking: { ...(o.tracking || {}), currentStep, steps: updatedSteps } };
+      },
+      { successMessage: `Live tracking step for ${orderId} set to step ${currentStep} and saved`, failMessage: `Tracking update for ${orderId} was not saved.` }
     );
-    addToast(`Driver & Logistics for ${orderId} updated`, 'success');
-  };
 
-  const updateOrderPayment = (orderId, paymentStatus) => {
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id === orderId) {
-          return {
-            ...o,
-            payment: {
-              ...(o.payment || {}),
-              status: paymentStatus,
-            },
-          };
-        }
-        return o;
-      })
+  const updateOrderDriver = (orderId, driverData) =>
+    patchOrder(
+      orderId,
+      (o) => ({
+        ...o,
+        tracking: {
+          ...(o.tracking || {}),
+          driverName: driverData.driverName || o.tracking?.driverName,
+          driverPhone: driverData.driverPhone || o.tracking?.driverPhone,
+          vehicleNumber: driverData.vehicleNumber || o.tracking?.vehicleNumber,
+          liveEtaMinutes: driverData.liveEtaMinutes || o.tracking?.liveEtaMinutes,
+        },
+      }),
+      { successMessage: `Driver & Logistics for ${orderId} updated and saved`, failMessage: `Driver update for ${orderId} was not saved.` }
     );
-    addToast(`Payment status for ${orderId} set to "${paymentStatus}"`, 'success');
-  };
 
-  const deleteOrder = (orderId) => {
+  const updateOrderPayment = (orderId, paymentStatus) =>
+    patchOrder(
+      orderId,
+      (o) => ({ ...o, payment: { ...(o.payment || {}), status: paymentStatus } }),
+      { successMessage: `Payment status for ${orderId} set to "${paymentStatus}" and saved`, failMessage: `Payment status change for ${orderId} was not saved.` }
+    );
+
+  const deleteOrder = async (orderId) => {
     setOrders((prev) => prev.filter((o) => o.id !== orderId));
-    addToast(`Order ${orderId} deleted from records`, 'info');
+    try {
+      await api.deleteOrder(orderId);
+      addToast(`Order ${orderId} deleted from database`, 'info');
+    } catch (err) {
+      console.warn('Backend order delete warning:', err);
+      if (err?.status === 401 || err?.status === 403) {
+        addToast(`Order removed locally, but admin session expired - please re-login to delete it from the database.`, 'warning', 7000);
+      } else {
+        addToast(`Order removed locally. Server delete will retry in the background.`, 'info');
+      }
+    }
   };
 
   // 4. SERVICES & MISTRIS CRUD
@@ -1920,31 +2102,77 @@ export const StoreProvider = ({ children }) => {
   };
 
   // 9. BANNERS CRUD
-  const addBanner = (newBanner) => {
+  const reportBannerError = (err, fallback) => {
+    console.warn('Backend banner sync warning:', err);
+    if (err?.status === 401 || err?.status === 403) {
+      addToast(`${fallback} Admin session expired - please re-login to save to the database.`, 'warning', 7000);
+    } else if (err?.status === 0) {
+      addToast(`${fallback} Cannot reach the server; will retry automatically.`, 'warning', 6000);
+    } else {
+      addToast(`${fallback} ${err?.message || 'Server rejected the change.'}`, 'error', 6000);
+    }
+  };
+
+  const addBanner = async (newBanner) => {
     const id = `bnr_${Date.now()}`;
     const created = { id, isActive: true, ...newBanner };
     setBanners((prev) => [created, ...prev]);
-    addToast('Hero banner added to homepage slider', 'success');
+    try {
+      await api.collection.create('/banners', created, { auth: 'admin' });
+      markSynced('banners', created);
+      addToast('Hero banner added to homepage slider and saved', 'success');
+    } catch (err) {
+      reportBannerError(err, 'Banner added locally, but it was not saved.');
+    }
     return created;
   };
 
-  const updateBanner = (id, updatedFields) => {
+  const updateBanner = async (id, updatedFields) => {
+    let updatedDoc = null;
     setBanners((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, ...updatedFields } : b))
+      prev.map((b) => {
+        if (b.id !== id) return b;
+        updatedDoc = { ...b, ...updatedFields };
+        return updatedDoc;
+      })
     );
-    addToast('Banner updated', 'success');
+    if (!updatedDoc) return;
+    try {
+      await api.collection.save('/banners', id, updatedDoc, { auth: 'admin' });
+      markSynced('banners', updatedDoc);
+      addToast('Banner updated and saved', 'success');
+    } catch (err) {
+      reportBannerError(err, 'Banner updated locally, but it was not saved.');
+    }
   };
 
-  const toggleBannerStatus = (id) => {
+  const toggleBannerStatus = async (id) => {
+    let updatedDoc = null;
     setBanners((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, isActive: !b.isActive } : b))
+      prev.map((b) => {
+        if (b.id !== id) return b;
+        updatedDoc = { ...b, isActive: !b.isActive };
+        return updatedDoc;
+      })
     );
-    addToast('Banner status updated', 'info');
+    if (!updatedDoc) return;
+    try {
+      await api.collection.save('/banners', id, updatedDoc, { auth: 'admin' });
+      markSynced('banners', updatedDoc);
+      addToast('Banner status updated and saved', 'success');
+    } catch (err) {
+      reportBannerError(err, 'Banner status changed locally, but it was not saved.');
+    }
   };
 
-  const deleteBanner = (id) => {
+  const deleteBanner = async (id) => {
     setBanners((prev) => prev.filter((b) => b.id !== id));
-    addToast('Banner removed', 'info');
+    try {
+      await api.collection.remove('/banners', id, { auth: 'admin' });
+      addToast('Banner removed from database', 'info');
+    } catch (err) {
+      reportBannerError(err, 'Banner removed locally, but it was not deleted from the database.');
+    }
   };
 
   // 10. FAQS CRUD
@@ -2306,6 +2534,7 @@ export const StoreProvider = ({ children }) => {
         user,
         setUser,
         login,
+        userOtpLogin,
         loginWithGoogle,
         signup,
         logout,
@@ -2314,7 +2543,16 @@ export const StoreProvider = ({ children }) => {
         adminUser,
         setAdminUser,
         adminLogin,
+        adminOtpLogin,
         adminLogout,
+
+        // Vendor Auth
+        vendorUser,
+        setVendorUser,
+        vendorLogin,
+        vendorOtpLogin,
+        vendorSignup,
+        vendorLogout,
 
         // Cart State & Calculations
         cart,

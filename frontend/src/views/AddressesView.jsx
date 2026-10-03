@@ -162,7 +162,7 @@ export const AddressesView = () => {
                   Set as Default Site
                 </button>
               ) : (
-                <span style={{ fontSize: '0.825rem', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ fontSize: '0.825rem', color: '#0A0A0A', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <CheckCircle2 size={14} /> Default Delivery Site
                 </span>
               )}
@@ -171,7 +171,7 @@ export const AddressesView = () => {
                 <button
                   type="button"
                   onClick={() => deleteAddress(addr.id)}
-                  style={{ background: 'none', border: 'none', color: '#D92D20', cursor: 'pointer', padding: '4px' }}
+                  style={{ background: 'none', border: 'none', color: '#0A0A0A', cursor: 'pointer', padding: '4px' }}
                   title="Delete Address"
                 >
                   <Trash2 size={16} />

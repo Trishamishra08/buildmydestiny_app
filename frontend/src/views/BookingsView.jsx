@@ -17,7 +17,7 @@ export const BookingsView = ({
       case 'Completed':
         return <span className="badge badge-success">Completed</span>;
       case 'Cancelled':
-        return <span className="badge" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' }}>Cancelled</span>;
+        return <span className="badge" style={{ background: '#F2F2F2', color: '#0A0A0A' }}>Cancelled</span>;
       default:
         return <span className="badge badge-warning">{status || 'Pending'}</span>;
     }
@@ -84,8 +84,8 @@ export const BookingsView = ({
                 width: '60px',
                 height: '60px',
                 borderRadius: '12px',
-                background: 'rgba(245, 158, 11, 0.1)',
-                border: '1px solid rgba(245, 158, 11, 0.25)',
+                background: 'rgba(255, 184, 0, 0.12)',
+                border: '1px solid rgba(255, 184, 0, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -128,7 +128,7 @@ export const BookingsView = ({
 
                   {booking.mistri && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <User size={14} color="#10b981" />
+                      <User size={14} color="#0A0A0A" />
                       <span>Technician: {booking.mistri.fullName || booking.mistri.name}</span>
                     </div>
                   )}
@@ -147,7 +147,7 @@ export const BookingsView = ({
                   ₹{booking.amount}
                 </div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  {booking.paymentMethod} • <span style={{ color: booking.paymentStatus === 'Paid' ? '#10b981' : '#f59e0b' }}>{booking.paymentStatus}</span>
+                  {booking.paymentMethod} • <span style={{ color: booking.paymentStatus === 'Paid' ? '#0A0A0A' : '#E6A600' }}>{booking.paymentStatus}</span>
                 </div>
 
                 {booking.status !== 'Completed' && booking.status !== 'Cancelled' && (
@@ -162,7 +162,7 @@ export const BookingsView = ({
                     <button
                       onClick={() => onUpdateStatus(booking._id, 'Cancelled')}
                       className="btn btn-outline btn-sm"
-                      style={{ fontSize: '0.75rem', padding: '0.35rem 0.7rem', color: '#ef4444', borderColor: '#ef4444' }}
+                      style={{ fontSize: '0.75rem', padding: '0.35rem 0.7rem', color: '#0A0A0A', borderColor: '#0A0A0A' }}
                     >
                       Cancel
                     </button>

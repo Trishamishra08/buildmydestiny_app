@@ -195,7 +195,7 @@ export const ProductDetailsView = () => {
               width: '42px',
               height: '42px',
               border: '3.5px solid #E2E8F0',
-              borderTopColor: '#0B2947',
+              borderTopColor: '#0A0A0A',
               borderRadius: '50%',
               animation: 'spinProductDetails 0.8s linear infinite',
               marginBottom: '1.25rem',
@@ -305,7 +305,7 @@ export const ProductDetailsView = () => {
               width: '34px',
               height: '34px',
               borderRadius: '50%',
-              backgroundColor: '#1E293B',
+              backgroundColor: '#0A0A0A',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -373,7 +373,7 @@ export const ProductDetailsView = () => {
                 justifyContent: 'center',
                 height: 'clamp(280px, 68vw, 420px)',
                 padding: '1rem',
-                boxShadow: '0 2px 10px rgba(8, 39, 76, 0.04)',
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)',
               }}
             >
               {/* Product Image */}
@@ -395,13 +395,13 @@ export const ProductDetailsView = () => {
                     position: 'absolute',
                     top: '12px',
                     left: '12px',
-                    backgroundColor: '#DC2626',
+                    backgroundColor: '#0A0A0A',
                     color: '#FFFFFF',
                     fontSize: '0.7rem',
                     fontWeight: '900',
                     padding: '4px 10px',
                     borderRadius: '6px',
-                    boxShadow: '0 2px 8px rgba(220, 38, 38, 0.35)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.35)',
                     letterSpacing: '0.04em',
                     textTransform: 'uppercase',
                   }}
@@ -453,7 +453,7 @@ export const ProductDetailsView = () => {
           </div>
 
           {/* RIGHT: PRODUCT INFO, SELECTORS, STOCK & DETAILS */}
-          <div style={{ backgroundColor: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', padding: '1.25rem', boxShadow: '0 2px 10px rgba(8, 39, 76, 0.04)' }}>
+          <div style={{ backgroundColor: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', padding: '1.25rem', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)' }}>
             
             {/* Free Delivery Banner Pill */}
             <div className="qc-free-delivery-pill">
@@ -481,7 +481,7 @@ export const ProductDetailsView = () => {
                 </span>
               )}
               {currentDiscount && (
-                <span style={{ backgroundColor: '#DCFCE7', color: '#15803D', border: '1px solid #BBF7D0', fontSize: '0.78rem', fontWeight: '800', padding: '2px 8px', borderRadius: '4px' }}>
+                <span style={{ backgroundColor: '#FFF8E1', color: '#0A0A0A', border: '1px solid #FFE08A', fontSize: '0.78rem', fontWeight: '800', padding: '2px 8px', borderRadius: '4px' }}>
                   {currentDiscount}
                 </span>
               )}
@@ -570,7 +570,7 @@ export const ProductDetailsView = () => {
             {/* TRUST & POLICY BADGES (3-COLUMN GRID) */}
             <div className="qc-trust-badges-grid">
               <div className="qc-trust-badge-card">
-                <div className="qc-trust-badge-icon-wrap" style={{ backgroundColor: '#FEF3C7', color: '#D97706' }}>
+                <div className="qc-trust-badge-icon-wrap" style={{ backgroundColor: '#FFF8E1', color: '#0A0A0A' }}>
                   <ShieldCheck size={20} />
                 </div>
                 <div className="qc-trust-badge-title">{product.trustBadge1Title || '100%'}</div>
@@ -578,7 +578,7 @@ export const ProductDetailsView = () => {
               </div>
 
               <div className="qc-trust-badge-card">
-                <div className="qc-trust-badge-icon-wrap" style={{ backgroundColor: '#FEE2E2', color: '#DC2626' }}>
+                <div className="qc-trust-badge-icon-wrap" style={{ backgroundColor: '#F2F2F2', color: '#0A0A0A' }}>
                   <PackageX size={20} />
                 </div>
                 <div className="qc-trust-badge-title">{product.returnPolicyTitle || (product.isReturnable ? '7 Days' : 'Non')}</div>
@@ -586,7 +586,7 @@ export const ProductDetailsView = () => {
               </div>
 
               <div className="qc-trust-badge-card">
-                <div className="qc-trust-badge-icon-wrap" style={{ backgroundColor: '#E0E7FF', color: '#4F46E5' }}>
+                <div className="qc-trust-badge-icon-wrap" style={{ backgroundColor: '#FFF8E1', color: '#0A0A0A' }}>
                   <RotateCcw size={20} />
                 </div>
                 <div className="qc-trust-badge-title">{product.replacementPolicyTitle || '7 Day'}</div>
@@ -691,7 +691,7 @@ export const ProductDetailsView = () => {
                     'Suitable for high-load residential & commercial structures',
                   ]).map((feat, idx) => (
                     <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                      <CheckCircle2 size={18} color="#038A53" style={{ flexShrink: 0, marginTop: '2px' }} />
+                      <CheckCircle2 size={18} color="#0A0A0A" style={{ flexShrink: 0, marginTop: '2px' }} />
                       <span style={{ fontSize: '0.88rem', color: 'var(--text-primary)', lineHeight: 1.4 }}>{feat}</span>
                     </div>
                   ))}
@@ -711,7 +711,7 @@ export const ProductDetailsView = () => {
               {activeTab === 'reviews' && (
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '1rem' }}>
-                    <Star size={16} fill="#CA8A04" color="#CA8A04" />
+                    <Star size={16} fill="#FFB800" color="#FFB800" />
                     <strong style={{ fontSize: '1rem' }}>{product.rating || 4.8} / 5.0</strong>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>based on {product.reviewsCount || 390} customer reviews</span>
                   </div>
@@ -720,8 +720,8 @@ export const ProductDetailsView = () => {
                       <strong style={{ fontSize: '0.88rem', color: 'var(--primary-navy)' }}>Rajesh Verma (Contractor)</strong>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>2 days ago</span>
                     </div>
-                    <div style={{ display: 'flex', gap: '2px', color: '#CA8A04', marginBottom: '6px' }}>
-                      {[...Array(5)].map((_, i) => <Star key={i} size={12} fill="#CA8A04" />)}
+                    <div style={{ display: 'flex', gap: '2px', color: '#FFB800', marginBottom: '6px' }}>
+                      {[...Array(5)].map((_, i) => <Star key={i} size={12} fill="#FFB800" />)}
                     </div>
                     <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
                       Authentic batch material delivered promptly at project site. Excellent quality and smooth invoicing!

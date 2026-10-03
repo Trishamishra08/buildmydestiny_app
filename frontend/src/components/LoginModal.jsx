@@ -22,6 +22,7 @@ export const LoginModal = () => {
     loginModalMode,
     setLoginModalMode,
     login,
+    userOtpLogin,
         signup,
     navigateTo,
     usersList,
@@ -31,10 +32,13 @@ export const LoginModal = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [useOtp, setUseOtp] = useState(false);
 
   // Sign In Form State
   const [signInIdentifier, setSignInIdentifier] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
+  const [otpPhone, setOtpPhone] = useState('');
+  const [otpCode, setOtpCode] = useState('');
 
   // Sign Up Form State
   const [signUpData, setSignUpData] = useState({
@@ -60,6 +64,23 @@ export const LoginModal = () => {
   const handleSignInSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+
+    if (useOtp) {
+      if (!otpPhone || !otpCode) {
+        setErrorMsg('Please enter your phone number and the OTP.');
+        return;
+      }
+      setLoading(true);
+      try {
+        await userOtpLogin(otpPhone, otpCode);
+      } catch (err) {
+        setErrorMsg(err.message || 'OTP login failed. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     if (!signInIdentifier || !signInPassword) {
       setErrorMsg('Please enter both your registered email/phone and password.');
       return;
@@ -111,7 +132,7 @@ export const LoginModal = () => {
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(4, 22, 44, 0.65)',
+        backgroundColor: 'rgba(0, 0, 0, 0.65)',
         backdropFilter: 'blur(5px)',
         display: 'flex',
         alignItems: 'center',
@@ -128,7 +149,7 @@ export const LoginModal = () => {
           borderRadius: '16px',
           width: '100%',
           maxWidth: '480px',
-          boxShadow: '0 25px 50px -12px rgba(8, 39, 76, 0.25)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
           overflow: 'hidden',
           border: '1px solid #E2E8F0',
           animation: 'scaleUp 0.2s ease-out',
@@ -184,7 +205,7 @@ export const LoginModal = () => {
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.75rem' }}>
             <Logo size="medium" showTagline={true} />
           </div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#08274C', margin: '0 0 4px 0' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0A0A0A', margin: '0 0 4px 0' }}>
             {mode === 'login' ? 'Sign In to Your Account' : 'Create Builder Account'}
           </h2>
           <p style={{ fontSize: '0.8rem', color: '#64748B', margin: 0 }}>
@@ -217,7 +238,7 @@ export const LoginModal = () => {
                 borderRadius: '8px',
                 border: 'none',
                 backgroundColor: mode === 'login' ? '#FFFFFF' : 'transparent',
-                color: mode === 'login' ? '#08274C' : '#64748B',
+                color: mode === 'login' ? '#0A0A0A' : '#64748B',
                 fontWeight: mode === 'login' ? 800 : 600,
                 fontSize: '0.825rem',
                 cursor: 'pointer',
@@ -240,7 +261,7 @@ export const LoginModal = () => {
                 borderRadius: '8px',
                 border: 'none',
                 backgroundColor: mode === 'register' ? '#FFFFFF' : 'transparent',
-                color: mode === 'register' ? '#08274C' : '#64748B',
+                color: mode === 'register' ? '#0A0A0A' : '#64748B',
                 fontWeight: mode === 'register' ? 800 : 600,
                 fontSize: '0.825rem',
                 cursor: 'pointer',
@@ -258,9 +279,9 @@ export const LoginModal = () => {
           {errorMsg && (
             <div
               style={{
-                backgroundColor: '#FEF2F2',
-                border: '1px solid #FCA5A5',
-                color: '#DC2626',
+                backgroundColor: '#F2F2F2',
+                border: '1px solid #CBD5E1',
+                color: '#0A0A0A',
                 padding: '0.65rem 0.85rem',
                 borderRadius: '8px',
                 fontSize: '0.825rem',
@@ -277,91 +298,141 @@ export const LoginModal = () => {
           {/* ========================================================= */}
           {mode === 'login' ? (
             <form onSubmit={handleSignInSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.35rem' }}>
-                  Mobile Number or Email
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <Mail
-                    size={16}
-                    color="#94A3B8"
-                    style={{ position: 'absolute', left: '12px', top: '12px' }}
-                  />
-                  <input
-                    type="text"
-                    required
-                    placeholder="+91 98260 11223 or name@company.com"
-                    value={signInIdentifier}
-                    onChange={(e) => setSignInIdentifier(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.65rem 0.75rem 0.65rem 2.4rem',
-                      borderRadius: '8px',
-                      border: '1.5px solid #CBD5E1',
-                      fontSize: '0.875rem',
-                      outline: 'none',
-                      color: '#0F172A',
-                    }}
-                  />
-                </div>
-              </div>
+              {useOtp ? (
+                // OTP login block - shown in place of the email/password fields when toggled on
+                <>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.35rem' }}>
+                      Mobile Number
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <Phone size={16} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '12px' }} />
+                      <input
+                        type="tel"
+                        required
+                        placeholder="Enter phone number"
+                        value={otpPhone}
+                        onChange={(e) => setOtpPhone(e.target.value)}
+                        style={{ width: '100%', padding: '0.65rem 0.75rem 0.65rem 2.4rem', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '0.875rem', outline: 'none', color: '#0F172A' }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.35rem' }}>
+                      OTP
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <ShieldCheck size={16} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '12px' }} />
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        required
+                        placeholder="Enter 6-digit OTP"
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value)}
+                        style={{ width: '100%', padding: '0.65rem 0.75rem 0.65rem 2.4rem', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '0.875rem', outline: 'none', color: '#0F172A', letterSpacing: '0.2em' }}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.35rem' }}>
+                      Mobile Number or Email
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <Mail
+                        size={16}
+                        color="#94A3B8"
+                        style={{ position: 'absolute', left: '12px', top: '12px' }}
+                      />
+                      <input
+                        type="text"
+                        required
+                        placeholder="+91 98260 11223 or name@company.com"
+                        value={signInIdentifier}
+                        onChange={(e) => setSignInIdentifier(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '0.65rem 0.75rem 0.65rem 2.4rem',
+                          borderRadius: '8px',
+                          border: '1.5px solid #CBD5E1',
+                          fontSize: '0.875rem',
+                          outline: 'none',
+                          color: '#0F172A',
+                        }}
+                      />
+                    </div>
+                  </div>
 
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                    Password
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      closeLoginModal();
-                      navigateTo('forgot-password');
-                    }}
-                    style={{ background: 'none', border: 'none', color: '#F15A24', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
-                <div style={{ position: 'relative' }}>
-                  <Lock
-                    size={16}
-                    color="#94A3B8"
-                    style={{ position: 'absolute', left: '12px', top: '12px' }}
-                  />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    placeholder="••••••••"
-                    value={signInPassword}
-                    onChange={(e) => setSignInPassword(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.65rem 2.4rem 0.65rem 2.4rem',
-                      borderRadius: '8px',
-                      border: '1.5px solid #CBD5E1',
-                      fontSize: '0.875rem',
-                      outline: 'none',
-                      color: '#0F172A',
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      position: 'absolute',
-                      right: '10px',
-                      top: '10px',
-                      background: 'none',
-                      border: 'none',
-                      color: '#94A3B8',
-                      cursor: 'pointer',
-                      padding: '2px',
-                    }}
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                        Password
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          closeLoginModal();
+                          navigateTo('forgot-password');
+                        }}
+                        style={{ background: 'none', border: 'none', color: '#0A0A0A', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        Forgot Password?
+                      </button>
+                    </div>
+                    <div style={{ position: 'relative' }}>
+                      <Lock
+                        size={16}
+                        color="#94A3B8"
+                        style={{ position: 'absolute', left: '12px', top: '12px' }}
+                      />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        placeholder="••••••••"
+                        value={signInPassword}
+                        onChange={(e) => setSignInPassword(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '0.65rem 2.4rem 0.65rem 2.4rem',
+                          borderRadius: '8px',
+                          border: '1.5px solid #CBD5E1',
+                          fontSize: '0.875rem',
+                          outline: 'none',
+                          color: '#0F172A',
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{
+                          position: 'absolute',
+                          right: '10px',
+                          top: '10px',
+                          background: 'none',
+                          border: 'none',
+                          color: '#94A3B8',
+                          cursor: 'pointer',
+                          padding: '2px',
+                        }}
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <button
+                type="button"
+                onClick={() => { setUseOtp((prev) => !prev); setErrorMsg(''); }}
+                style={{ background: 'none', border: 'none', color: '#0A0A0A', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer', alignSelf: 'flex-end', marginTop: '-0.5rem' }}
+              >
+                {useOtp ? 'Use password instead' : 'Use OTP instead'}
+              </button>
 
               <button
                 type="submit"
@@ -369,14 +440,14 @@ export const LoginModal = () => {
                 style={{
                   width: '100%',
                   padding: '0.75rem',
-                  backgroundColor: '#F15A24',
-                  color: '#FFFFFF',
+                  backgroundColor: '#FFB800',
+                  color: '#0A0A0A',
                   borderRadius: '8px',
                   border: 'none',
                   fontWeight: 800,
                   fontSize: '0.9rem',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(241, 90, 36, 0.35)',
+                  boxShadow: '0 4px 14px rgba(255, 184, 0, 0.35)',
                   marginTop: '0.25rem',
                   display: 'flex',
                   alignItems: 'center',
@@ -384,7 +455,7 @@ export const LoginModal = () => {
                   gap: '8px',
                 }}
               >
-                <span>{loading ? 'Authenticating...' : 'Sign In to MISTRI'}</span>
+                <span>{loading ? 'Authenticating...' : 'Sign In to BuildMyDestiny'}</span>
                 <ArrowRight size={16} />
               </button>
 
@@ -568,14 +639,14 @@ export const LoginModal = () => {
                 style={{
                   width: '100%',
                   padding: '0.75rem',
-                  backgroundColor: '#08274C',
+                  backgroundColor: '#0A0A0A',
                   color: '#FFFFFF',
                   borderRadius: '8px',
                   border: 'none',
                   fontWeight: 800,
                   fontSize: '0.9rem',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(8, 39, 76, 0.25)',
+                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.25)',
                   marginTop: '0.5rem',
                   display: 'flex',
                   alignItems: 'center',
@@ -583,8 +654,8 @@ export const LoginModal = () => {
                   gap: '8px',
                 }}
               >
-                <span>{loading ? 'Creating account...' : 'Create MISTRI Account'}</span>
-                <CheckCircle2 size={16} color="#10B981" />
+                <span>{loading ? 'Creating account...' : 'Create BuildMyDestiny Account'}</span>
+                <CheckCircle2 size={16} color="#FFB800" />
               </button>
 
               

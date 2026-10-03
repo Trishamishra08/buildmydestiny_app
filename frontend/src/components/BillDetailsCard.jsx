@@ -67,7 +67,7 @@ export const BillDetailsCard = ({
             {/* Discount */}
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#334155' }}>
               <span>Discount</span>
-              <span style={{ fontWeight: '700', color: discount > 0 ? '#10B981' : '#0F172A' }}>
+              <span style={{ fontWeight: '700', color: discount > 0 ? '#0A0A0A' : '#0F172A' }}>
                 {discount > 0 ? `-₹${Number(discount).toLocaleString('en-IN')}` : '₹0'}
               </span>
             </div>
@@ -75,7 +75,7 @@ export const BillDetailsCard = ({
             {/* Wallet */}
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#334155' }}>
               <span>Wallet</span>
-              <span style={{ fontWeight: '700', color: walletDiscount > 0 ? '#10B981' : '#0F172A' }}>
+              <span style={{ fontWeight: '700', color: walletDiscount > 0 ? '#0A0A0A' : '#0F172A' }}>
                 {walletDiscount > 0 ? `-₹${Number(walletDiscount).toLocaleString('en-IN')}` : '₹0'}
               </span>
             </div>
@@ -88,7 +88,7 @@ export const BillDetailsCard = ({
               >
                 Delivery Charge
               </span>
-              <span style={{ fontWeight: '700', color: deliveryFee === 0 ? '#10B981' : '#0F172A' }}>
+              <span style={{ fontWeight: '700', color: deliveryFee === 0 ? '#0A0A0A' : '#0F172A' }}>
                 {deliveryFee === 0 ? 'FREE' : `₹${Number(deliveryFee).toLocaleString('en-IN')}`}
               </span>
             </div>
@@ -101,7 +101,7 @@ export const BillDetailsCard = ({
               >
                 Handling Charge
               </span>
-              <span style={{ fontWeight: '700', color: handlingFee === 0 ? '#10B981' : '#0F172A' }}>
+              <span style={{ fontWeight: '700', color: handlingFee === 0 ? '#0A0A0A' : '#0F172A' }}>
                 {handlingFee === 0 ? '₹0' : `₹${Number(handlingFee).toLocaleString('en-IN')}`}
               </span>
             </div>

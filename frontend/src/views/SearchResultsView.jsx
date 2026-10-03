@@ -37,7 +37,7 @@ export const SearchResultsView = () => {
           Search Results for "{query}"
         </h1>
         <p className="page-subtitle">
-          Found <strong style={{ color: 'var(--primary-orange)' }}>{searchResults.length}</strong> matching materials in MISTRI catalog
+          Found <strong style={{ color: 'var(--primary-orange)' }}>{searchResults.length}</strong> matching materials in BuildMyDestiny catalog
         </p>
 
         {/* Quick Suggestion Pills */}

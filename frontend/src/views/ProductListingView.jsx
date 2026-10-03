@@ -135,7 +135,7 @@ export const ProductListingView = () => {
       {/* Category Banner */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #123A63 0%, #0B2947 100%)',
+          background: 'linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%)',
           color: '#FFFFFF',
           borderRadius: 'var(--radius-md)',
           padding: 'clamp(1.15rem, 3.5vw, 1.75rem) clamp(1.15rem, 3.5vw, 2rem)',

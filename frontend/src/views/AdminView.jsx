@@ -75,6 +75,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import Logo from '../components/Logo';
+import api from '../services/api';
 import { uploadCloudFile } from '../services/storageService';
 import { uploadBannerToCloud } from '../services/cloudinaryService';
 import { printTaxInvoice } from '../utils/printInvoice';
@@ -87,6 +88,7 @@ export default function AdminView() {
     // Admin Authentication
     adminUser,
     adminLogin,
+    adminOtpLogin,
     adminLogout,
     // Dynamic Collections & CRUD
     products,
@@ -223,6 +225,39 @@ export default function AdminView() {
   const [productActionMenuId, setProductActionMenuId] = useState(null);
   const [isRefreshingProducts, setIsRefreshingProducts] = useState(false);
 
+  // Vendor (multivendor marketplace) management state
+  const [vendors, setVendors] = useState([]);
+  const [isLoadingVendors, setIsLoadingVendors] = useState(false);
+  const [vendorSearch, setVendorSearch] = useState('');
+  const [vendorStatusFilter, setVendorStatusFilter] = useState('All');
+
+  const loadVendors = async () => {
+    setIsLoadingVendors(true);
+    try {
+      const res = await api.getVendors();
+      setVendors(res.data || []);
+    } catch (err) {
+      addToast(err?.message || 'Could not load vendors', 'error');
+    } finally {
+      setIsLoadingVendors(false);
+    }
+  };
+
+  useEffect(() => {
+    if (adminUser) loadVendors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminUser?.id]);
+
+  const setVendorApprovalStatus = async (id, status) => {
+    try {
+      await api.setVendorStatus(id, status);
+      addToast(`Vendor ${status}`, 'success');
+      loadVendors();
+    } catch (err) {
+      addToast(err?.message || 'Could not update vendor status', 'error');
+    }
+  };
+
   // Product Create/Edit Form State
   const [productFormData, setProductFormData] = useState({
     id: '',
@@ -271,7 +306,7 @@ export default function AdminView() {
     ctaText: 'ORDER NOW',
     target: '',
     image: '',
-    gradient: 'linear-gradient(135deg, #0B2947 0%, #163E68 60%, #0F172A 100%)',
+    gradient: 'linear-gradient(135deg, #0A0A0A 0%, #262626 60%, #0F172A 100%)',
   });
 
   // User Management State & Handlers
@@ -476,8 +511,8 @@ export default function AdminView() {
       image: '',
       showTextOverlay: true,
       imageFit: 'cover',
-      gradient: 'linear-gradient(135deg, #0B2947 0%, #163E68 60%, #0F172A 100%)',
-      accent: '#F59E0B',
+      gradient: 'linear-gradient(135deg, #0A0A0A 0%, #262626 60%, #0F172A 100%)',
+      accent: '#FFB800',
       isActive: true,
     });
     setIsBannerModalOpen(true);
@@ -495,8 +530,8 @@ export default function AdminView() {
       image: banner.image || '',
       showTextOverlay: banner.showTextOverlay !== false,
       imageFit: banner.imageFit || 'cover',
-      gradient: banner.gradient || 'linear-gradient(135deg, #0B2947 0%, #163E68 60%, #0F172A 100%)',
-      accent: banner.accent || '#F59E0B',
+      gradient: banner.gradient || 'linear-gradient(135deg, #0A0A0A 0%, #262626 60%, #0F172A 100%)',
+      accent: banner.accent || '#FFB800',
       isActive: banner.isActive !== false,
     });
     setIsBannerModalOpen(true);
@@ -638,6 +673,7 @@ export default function AdminView() {
       group: 'USERS',
       items: [
         { id: 'customers', label: 'Customers', icon: Users, badge: usersList.length },
+        { id: 'vendors', label: 'Vendors', icon: Store, badge: vendors.filter((v) => v.vendorStatus === 'pending').length || undefined },
       ],
     },
     {
@@ -748,7 +784,7 @@ export default function AdminView() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <label style={{ fontSize: '0.8rem', fontWeight: 700, color: theme.textDark }}>{label}</label>
             {isCloudHosted && (
-              <span style={{ fontSize: '0.62rem', backgroundColor: '#ECFDF5', color: '#059669', padding: '1px 6px', borderRadius: '4px', fontWeight: 700, border: '1px solid #A7F3D0' }}>
+              <span style={{ fontSize: '0.62rem', backgroundColor: '#F2F2F2', color: '#0A0A0A', padding: '1px 6px', borderRadius: '4px', fontWeight: 700, border: '1px solid #E5E7EB' }}>
                 ☁️ Cloud Stored
               </span>
             )}
@@ -867,7 +903,7 @@ export default function AdminView() {
                   position: 'absolute',
                   top: '8px',
                   left: '8px',
-                  backgroundColor: 'rgba(16, 185, 129, 0.9)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.9)',
                   color: '#FFFFFF',
                   padding: '3px 8px',
                   borderRadius: '9999px',
@@ -896,10 +932,10 @@ export default function AdminView() {
                   justifyContent: 'center',
                   gap: '6px',
                   padding: '0.5rem 0.85rem',
-                  backgroundColor: '#EFF6FF',
-                  border: '1px solid #BFDBFE',
+                  backgroundColor: '#FFF8E1',
+                  border: '1px solid #FFE08A',
                   borderRadius: '8px',
-                  color: '#2563EB',
+                  color: '#0A0A0A',
                   fontSize: '0.78rem',
                   fontWeight: 700,
                   cursor: isUploading ? 'not-allowed' : 'pointer',
@@ -919,10 +955,10 @@ export default function AdminView() {
                   justifyContent: 'center',
                   gap: '5px',
                   padding: '0.5rem 0.85rem',
-                  backgroundColor: '#FEF2F2',
-                  border: '1px solid #FECACA',
+                  backgroundColor: '#F2F2F2',
+                  border: '1px solid #E5E7EB',
                   borderRadius: '8px',
-                  color: '#DC2626',
+                  color: '#0A0A0A',
                   fontSize: '0.78rem',
                   fontWeight: 700,
                   cursor: isUploading ? 'not-allowed' : 'pointer',
@@ -941,10 +977,10 @@ export default function AdminView() {
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             style={{
-              border: `2px dashed ${dragOver ? theme.primaryBlue : isUploading ? '#F59E0B' : '#CBD5E1'}`,
+              border: `2px dashed ${dragOver ? theme.primaryBlue : isUploading ? '#FFB800' : '#CBD5E1'}`,
               borderRadius: '12px',
               padding: '1.5rem 1rem',
-              backgroundColor: dragOver ? '#EFF6FF' : isUploading ? '#FFFBEB' : '#F8FAFC',
+              backgroundColor: dragOver ? '#FFF8E1' : isUploading ? '#FFF8E1' : '#F8FAFC',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -957,8 +993,8 @@ export default function AdminView() {
           >
             {isUploading ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <Loader2 size={28} color="#D97706" className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
-                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#D97706' }}>
+                <Loader2 size={28} color="#FFB800" className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
+                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0A0A0A' }}>
                   Uploading to Cloud Storage ({uploadProgress}%)...
                 </span>
               </div>
@@ -968,11 +1004,11 @@ export default function AdminView() {
                   width: '48px',
                   height: '48px',
                   borderRadius: '50%',
-                  backgroundColor: '#EFF6FF',
+                  backgroundColor: '#FFF8E1',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#2563EB',
+                  color: '#0A0A0A',
                 }}>
                   <UploadCloud size={24} />
                 </div>
@@ -1002,7 +1038,7 @@ export default function AdminView() {
                     marginTop: '2px',
                   }}
                 >
-                  <UploadCloud size={14} color="#2563EB" /> Choose Photo from Device
+                  <UploadCloud size={14} color="#0A0A0A" /> Choose Photo from Device
                 </div>
               </>
             )}
@@ -1380,31 +1416,31 @@ export default function AdminView() {
   // Inline Styles & CSS Variables for the Light Blue SaaS Design
   // -------------------------------------------------------------
   const theme = {
-    bg: '#EDF4FB',
-    sidebarBg: '#E8F2FA',
-    sidebarBorder: '#D6E4F0',
-    headerBg: '#E8F2FA',
-    headerBorder: '#D6E4F0',
+    bg: '#F2F2F2',
+    sidebarBg: '#FFFFFF',
+    sidebarBorder: '#E5E7EB',
+    headerBg: '#FFFFFF',
+    headerBorder: '#E5E7EB',
     cardBg: '#FFFFFF',
-    cardBorder: '#D9E6F2',
-    primaryBlue: '#0066FF',
-    primaryBlueHover: '#0052CC',
-    primaryBlueLight: '#DCEBF8',
-    textDark: '#08274C',
-    textMuted: '#58738D',
-    textSubtle: '#7E9BB5',
-    tableBorder: '#E6EFF7',
-    tableHeaderBg: '#F3F8FC',
-    badgeGreen: '#10B981',
-    badgeGreenLight: '#ECFDF5',
-    badgeOrange: '#FF6B00',
-    badgeOrangeLight: '#FFF7ED',
-    badgePurple: '#7C3AED',
-    badgePurpleLight: '#F5F3FF',
-    badgeBlue: '#0066FF',
-    badgeBlueLight: '#EFF6FF',
-    badgeRed: '#EF4444',
-    badgeRedLight: '#FEF2F2',
+    cardBorder: '#E5E7EB',
+    primaryBlue: '#0A0A0A',
+    primaryBlueHover: '#262626',
+    primaryBlueLight: '#FFF8E1',
+    textDark: '#000000',
+    textMuted: '#6B7280',
+    textSubtle: '#9CA3AF',
+    tableBorder: '#E5E7EB',
+    tableHeaderBg: '#F8FAFC',
+    badgeGreen: '#0A0A0A',
+    badgeGreenLight: '#F2F2F2',
+    badgeOrange: '#FFB800',
+    badgeOrangeLight: '#FFF8E1',
+    badgePurple: '#0A0A0A',
+    badgePurpleLight: '#FFF8E1',
+    badgeBlue: '#0A0A0A',
+    badgeBlueLight: '#FFF8E1',
+    badgeRed: '#0A0A0A',
+    badgeRedLight: '#F2F2F2',
   };
 
   // Local state for Admin Login Form
@@ -1413,6 +1449,9 @@ export default function AdminView() {
   const [showAdminPassword, setShowAdminPassword] = useState(false);
   const [adminAuthError, setAdminAuthError] = useState('');
   const [isAdminSubmitting, setIsAdminSubmitting] = useState(false);
+  const [useAdminOtp, setUseAdminOtp] = useState(false);
+  const [adminPhoneInput, setAdminPhoneInput] = useState('');
+  const [adminOtpInput, setAdminOtpInput] = useState('');
 
   const handleAdminLoginSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -1420,9 +1459,11 @@ export default function AdminView() {
     setIsAdminSubmitting(true);
 
     try {
-      const res = await adminLogin(adminEmailInput, adminPasswordInput);
+      const res = useAdminOtp
+        ? await adminOtpLogin(adminPhoneInput, adminOtpInput)
+        : await adminLogin(adminEmailInput, adminPasswordInput);
       if (!res.success) {
-        setAdminAuthError(res.message || 'Invalid administrator email or password');
+        setAdminAuthError(res.message || 'Invalid administrator credentials');
       }
     } catch (err) {
       setAdminAuthError(err.message || 'Authentication error');
@@ -1438,8 +1479,8 @@ export default function AdminView() {
     return (
       <div style={{
         minHeight: '100vh',
-        backgroundColor: '#07101E',
-        backgroundImage: 'radial-gradient(circle at 50% 20%, rgba(0, 102, 255, 0.18) 0%, transparent 60%), radial-gradient(circle at 80% 80%, rgba(241, 90, 36, 0.15) 0%, transparent 50%)',
+        backgroundColor: '#000000',
+        backgroundImage: 'radial-gradient(circle at 50% 20%, rgba(0, 0, 0, 0.18) 0%, transparent 60%), radial-gradient(circle at 80% 80%, rgba(255, 184, 0, 0.15) 0%, transparent 50%)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -1462,10 +1503,10 @@ export default function AdminView() {
         <div style={{
           width: '100%',
           maxWidth: '460px',
-          backgroundColor: '#0F1D33',
+          backgroundColor: '#000000',
           border: '1px solid rgba(255, 255, 255, 0.12)',
           borderRadius: '24px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(0, 102, 255, 0.15)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(0, 0, 0, 0.15)',
           padding: '2.5rem 2.25rem',
           position: 'relative',
           zIndex: 10,
@@ -1480,9 +1521,9 @@ export default function AdminView() {
               width: '64px',
               height: '64px',
               borderRadius: '18px',
-              background: 'linear-gradient(135deg, #0066FF 0%, #0044B3 100%)',
+              background: 'linear-gradient(135deg, #0A0A0A 0%, #000000 100%)',
               color: '#FFFFFF',
-              boxShadow: '0 8px 24px rgba(0, 102, 255, 0.35)',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
               marginBottom: '1rem',
             }}>
               <ShieldCheck size={34} />
@@ -1494,9 +1535,9 @@ export default function AdminView() {
               gap: '6px',
               padding: '4px 12px',
               borderRadius: '9999px',
-              backgroundColor: 'rgba(241, 90, 36, 0.15)',
-              border: '1px solid rgba(241, 90, 36, 0.35)',
-              color: '#FF7A45',
+              backgroundColor: 'rgba(255, 184, 0, 0.15)',
+              border: '1px solid rgba(255, 184, 0, 0.35)',
+              color: '#0A0A0A',
               fontSize: '0.7rem',
               fontWeight: 800,
               letterSpacing: '0.06em',
@@ -1513,7 +1554,7 @@ export default function AdminView() {
               margin: '0 0 0.4rem 0',
               letterSpacing: '-0.02em',
             }}>
-              MISTRI Admin Login
+              BuildMyDestiny Admin Login
             </h1>
             <p style={{
               fontSize: '0.84rem',
@@ -1529,11 +1570,11 @@ export default function AdminView() {
           {/* Error Alert Banner */}
           {adminAuthError && (
             <div style={{
-              backgroundColor: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
+              backgroundColor: 'rgba(0, 0, 0, 0.15)',
+              border: '1px solid rgba(0, 0, 0, 0.4)',
               borderRadius: '10px',
               padding: '0.75rem 1rem',
-              color: '#FCA5A5',
+              color: '#9CA3AF',
               fontSize: '0.8rem',
               fontWeight: 600,
               marginBottom: '1.25rem',
@@ -1541,123 +1582,185 @@ export default function AdminView() {
               alignItems: 'center',
               gap: '8px',
             }}>
-              <AlertCircle size={16} color="#EF4444" style={{ flexShrink: 0 }} />
+              <AlertCircle size={16} color="#0A0A0A" style={{ flexShrink: 0 }} />
               <span>{adminAuthError}</span>
             </div>
           )}
 
           {/* Admin Login Form */}
           <form onSubmit={handleAdminLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
-            {/* Email Field */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '0.74rem',
-                fontWeight: 800,
-                color: '#CBD5E1',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                marginBottom: '6px',
-              }}>
-                Administrator Email
-              </label>
-              <div style={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-              }}>
-                <Mail
-                  size={17}
-                  color="#64748B"
-                  style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }}
-                />
-                <input
-                  type="email"
-                  required
-                  value={adminEmailInput}
-                  onChange={(e) => setAdminEmailInput(e.target.value)}
-                  placeholder="admin@gmail.com"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem 0.75rem 2.65rem',
-                    borderRadius: '10px',
-                    border: '1px solid #2A3F60',
-                    backgroundColor: '#091528',
-                    color: '#FFFFFF',
-                    fontSize: '0.9rem',
-                    fontWeight: 600,
-                    outline: 'none',
-                    transition: 'border-color 0.15s ease',
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#0066FF'}
-                  onBlur={(e) => e.target.style.borderColor = '#2A3F60'}
-                />
-              </div>
-            </div>
+            {useAdminOtp ? (
+              <>
+                {/* Phone Field */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, color: '#CBD5E1', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Phone Number
+                  </label>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <Phone size={17} color="#64748B" style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }} />
+                    <input
+                      type="tel"
+                      required
+                      value={adminPhoneInput}
+                      onChange={(e) => setAdminPhoneInput(e.target.value)}
+                      placeholder="Enter phone number"
+                      style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.65rem', borderRadius: '10px', border: '1px solid #262626', backgroundColor: '#000000', color: '#FFFFFF', fontSize: '0.9rem', fontWeight: 600, outline: 'none' }}
+                    />
+                  </div>
+                </div>
 
-            {/* Password Field */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <label style={{
-                  fontSize: '0.74rem',
-                  fontWeight: 800,
-                  color: '#CBD5E1',
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                }}>
-                  Admin Password
-                </label>
-              </div>
-              <div style={{
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-              }}>
-                <Lock
-                  size={17}
-                  color="#64748B"
-                  style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }}
-                />
-                <input
-                  type={showAdminPassword ? 'text' : 'password'}
-                  required
-                  value={adminPasswordInput}
-                  onChange={(e) => setAdminPasswordInput(e.target.value)}
-                  placeholder="Enter admin password"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 2.75rem 0.75rem 2.65rem',
-                    borderRadius: '10px',
-                    border: '1px solid #2A3F60',
-                    backgroundColor: '#091528',
-                    color: '#FFFFFF',
-                    fontSize: '0.9rem',
-                    fontWeight: 600,
-                    outline: 'none',
-                    transition: 'border-color 0.15s ease',
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#0066FF'}
-                  onBlur={(e) => e.target.style.borderColor = '#2A3F60'}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowAdminPassword(!showAdminPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    background: 'none',
-                    border: 'none',
-                    color: '#64748B',
-                    cursor: 'pointer',
-                    padding: '4px',
+                {/* OTP Field */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, color: '#CBD5E1', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    OTP
+                  </label>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <Key size={17} color="#64748B" style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }} />
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={6}
+                      required
+                      value={adminOtpInput}
+                      onChange={(e) => setAdminOtpInput(e.target.value)}
+                      placeholder="Enter 6-digit OTP"
+                      style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.65rem', borderRadius: '10px', border: '1px solid #262626', backgroundColor: '#000000', color: '#FFFFFF', fontSize: '0.9rem', fontWeight: 600, outline: 'none' }}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Email Field */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '0.74rem',
+                    fontWeight: 800,
+                    color: '#CBD5E1',
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                    marginBottom: '6px',
+                  }}>
+                    Administrator Email
+                  </label>
+                  <div style={{
+                    position: 'relative',
                     display: 'flex',
                     alignItems: 'center',
-                  }}
-                >
-                  {showAdminPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-                </button>
-              </div>
-            </div>
+                  }}>
+                    <Mail
+                      size={17}
+                      color="#64748B"
+                      style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }}
+                    />
+                    <input
+                      type="email"
+                      required
+                      value={adminEmailInput}
+                      onChange={(e) => setAdminEmailInput(e.target.value)}
+                      placeholder="admin@gmail.com"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem 0.75rem 2.65rem',
+                        borderRadius: '10px',
+                        border: '1px solid #262626',
+                        backgroundColor: '#000000',
+                        color: '#FFFFFF',
+                        fontSize: '0.9rem',
+                        fontWeight: 600,
+                        outline: 'none',
+                        transition: 'border-color 0.15s ease',
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = '#0A0A0A'}
+                      onBlur={(e) => e.target.style.borderColor = '#262626'}
+                    />
+                  </div>
+                </div>
+
+                {/* Password Field */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label style={{
+                      fontSize: '0.74rem',
+                      fontWeight: 800,
+                      color: '#CBD5E1',
+                      letterSpacing: '0.04em',
+                      textTransform: 'uppercase',
+                    }}>
+                      Admin Password
+                    </label>
+                  </div>
+                  <div style={{
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}>
+                    <Lock
+                      size={17}
+                      color="#64748B"
+                      style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }}
+                    />
+                    <input
+                      type={showAdminPassword ? 'text' : 'password'}
+                      required
+                      value={adminPasswordInput}
+                      onChange={(e) => setAdminPasswordInput(e.target.value)}
+                      placeholder="Enter admin password"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 2.75rem 0.75rem 2.65rem',
+                        borderRadius: '10px',
+                        border: '1px solid #262626',
+                        backgroundColor: '#000000',
+                        color: '#FFFFFF',
+                        fontSize: '0.9rem',
+                        fontWeight: 600,
+                        outline: 'none',
+                        transition: 'border-color 0.15s ease',
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = '#0A0A0A'}
+                      onBlur={(e) => e.target.style.borderColor = '#262626'}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowAdminPassword(!showAdminPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        background: 'none',
+                        border: 'none',
+                        color: '#64748B',
+                        cursor: 'pointer',
+                        padding: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      {showAdminPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Toggle between password and OTP login */}
+            <button
+              type="button"
+              onClick={() => { setUseAdminOtp((prev) => !prev); setAdminAuthError(''); }}
+              style={{
+                display: 'block',
+                margin: '-0.6rem 0 0 auto',
+                background: 'none',
+                border: 'none',
+                color: '#FFB800',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                cursor: 'pointer',
+              }}
+            >
+              {useAdminOtp ? 'Use email & password instead' : 'Use OTP instead'}
+            </button>
 
             {/* Submit Button */}
             <button
@@ -1669,13 +1772,13 @@ export default function AdminView() {
                 padding: '0.85rem 1.5rem',
                 borderRadius: '12px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #0066FF 0%, #0052CC 100%)',
+                background: 'linear-gradient(135deg, #0A0A0A 0%, #262626 100%)',
                 color: '#FFFFFF',
                 fontWeight: 800,
                 fontSize: '0.9rem',
                 letterSpacing: '0.03em',
                 cursor: isAdminSubmitting ? 'not-allowed' : 'pointer',
-                boxShadow: '0 4px 16px rgba(0, 102, 255, 0.4)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -1787,7 +1890,7 @@ export default function AdminView() {
                 width: '38px',
                 height: '38px',
                 borderRadius: '10px',
-                backgroundColor: '#08274C',
+                backgroundColor: '#000000',
                 color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
@@ -1828,7 +1931,7 @@ export default function AdminView() {
                   fontSize: '0.68rem',
                   fontWeight: 800,
                   letterSpacing: '0.06em',
-                  color: '#607D9B',
+                  color: '#6B7280',
                   padding: '0.6rem 0.6rem 0.3rem 0.6rem',
                   textTransform: 'uppercase',
                 }}>
@@ -1858,8 +1961,8 @@ export default function AdminView() {
                           justifyContent: isSidebarCollapsed ? 'center' : 'space-between',
                           padding: isSidebarCollapsed ? '0.65rem 0' : '0.55rem 0.75rem',
                           borderRadius: '9px',
-                          backgroundColor: isParentActive ? '#E6F0FA' : 'transparent',
-                          color: isParentActive ? theme.primaryBlue : '#1E3A5F',
+                          backgroundColor: isParentActive ? '#F1F5F9' : 'transparent',
+                          color: isParentActive ? theme.primaryBlue : '#1A1A1A',
                           border: 'none',
                           cursor: 'pointer',
                           fontWeight: isParentActive ? 700 : 500,
@@ -1868,14 +1971,14 @@ export default function AdminView() {
                           marginBottom: '2px',
                         }}
                         onMouseEnter={(e) => {
-                          if (!isParentActive) e.currentTarget.style.backgroundColor = '#DCE8F5';
+                          if (!isParentActive) e.currentTarget.style.backgroundColor = '#F1F5F9';
                         }}
                         onMouseLeave={(e) => {
                           if (!isParentActive) e.currentTarget.style.backgroundColor = 'transparent';
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <Icon size={18} color={isParentActive ? theme.primaryBlue : '#4B6B8A'} />
+                          <Icon size={18} color={isParentActive ? theme.primaryBlue : '#6B7280'} />
                           {!isSidebarCollapsed && <span>{item.label}</span>}
                         </div>
 
@@ -1887,16 +1990,16 @@ export default function AdminView() {
                                 fontWeight: 700,
                                 padding: '1px 7px',
                                 borderRadius: '12px',
-                                backgroundColor: isParentActive ? theme.primaryBlue : '#D2E5F7',
+                                backgroundColor: isParentActive ? theme.primaryBlue : '#F1F5F9',
                                 color: isParentActive ? '#FFFFFF' : theme.primaryBlue,
                               }}>
                                 {item.badge}
                               </span>
                             )}
                             {isCategoryMenuOpen ? (
-                              <ChevronDown size={15} color={isParentActive ? theme.primaryBlue : '#4B6B8A'} />
+                              <ChevronDown size={15} color={isParentActive ? theme.primaryBlue : '#6B7280'} />
                             ) : (
-                              <ChevronRight size={15} color={isParentActive ? theme.primaryBlue : '#4B6B8A'} />
+                              <ChevronRight size={15} color={isParentActive ? theme.primaryBlue : '#6B7280'} />
                             )}
                           </div>
                         )}
@@ -1979,7 +2082,7 @@ export default function AdminView() {
                       padding: isSidebarCollapsed ? '0.65rem 0' : '0.55rem 0.75rem',
                       borderRadius: '9px',
                       backgroundColor: isActive ? theme.primaryBlue : 'transparent',
-                      color: isActive ? '#FFFFFF' : '#1E3A5F',
+                      color: isActive ? '#FFFFFF' : '#1A1A1A',
                       border: 'none',
                       cursor: 'pointer',
                       fontWeight: isActive ? 700 : 500,
@@ -1988,14 +2091,14 @@ export default function AdminView() {
                       marginBottom: '2px',
                     }}
                     onMouseEnter={(e) => {
-                      if (!isActive) e.currentTarget.style.backgroundColor = '#DCE8F5';
+                      if (!isActive) e.currentTarget.style.backgroundColor = '#F1F5F9';
                     }}
                     onMouseLeave={(e) => {
                       if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <Icon size={18} color={isActive ? '#FFFFFF' : '#4B6B8A'} />
+                      <Icon size={18} color={isActive ? '#FFFFFF' : '#6B7280'} />
                       {!isSidebarCollapsed && <span>{item.label}</span>}
                     </div>
 
@@ -2009,7 +2112,7 @@ export default function AdminView() {
                           ? 'rgba(255,255,255,0.25)'
                           : item.badgeStyle === 'blue-pill'
                           ? theme.primaryBlue
-                          : '#D2E5F7',
+                          : '#F1F5F9',
                         color: isActive ? '#FFFFFF' : item.badgeStyle === 'blue-pill' ? '#FFFFFF' : theme.primaryBlue,
                       }}>
                         {item.badge}
@@ -2027,8 +2130,8 @@ export default function AdminView() {
               <div style={{
                 padding: '0.75rem',
                 borderRadius: '10px',
-                backgroundColor: '#EBF4FD',
-                border: '1px solid #D0E2F2',
+                backgroundColor: '#F8FAFC',
+                border: '1px solid #E5E7EB',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -2050,7 +2153,7 @@ export default function AdminView() {
                     {adminUser?.name ? adminUser.name.charAt(0).toUpperCase() : 'A'}
                   </div>
                   <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#08274C', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#000000', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                       {adminUser?.name || 'Administrator'}
                     </div>
                     <div style={{ fontSize: '0.66rem', color: '#64748B', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
@@ -2070,11 +2173,11 @@ export default function AdminView() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#EF4444',
+                    color: '#0A0A0A',
                     transition: 'all 0.15s ease',
                     flexShrink: 0,
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#FEF2F2'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#F2F2F2'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFFFFF'; }}
                 >
                   <LogOut size={14} />
@@ -2088,9 +2191,9 @@ export default function AdminView() {
                   width: '38px',
                   height: '38px',
                   borderRadius: '8px',
-                  backgroundColor: '#FEF2F2',
-                  border: '1px solid #FECACA',
-                  color: '#EF4444',
+                  backgroundColor: '#F2F2F2',
+                  border: '1px solid #E5E7EB',
+                  color: '#0A0A0A',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -2137,15 +2240,15 @@ export default function AdminView() {
               }}
               style={{
                 background: '#FFFFFF',
-                border: '1px solid #D0E2F2',
+                border: '1px solid #E5E7EB',
                 cursor: 'pointer',
-                color: '#335372',
+                color: '#262626',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '7px',
                 borderRadius: '8px',
-                boxShadow: '0 1px 2px rgba(8, 39, 76, 0.04)',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
               }}
               title="Toggle Navigation Menu"
             >
@@ -2160,14 +2263,14 @@ export default function AdminView() {
                 display: 'flex',
                 alignItems: 'center',
                 backgroundColor: '#FFFFFF',
-                border: '1px solid #D0E2F2',
+                border: '1px solid #E5E7EB',
                 borderRadius: '10px',
                 padding: '0.45rem 0.85rem',
                 gap: '8px',
-                boxShadow: '0 1px 3px rgba(8, 39, 76, 0.04)',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
               }}
             >
-              <Search size={16} color="#7E9BB5" />
+              <Search size={16} color="#9CA3AF" />
               <input
                 type="text"
                 placeholder="Search products, orders, users, categories..."
@@ -2189,9 +2292,9 @@ export default function AdminView() {
                 style={{
                   fontSize: '0.7rem',
                   fontWeight: 600,
-                  color: '#58738D',
-                  backgroundColor: '#EDF5FC',
-                  border: '1px solid #D0E2F2',
+                  color: '#6B7280',
+                  backgroundColor: '#F8FAFC',
+                  border: '1px solid #E5E7EB',
                   padding: '2px 6px',
                   borderRadius: '5px',
                 }}
@@ -2213,19 +2316,19 @@ export default function AdminView() {
                 gap: '6px',
                 padding: '0.45rem 0.85rem',
                 backgroundColor: '#FFFFFF',
-                border: '1px solid #D0E2F2',
+                border: '1px solid #E5E7EB',
                 borderRadius: '8px',
-                color: '#08274C',
+                color: '#000000',
                 fontSize: '0.8rem',
                 fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
-                boxShadow: '0 1px 2px rgba(8, 39, 76, 0.04)',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F0F6FC'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FAFC'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FFFFFF'}
             >
-              <Store size={15} color="#0066FF" />
+              <Store size={15} color="#0A0A0A" />
               <span>View User Store</span>
             </button>
 
@@ -2235,7 +2338,7 @@ export default function AdminView() {
                 onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                 style={{
                   background: '#FFFFFF',
-                  border: '1px solid #D0E2F2',
+                  border: '1px solid #E5E7EB',
                   borderRadius: '8px',
                   width: '38px',
                   height: '38px',
@@ -2243,9 +2346,9 @@ export default function AdminView() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  color: '#335372',
+                  color: '#262626',
                   position: 'relative',
-                  boxShadow: '0 1px 2px rgba(8, 39, 76, 0.04)',
+                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
                 }}
               >
                 <Bell size={18} />
@@ -2258,7 +2361,7 @@ export default function AdminView() {
                       minWidth: '18px',
                       height: '18px',
                       borderRadius: '9px',
-                      backgroundColor: '#EF4444',
+                      backgroundColor: '#0A0A0A',
                       color: '#FFFFFF',
                       fontSize: '0.65rem',
                       fontWeight: 800,
@@ -2296,7 +2399,7 @@ export default function AdminView() {
                   <div
                     style={{
                       padding: '12px 14px',
-                      backgroundColor: '#071E3D',
+                      backgroundColor: '#0A0A0A',
                       color: '#FFFFFF',
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -2333,7 +2436,7 @@ export default function AdminView() {
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#FDBA74',
+                          color: '#FFE08A',
                           fontSize: '0.7rem',
                           fontWeight: 700,
                           cursor: 'pointer',
@@ -2360,7 +2463,7 @@ export default function AdminView() {
                             style={{
                               padding: '10px 14px',
                               borderBottom: '1px solid #F1F5F9',
-                              backgroundColor: notif.unread ? '#FFF7ED' : '#FFFFFF',
+                              backgroundColor: notif.unread ? '#FFF8E1' : '#FFFFFF',
                               cursor: 'pointer',
                               display: 'flex',
                               gap: '10px',
@@ -2373,8 +2476,8 @@ export default function AdminView() {
                                 width: '32px',
                                 height: '32px',
                                 borderRadius: '50%',
-                                backgroundColor: isOnline ? '#D1FAE5' : '#FED7AA',
-                                color: isOnline ? '#059669' : '#C2410C',
+                                backgroundColor: isOnline ? '#F2F2F2' : '#FFF8E1',
+                                color: '#0A0A0A',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -2386,7 +2489,7 @@ export default function AdminView() {
                             </div>
                             <div style={{ flex: 1 }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                <span style={{ fontWeight: 800, fontSize: '0.825rem', color: '#071E3D' }}>
+                                <span style={{ fontWeight: 800, fontSize: '0.825rem', color: '#0A0A0A' }}>
                                   {notif.title}
                                 </span>
                                 <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>{notif.time}</span>
@@ -2395,11 +2498,11 @@ export default function AdminView() {
                                 {notif.message}
                               </div>
                               <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
-                                <span style={{ fontSize: '0.68rem', fontWeight: 700, padding: '1px 6px', borderRadius: '4px', backgroundColor: isOnline ? '#DCFCE7' : '#FEF3C7', color: isOnline ? '#15803D' : '#D97706' }}>
+                                <span style={{ fontSize: '0.68rem', fontWeight: 700, padding: '1px 6px', borderRadius: '4px', border: isOnline ? '1px solid #E5E7EB' : '1px solid #FFE08A', backgroundColor: isOnline ? '#F2F2F2' : '#FFF8E1', color: '#0A0A0A' }}>
                                   {isOnline ? '💳 Online Paid' : '💵 Cash on Site'}
                                 </span>
                                 {notif.amount && (
-                                  <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#071E3D' }}>
+                                  <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#0A0A0A' }}>
                                     ₹{notif.amount.toLocaleString('en-IN')}
                                   </span>
                                 )}
@@ -2420,7 +2523,7 @@ export default function AdminView() {
                       <button
                         type="button"
                         onClick={clearAdminNotifications}
-                        style={{ background: 'none', border: 'none', color: '#EF4444', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                        style={{ background: 'none', border: 'none', color: '#0A0A0A', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
                       >
                         Clear All
                       </button>
@@ -2430,7 +2533,7 @@ export default function AdminView() {
                           handleTabChange('orders');
                           setIsNotificationOpen(false);
                         }}
-                        style={{ background: 'none', border: 'none', color: '#0066FF', fontSize: '0.72rem', fontWeight: 800, cursor: 'pointer' }}
+                        style={{ background: 'none', border: 'none', color: '#0A0A0A', fontSize: '0.72rem', fontWeight: 800, cursor: 'pointer' }}
                       >
                         View All Orders →
                       </button>
@@ -2451,7 +2554,7 @@ export default function AdminView() {
               }}
               style={{
                 background: '#FFFFFF',
-                border: '1px solid #D0E2F2',
+                border: '1px solid #E5E7EB',
                 borderRadius: '8px',
                 width: '38px',
                 height: '38px',
@@ -2459,8 +2562,8 @@ export default function AdminView() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: '#335372',
-                boxShadow: '0 1px 2px rgba(8, 39, 76, 0.04)',
+                color: '#262626',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
               }}
               title="Toggle Fullscreen"
             >
@@ -2478,16 +2581,16 @@ export default function AdminView() {
                   padding: '4px 8px 4px 4px',
                   borderRadius: '24px',
                   backgroundColor: '#FFFFFF',
-                  border: '1px solid #D0E2F2',
+                  border: '1px solid #E5E7EB',
                   cursor: 'pointer',
-                  boxShadow: '0 1px 2px rgba(8, 39, 76, 0.04)',
+                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
                 }}
               >
                 <div style={{
                   width: '34px',
                   height: '34px',
                   borderRadius: '50%',
-                  backgroundColor: '#0066FF',
+                  backgroundColor: '#0A0A0A',
                   color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
@@ -2501,7 +2604,7 @@ export default function AdminView() {
                   <span style={{ fontSize: '0.82rem', fontWeight: 700, color: theme.textDark }}>{adminUser?.name || 'Root Administrator'}</span>
                   <span style={{ fontSize: '0.68rem', color: theme.textMuted }}>{adminUser?.email || 'admin@gmail.com'}</span>
                 </div>
-                <ChevronDown size={14} color="#7E9BB5" />
+                <ChevronDown size={14} color="#9CA3AF" />
               </div>
 
               {/* Profile Dropdown */}
@@ -2511,33 +2614,33 @@ export default function AdminView() {
                   right: 0,
                   top: '110%',
                   backgroundColor: '#FFFFFF',
-                  border: '1px solid #D0E2F2',
+                  border: '1px solid #E5E7EB',
                   borderRadius: '10px',
-                  boxShadow: '0 10px 25px rgba(8, 39, 76, 0.12)',
+                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.12)',
                   width: '200px',
                   padding: '0.5rem',
                   zIndex: 100,
                 }}>
                   <button
                     onClick={() => { navigateTo('home'); setIsProfileMenuOpen(false); }}
-                    style={{ width: '100%', padding: '0.5rem 0.75rem', background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#08274C', cursor: 'pointer', borderRadius: '6px' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#EDF5FC'}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#000000', cursor: 'pointer', borderRadius: '6px' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FAFC'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     <Store size={15} /> View Storefront
                   </button>
                   <button
                     onClick={() => { handleTabChange('settings'); setIsProfileMenuOpen(false); }}
-                    style={{ width: '100%', padding: '0.5rem 0.75rem', background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#08274C', cursor: 'pointer', borderRadius: '6px' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#EDF5FC'}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#000000', cursor: 'pointer', borderRadius: '6px' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FAFC'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     <Settings size={15} /> Platform Settings
                   </button>
                   <button
                     onClick={() => { resetToDefaultData(); setIsProfileMenuOpen(false); }}
-                    style={{ width: '100%', padding: '0.5rem 0.75rem', background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#F15A24', cursor: 'pointer', borderRadius: '6px' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFF1EB'}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#0A0A0A', cursor: 'pointer', borderRadius: '6px' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFF8E1'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     <RotateCcw size={15} /> Reload Data from Server
@@ -2545,8 +2648,8 @@ export default function AdminView() {
                   <div style={{ height: '1px', backgroundColor: '#E2E8F0', margin: '4px 0' }} />
                   <button
                     onClick={() => { adminLogout(); setIsProfileMenuOpen(false); }}
-                    style={{ width: '100%', padding: '0.5rem 0.75rem', background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#EF4444', cursor: 'pointer', borderRadius: '6px' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FEF2F2'}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#0A0A0A', cursor: 'pointer', borderRadius: '6px' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F2F2F2'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     <LogOut size={15} /> Logout Admin
@@ -2572,6 +2675,7 @@ export default function AdminView() {
             {adminActiveTab === 'orders' && renderOrdersView()}
             {adminActiveTab === 'live-tracking' && renderLiveTrackingView()}
             {adminActiveTab === 'customers' && renderUsersView('Customers')}
+            {adminActiveTab === 'vendors' && renderVendorsView()}
             {adminActiveTab === 'coupons' && renderCouponsView()}
             {adminActiveTab === 'banners' && renderBannersView()}
             {adminActiveTab === 'bookings' && renderBookingsView()}
@@ -2768,8 +2872,8 @@ export default function AdminView() {
                       width: '100%',
                       padding: '0.6rem 0.8rem',
                       borderRadius: '8px',
-                      border: '1.5px solid #3B82F6',
-                      backgroundColor: '#F0F7FF',
+                      border: '1.5px solid #0A0A0A',
+                      backgroundColor: '#F8FAFC',
                       fontSize: '0.85rem',
                       color: '#0F172A',
                       fontWeight: 600,
@@ -2857,7 +2961,7 @@ export default function AdminView() {
                     fontSize: '0.82rem',
                     fontWeight: 700,
                     cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(0, 102, 255, 0.3)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
                   }}
                 >
                   Create Category
@@ -2956,7 +3060,7 @@ export default function AdminView() {
                     overflow: 'hidden',
                     transition: 'all 0.15s ease',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#818CF8')}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#0A0A0A')}
                   onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#CBD5E1')}
                 >
                   <input
@@ -3085,7 +3189,7 @@ export default function AdminView() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#4F46E5', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#0A0A0A', marginBottom: '6px' }}>
                     Priority Order
                   </label>
                   <input
@@ -3097,10 +3201,10 @@ export default function AdminView() {
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: '8px',
-                      border: '1.5px solid #C7D2FE',
+                      border: '1.5px solid #FFE08A',
                       fontSize: '0.875rem',
                       fontWeight: 700,
-                      color: '#4F46E5',
+                      color: '#0A0A0A',
                       outline: 'none',
                       backgroundColor: '#FFFFFF',
                       boxSizing: 'border-box',
@@ -3132,7 +3236,7 @@ export default function AdminView() {
                 <button
                   type="submit"
                   style={{
-                    backgroundColor: '#4F46E5',
+                    backgroundColor: '#0A0A0A',
                     color: '#FFFFFF',
                     padding: '10px 22px',
                     borderRadius: '8px',
@@ -3140,11 +3244,11 @@ export default function AdminView() {
                     fontSize: '0.875rem',
                     fontWeight: 600,
                     cursor: 'pointer',
-                    boxShadow: '0 2px 6px rgba(79, 70, 229, 0.3)',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
                     transition: 'background-color 0.15s ease',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#4338CA')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#4F46E5')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#262626')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0A0A0A')}
                 >
                   Create Category
                 </button>
@@ -3239,7 +3343,7 @@ export default function AdminView() {
                     overflow: 'hidden',
                     transition: 'all 0.15s ease',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#818CF8')}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#0A0A0A')}
                   onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#CBD5E1')}
                 >
                   <input
@@ -3366,7 +3470,7 @@ export default function AdminView() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#4F46E5', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#0A0A0A', marginBottom: '6px' }}>
                     Priority Order
                   </label>
                   <input
@@ -3378,10 +3482,10 @@ export default function AdminView() {
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: '8px',
-                      border: '1.5px solid #C7D2FE',
+                      border: '1.5px solid #FFE08A',
                       fontSize: '0.875rem',
                       fontWeight: 700,
-                      color: '#4F46E5',
+                      color: '#0A0A0A',
                       outline: 'none',
                       backgroundColor: '#FFFFFF',
                       boxSizing: 'border-box',
@@ -3413,7 +3517,7 @@ export default function AdminView() {
                 <button
                   type="submit"
                   style={{
-                    backgroundColor: '#4F46E5',
+                    backgroundColor: '#0A0A0A',
                     color: '#FFFFFF',
                     padding: '10px 22px',
                     borderRadius: '8px',
@@ -3421,11 +3525,11 @@ export default function AdminView() {
                     fontSize: '0.875rem',
                     fontWeight: 600,
                     cursor: 'pointer',
-                    boxShadow: '0 2px 6px rgba(79, 70, 229, 0.3)',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
                     transition: 'background-color 0.15s ease',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#4338CA')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#4F46E5')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#262626')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0A0A0A')}
                 >
                   Save Changes
                 </button>
@@ -3515,7 +3619,7 @@ export default function AdminView() {
                     overflow: 'hidden',
                     transition: 'all 0.15s ease',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#818CF8')}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#0A0A0A')}
                   onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#CBD5E1')}
                 >
                   <input
@@ -3675,7 +3779,7 @@ export default function AdminView() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#4F46E5', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#0A0A0A', marginBottom: '6px' }}>
                     Priority Order
                   </label>
                   <input
@@ -3687,10 +3791,10 @@ export default function AdminView() {
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: '8px',
-                      border: '1.5px solid #C7D2FE',
+                      border: '1.5px solid #FFE08A',
                       fontSize: '0.875rem',
                       fontWeight: 700,
-                      color: '#4F46E5',
+                      color: '#0A0A0A',
                       outline: 'none',
                       backgroundColor: '#FFFFFF',
                       boxSizing: 'border-box',
@@ -3722,7 +3826,7 @@ export default function AdminView() {
                 <button
                   type="submit"
                   style={{
-                    backgroundColor: '#4F46E5',
+                    backgroundColor: '#0A0A0A',
                     color: '#FFFFFF',
                     padding: '10px 22px',
                     borderRadius: '8px',
@@ -3730,11 +3834,11 @@ export default function AdminView() {
                     fontSize: '0.875rem',
                     fontWeight: 600,
                     cursor: 'pointer',
-                    boxShadow: '0 2px 6px rgba(79, 70, 229, 0.3)',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
                     transition: 'background-color 0.15s ease',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#4338CA')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#4F46E5')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#262626')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0A0A0A')}
                 >
                   Create Subcategory
                 </button>
@@ -3823,7 +3927,7 @@ export default function AdminView() {
                     overflow: 'hidden',
                     transition: 'all 0.15s ease',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#818CF8')}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#0A0A0A')}
                   onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#CBD5E1')}
                 >
                   <input
@@ -3981,7 +4085,7 @@ export default function AdminView() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#4F46E5', marginBottom: '6px' }}>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#0A0A0A', marginBottom: '6px' }}>
                     Priority Order
                   </label>
                   <input
@@ -3993,10 +4097,10 @@ export default function AdminView() {
                       width: '100%',
                       padding: '10px 14px',
                       borderRadius: '8px',
-                      border: '1.5px solid #C7D2FE',
+                      border: '1.5px solid #FFE08A',
                       fontSize: '0.875rem',
                       fontWeight: 700,
-                      color: '#4F46E5',
+                      color: '#0A0A0A',
                       outline: 'none',
                       backgroundColor: '#FFFFFF',
                       boxSizing: 'border-box',
@@ -4028,7 +4132,7 @@ export default function AdminView() {
                 <button
                   type="submit"
                   style={{
-                    backgroundColor: '#4F46E5',
+                    backgroundColor: '#0A0A0A',
                     color: '#FFFFFF',
                     padding: '10px 22px',
                     borderRadius: '8px',
@@ -4036,11 +4140,11 @@ export default function AdminView() {
                     fontSize: '0.875rem',
                     fontWeight: 600,
                     cursor: 'pointer',
-                    boxShadow: '0 2px 6px rgba(79, 70, 229, 0.3)',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
                     transition: 'background-color 0.15s ease',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#4338CA')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#4F46E5')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#262626')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0A0A0A')}
                 >
                   Save Changes
                 </button>
@@ -4142,7 +4246,7 @@ export default function AdminView() {
               gridTemplateColumns: '1fr 1fr 1fr 2fr',
               gap: '12px',
               padding: '0.65rem 1.5rem',
-              backgroundColor: '#FAFCFE',
+              backgroundColor: '#FFFFFF',
               borderBottom: '1px solid #E2E8F0',
               fontSize: '0.75rem',
             }}>
@@ -4154,7 +4258,7 @@ export default function AdminView() {
               </div>
               <div>
                 <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#64748B', letterSpacing: '0.04em', textTransform: 'uppercase' }}>SELL PRICES</div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#10B981', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0A0A0A', marginTop: '2px' }}>
                   {productFormData.price !== '' && productFormData.price !== undefined && !isNaN(productFormData.price) && Number(productFormData.price) > 0
                     ? `₹${Number(productFormData.price).toLocaleString('en-IN')}`
                     : '—'}
@@ -4209,7 +4313,7 @@ export default function AdminView() {
                         borderRadius: '8px',
                         border: 'none',
                         backgroundColor: isTabActive ? '#FFFFFF' : 'transparent',
-                        color: isTabActive ? '#EF4444' : '#475569',
+                        color: isTabActive ? '#0A0A0A' : '#475569',
                         fontWeight: isTabActive ? 800 : 600,
                         fontSize: '0.82rem',
                         cursor: 'pointer',
@@ -4218,7 +4322,7 @@ export default function AdminView() {
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      <Icon size={16} color={isTabActive ? '#EF4444' : '#64748B'} />
+                      <Icon size={16} color={isTabActive ? '#FFB800' : '#64748B'} />
                       <span>{t.label}</span>
                     </button>
                   );
@@ -4237,9 +4341,9 @@ export default function AdminView() {
                         width: '100%',
                         padding: '0.45rem 0.65rem',
                         borderRadius: '8px',
-                        backgroundColor: productFormData.status === 'PUBLISHED' ? '#ECFDF5' : '#F1F5F9',
-                        border: productFormData.status === 'PUBLISHED' ? '1px solid #A7F3D0' : '1px solid #CBD5E1',
-                        color: productFormData.status === 'PUBLISHED' ? '#059669' : '#334155',
+                        backgroundColor: productFormData.status === 'PUBLISHED' ? '#FFF8E1' : '#F1F5F9',
+                        border: productFormData.status === 'PUBLISHED' ? '1px solid #FFB800' : '1px solid #CBD5E1',
+                        color: productFormData.status === 'PUBLISHED' ? '#0A0A0A' : '#334155',
                         fontWeight: 800,
                         fontSize: '0.78rem',
                         cursor: 'pointer',
@@ -4314,11 +4418,11 @@ export default function AdminView() {
 
                     {/* Instruction Alert Callout */}
                     <div style={{
-                      backgroundColor: '#FEFCE8',
-                      border: '1px solid #FEF08A',
+                      backgroundColor: '#FFF8E1',
+                      border: '1px solid #FFE08A',
                       borderRadius: '8px',
                       padding: '0.75rem 1rem',
-                      color: '#854D0E',
+                      color: '#0A0A0A',
                       fontSize: '0.78rem',
                       lineHeight: 1.45,
                     }}>
@@ -4490,7 +4594,7 @@ export default function AdminView() {
                                     fontWeight: 700,
                                     cursor: 'pointer',
                                     border: isSelected ? `1.5px solid ${theme.primaryBlue}` : '1px solid #CBD5E1',
-                                    backgroundColor: isSelected ? '#EFF6FF' : '#FFFFFF',
+                                    backgroundColor: isSelected ? '#FFF8E1' : '#FFFFFF',
                                     color: isSelected ? theme.primaryBlue : '#334155',
                                     transition: 'all 0.15s ease',
                                     display: 'inline-flex',
@@ -4649,9 +4753,9 @@ export default function AdminView() {
                                     onClick={removeGroup}
                                     style={{
                                       padding: '4px 8px',
-                                      backgroundColor: '#FEF2F2',
-                                      color: '#EF4444',
-                                      border: '1px solid #FECACA',
+                                      backgroundColor: '#F2F2F2',
+                                      color: '#0A0A0A',
+                                      border: '1px solid #E5E7EB',
                                       borderRadius: '6px',
                                       fontSize: '0.7rem',
                                       fontWeight: 700,
@@ -4694,7 +4798,7 @@ export default function AdminView() {
                                           border: '1px solid #E2E8F0',
                                           fontSize: '0.8rem',
                                           fontWeight: 700,
-                                          color: '#10B981',
+                                          color: '#0A0A0A',
                                         }}
                                         title="Optional override price when this option is chosen"
                                       />
@@ -4831,9 +4935,9 @@ export default function AdminView() {
                                 alignItems: 'center',
                                 gap: '4px',
                                 padding: '3px 8px',
-                                backgroundColor: '#FEF2F2',
-                                color: '#EF4444',
-                                border: '1px solid #FECACA',
+                                backgroundColor: '#F2F2F2',
+                                color: '#0A0A0A',
+                                border: '1px solid #E5E7EB',
                                 borderRadius: '6px',
                                 fontSize: '0.68rem',
                                 fontWeight: 700,
@@ -4881,7 +4985,7 @@ export default function AdminView() {
                                 placeholder="e.g. 375"
                                 value={variant.price || ''}
                                 onChange={(e) => updateVariant('price', e.target.value)}
-                                style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', fontSize: '0.9rem', fontWeight: 800, color: '#10B981', boxSizing: 'border-box' }}
+                                style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', fontSize: '0.9rem', fontWeight: 800, color: '#0A0A0A', boxSizing: 'border-box' }}
                               />
                             </div>
                             <div>
@@ -4905,7 +5009,7 @@ export default function AdminView() {
                                 placeholder="e.g. 500"
                                 value={variant.stockCount !== undefined ? variant.stockCount : ''}
                                 onChange={(e) => updateVariant('stockCount', e.target.value)}
-                                style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', fontSize: '0.9rem', fontWeight: 700, color: '#3B82F6', boxSizing: 'border-box' }}
+                                style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', fontSize: '0.9rem', fontWeight: 700, color: '#0A0A0A', boxSizing: 'border-box' }}
                               />
                             </div>
                             <div>
@@ -4923,9 +5027,9 @@ export default function AdminView() {
 
                           {/* Margin badge */}
                           {variant.price && Number(variant.price) > 0 && (
-                            <div style={{ padding: '0.5rem 0.75rem', borderRadius: '8px', backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', color: '#059669', fontWeight: 700, fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ padding: '0.5rem 0.75rem', borderRadius: '8px', backgroundColor: '#F2F2F2', border: '1px solid #E5E7EB', color: '#0A0A0A', fontWeight: 700, fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <span>₹{margin} margin</span>
-                              <span style={{ fontSize: '0.75rem', color: '#047857' }}>{discPct}% off MRP</span>
+                              <span style={{ fontSize: '0.75rem', color: '#0A0A0A' }}>{discPct}% off MRP</span>
                             </div>
                           )}
                         </div>
@@ -4969,9 +5073,9 @@ export default function AdminView() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     
                     {/* Assured Cashback Box */}
-                    <div style={{ backgroundColor: '#FFFDF0', border: '1px solid #FEF3C7', borderLeft: '3.5px solid #F59E0B', borderRadius: '10px', padding: '1rem' }}>
+                    <div style={{ backgroundColor: '#FFF8E1', border: '1px solid #FFF8E1', borderLeft: '3.5px solid #FFB800', borderRadius: '10px', padding: '1rem' }}>
                       <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0F172A', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Gift size={16} color="#D97706" /> Assured Cashback Banner
+                        <Gift size={16} color="#FFB800" /> Assured Cashback Banner
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                         <div>
@@ -5243,7 +5347,7 @@ export default function AdminView() {
                                   position: 'absolute',
                                   top: '4px',
                                   right: '4px',
-                                  backgroundColor: 'rgba(239,68,68,0.85)',
+                                  backgroundColor: 'rgba(0,0,0,0.85)',
                                   color: '#FFFFFF',
                                   border: 'none',
                                   borderRadius: '50%',
@@ -5495,7 +5599,7 @@ export default function AdminView() {
             display: block !important;
             position: fixed !important;
             inset: 0 !important;
-            background: rgba(8, 39, 76, 0.6) !important;
+            background: rgba(0, 0, 0, 0.6) !important;
             backdrop-filter: blur(4px) !important;
             -webkit-backdrop-filter: blur(4px) !important;
             z-index: 99998 !important;
@@ -5560,12 +5664,12 @@ export default function AdminView() {
             right: 0 !important;
             height: 60px !important;
             background-color: #FFFFFF !important;
-            border-top: 1px solid #D6E4F0 !important;
+            border-top: 1px solid #E5E7EB !important;
             z-index: 9990 !important;
             align-items: center !important;
             justify-content: space-around !important;
             padding: 4px 6px max(4px, env(safe-area-inset-bottom, 4px)) 6px !important;
-            box-shadow: 0 -3px 14px rgba(8, 39, 76, 0.08) !important;
+            box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.08) !important;
           }
           .admin-mob-nav-item {
             display: flex;
@@ -5585,14 +5689,14 @@ export default function AdminView() {
             flex: 1;
           }
           .admin-mob-nav-item.active {
-            color: #0066FF !important;
-            background-color: #EFF6FF !important;
+            color: #0A0A0A !important;
+            background-color: #FFF8E1 !important;
           }
           .admin-mob-badge {
             position: absolute;
             top: -4px;
             right: -6px;
-            background-color: #EF4444;
+            background-color: #0A0A0A;
             color: #FFFFFF;
             font-size: 0.6rem;
             font-weight: 800;
@@ -5836,7 +5940,7 @@ export default function AdminView() {
                       justifyContent: 'space-between',
                       borderBottom: '1px solid #F8FAFC',
                       cursor: 'pointer',
-                      backgroundColor: isSelected ? '#F1F7FE' : 'transparent',
+                      backgroundColor: isSelected ? '#F8FAFC' : 'transparent',
                       borderLeft: isSelected ? `3px solid ${theme.primaryBlue}` : '3px solid transparent',
                       transition: 'all 0.15s ease',
                     }}
@@ -5921,8 +6025,8 @@ export default function AdminView() {
               justifyContent: 'space-between',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, color: '#0F172A', fontSize: '0.95rem' }}>
-                <span style={{ width: '4px', height: '18px', borderRadius: '4px', backgroundColor: '#10B981', display: 'inline-block' }} />
-                <Tag size={16} color="#10B981" /> Subcategories
+                <span style={{ width: '4px', height: '18px', borderRadius: '4px', backgroundColor: '#0A0A0A', display: 'inline-block' }} />
+                <Tag size={16} color="#0A0A0A" /> Subcategories
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{
@@ -6094,7 +6198,7 @@ export default function AdminView() {
                         <div style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.84rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {sub.name}
                         </div>
-                        <div style={{ fontSize: '0.7rem', color: '#10B981', fontWeight: 700, marginTop: '2px' }}>
+                        <div style={{ fontSize: '0.7rem', color: '#0A0A0A', fontWeight: 700, marginTop: '2px' }}>
                           {sub.skuCount} linked items
                         </div>
 
@@ -6155,7 +6259,7 @@ export default function AdminView() {
                             style={{
                               background: 'none',
                               border: 'none',
-                              color: '#EF4444',
+                              color: '#0A0A0A',
                               fontSize: '0.72rem',
                               fontWeight: 600,
                               cursor: 'pointer',
@@ -6257,18 +6361,18 @@ export default function AdminView() {
               alignItems: 'center',
               gap: '6px',
               padding: '0.55rem 1.15rem',
-              backgroundColor: '#4F46E5',
+              backgroundColor: '#0A0A0A',
               color: '#FFFFFF',
               border: 'none',
               borderRadius: '8px',
               fontSize: '0.85rem',
               fontWeight: 600,
               cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(79, 70, 229, 0.3)',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
               transition: 'background-color 0.15s ease',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#4338CA')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#4F46E5')}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#262626')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0A0A0A')}
           >
             <Plus size={16} /> Add New Category
           </button>
@@ -6311,7 +6415,7 @@ export default function AdminView() {
               gap: '6px',
               padding: '0.45rem 0.9rem',
               borderRadius: '8px',
-              backgroundColor: '#4F46E5',
+              backgroundColor: '#0A0A0A',
               color: '#FFFFFF',
               border: 'none',
               fontWeight: 700,
@@ -6394,13 +6498,13 @@ export default function AdminView() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              backgroundColor: '#EEF2FF',
-              border: '1px solid #C7D2FE',
+              backgroundColor: '#FFF8E1',
+              border: '1px solid #FFE08A',
               borderRadius: '8px',
               padding: '0.6rem 1rem',
               marginBottom: '1rem',
             }}>
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#3730A3' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0A0A0A' }}>
                 {selectedIds.length} categor{selectedIds.length > 1 ? 'ies' : 'y'} selected
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -6410,9 +6514,9 @@ export default function AdminView() {
                   style={{
                     padding: '4px 10px',
                     borderRadius: '6px',
-                    backgroundColor: '#ECFDF5',
-                    border: '1px solid #A7F3D0',
-                    color: '#059669',
+                    backgroundColor: '#F2F2F2',
+                    border: '1px solid #E5E7EB',
+                    color: '#0A0A0A',
                     fontSize: '0.75rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -6426,9 +6530,9 @@ export default function AdminView() {
                   style={{
                     padding: '4px 10px',
                     borderRadius: '6px',
-                    backgroundColor: '#FEF3C7',
-                    border: '1px solid #FDE68A',
-                    color: '#D97706',
+                    backgroundColor: '#FFF8E1',
+                    border: '1px solid #FFE08A',
+                    color: '#0A0A0A',
                     fontSize: '0.75rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -6442,9 +6546,9 @@ export default function AdminView() {
                   style={{
                     padding: '4px 10px',
                     borderRadius: '6px',
-                    backgroundColor: '#FEE2E2',
-                    border: '1px solid #FECACA',
-                    color: '#DC2626',
+                    backgroundColor: '#F2F2F2',
+                    border: '1px solid #E5E7EB',
+                    color: '#0A0A0A',
                     fontSize: '0.75rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -6488,7 +6592,7 @@ export default function AdminView() {
                           setSelectedIds([]);
                         }
                       }}
-                      style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: '#4F46E5' }}
+                      style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: '#0A0A0A' }}
                     />
                   </th>
                   <th style={{ padding: '10px 14px', fontSize: '0.72rem', fontWeight: 700, color: '#6B7280', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
@@ -6537,7 +6641,7 @@ export default function AdminView() {
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => handleSelectOne(catId)}
-                          style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: '#4F46E5' }}
+                          style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: '#0A0A0A' }}
                         />
                       </td>
 
@@ -6601,9 +6705,9 @@ export default function AdminView() {
                             fontSize: '0.75rem',
                             fontWeight: 600,
                             cursor: 'pointer',
-                            backgroundColor: isActive ? '#ECFDF5' : '#FEF3C7',
-                            color: isActive ? '#059669' : '#D97706',
-                            border: `1px solid ${isActive ? '#A7F3D0' : '#FDE68A'}`,
+                            backgroundColor: isActive ? '#F2F2F2' : '#FFF8E1',
+                            color: isActive ? '#0A0A0A' : '#FFB800',
+                            border: `1px solid ${isActive ? '#E5E7EB' : '#FFE08A'}`,
                             userSelect: 'none',
                           }}
                           title="Click to toggle Active / Inactive status"
@@ -6640,7 +6744,7 @@ export default function AdminView() {
                               alignItems: 'center',
                               transition: 'color 0.15s ease',
                             }}
-                            onMouseEnter={(e) => (e.currentTarget.style.color = '#4F46E5')}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = '#0A0A0A')}
                             onMouseLeave={(e) => (e.currentTarget.style.color = '#64748B')}
                             title="Edit Category"
                           >
@@ -6664,7 +6768,7 @@ export default function AdminView() {
                               alignItems: 'center',
                               transition: 'color 0.15s ease',
                             }}
-                            onMouseEnter={(e) => (e.currentTarget.style.color = '#DC2626')}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = '#0A0A0A')}
                             onMouseLeave={(e) => (e.currentTarget.style.color = '#64748B')}
                             title="Delete Category"
                           >
@@ -6744,7 +6848,7 @@ export default function AdminView() {
               fontSize: '0.85rem',
               fontWeight: 700,
               cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(0, 102, 255, 0.25)',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.25)',
             }}
           >
             <Plus size={16} /> + Add Sub Category
@@ -6928,7 +7032,7 @@ export default function AdminView() {
                     </div>
                   </td>
                   <td style={{ padding: '0.75rem 1rem' }}>
-                    <span style={{ backgroundColor: '#EFF6FF', color: theme.primaryBlue, fontWeight: 700, padding: '3px 8px', borderRadius: '6px' }}>
+                    <span style={{ backgroundColor: '#FFF8E1', color: theme.primaryBlue, fontWeight: 700, padding: '3px 8px', borderRadius: '6px' }}>
                       {sub.categoryName}
                     </span>
                   </td>
@@ -6939,7 +7043,7 @@ export default function AdminView() {
                     {sub.prodCount} items
                   </td>
                   <td style={{ padding: '0.75rem 1rem' }}>
-                    <span style={{ padding: '2px 8px', borderRadius: '10px', backgroundColor: '#ECFDF5', color: '#10B981', fontWeight: 700, fontSize: '0.72rem' }}>
+                    <span style={{ padding: '2px 8px', borderRadius: '10px', backgroundColor: '#F2F2F2', color: '#0A0A0A', fontWeight: 700, fontSize: '0.72rem' }}>
                       Active
                     </span>
                   </td>
@@ -6962,12 +7066,12 @@ export default function AdminView() {
                         }}
                         style={{
                           padding: '4px 10px',
-                          backgroundColor: '#EEF2FF',
-                          border: '1px solid #C7D2FE',
+                          backgroundColor: '#FFF8E1',
+                          border: '1px solid #FFE08A',
                           borderRadius: '6px',
                           fontSize: '0.74rem',
                           fontWeight: 700,
-                          color: '#4F46E5',
+                          color: '#0A0A0A',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
@@ -6975,12 +7079,12 @@ export default function AdminView() {
                           transition: 'all 0.15s ease',
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#4F46E5';
+                          e.currentTarget.style.backgroundColor = '#0A0A0A';
                           e.currentTarget.style.color = '#FFFFFF';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#EEF2FF';
-                          e.currentTarget.style.color = '#4F46E5';
+                          e.currentTarget.style.backgroundColor = '#FFF8E1';
+                          e.currentTarget.style.color = '#0A0A0A';
                         }}
                         title="Edit subcategory"
                       >
@@ -6995,10 +7099,10 @@ export default function AdminView() {
                         }}
                         style={{
                           padding: '4px 6px',
-                          backgroundColor: '#FEF2F2',
-                          border: '1px solid #FCA5A5',
+                          backgroundColor: '#F2F2F2',
+                          border: '1px solid #9CA3AF',
                           borderRadius: '6px',
-                          color: '#EF4444',
+                          color: '#0A0A0A',
                           cursor: 'pointer',
                         }}
                         title="Delete subcategory"
@@ -7038,46 +7142,46 @@ export default function AdminView() {
         {/* Top KPI Cards */}
         <div className="admin-kpi-grid">
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '14px', border: `1px solid ${theme.cardBorder}`, padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10B981', flexShrink: 0 }}>
+            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: '#F2F2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A0A0A', flexShrink: 0 }}>
               <DollarSign size={22} />
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: theme.textMuted }}>Total Material Revenue</div>
               <div style={{ fontSize: '1.35rem', fontWeight: 800, color: theme.textDark, lineHeight: 1.2 }}>₹{totalRev.toLocaleString('en-IN')}</div>
-              <div style={{ fontSize: '0.72rem', color: '#10B981', fontWeight: 700, marginTop: '2px' }}>↑ +18.4% this week</div>
+              <div style={{ fontSize: '0.72rem', color: '#0A0A0A', fontWeight: 700, marginTop: '2px' }}>↑ +18.4% this week</div>
             </div>
           </div>
 
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '14px', border: `1px solid ${theme.cardBorder}`, padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.primaryBlue, flexShrink: 0 }}>
+            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.primaryBlue, flexShrink: 0 }}>
               <Truck size={22} />
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: theme.textMuted }}>Total Orders</div>
               <div style={{ fontSize: '1.35rem', fontWeight: 800, color: theme.textDark, lineHeight: 1.2 }}>{orders.length} Orders</div>
-              <div style={{ fontSize: '0.72rem', color: '#0066FF', fontWeight: 700, marginTop: '2px' }}>60-min express active</div>
+              <div style={{ fontSize: '0.72rem', color: '#0A0A0A', fontWeight: 700, marginTop: '2px' }}>60-min express active</div>
             </div>
           </div>
 
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '14px', border: `1px solid ${theme.cardBorder}`, padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: '#FFF7ED', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FF6B00', flexShrink: 0 }}>
+            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFB800', flexShrink: 0 }}>
               <Wrench size={22} />
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: theme.textMuted }}>Active Mistris</div>
               <div style={{ fontSize: '1.35rem', fontWeight: 800, color: theme.textDark, lineHeight: 1.2 }}>{mistris.filter(m => m.isAvailable).length} Available</div>
-              <div style={{ fontSize: '0.72rem', color: '#FF6B00', fontWeight: 700, marginTop: '2px' }}>100% verified & insured</div>
+              <div style={{ fontSize: '0.72rem', color: '#0A0A0A', fontWeight: 700, marginTop: '2px' }}>100% verified & insured</div>
             </div>
           </div>
 
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '14px', border: `1px solid ${theme.cardBorder}`, padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7C3AED', flexShrink: 0 }}>
+            <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A0A0A', flexShrink: 0 }}>
               <Users size={22} />
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: theme.textMuted }}>Registered Customers</div>
               <div style={{ fontSize: '1.35rem', fontWeight: 800, color: theme.textDark, lineHeight: 1.2 }}>{usersList.length} Accounts</div>
-              <div style={{ fontSize: '0.72rem', color: '#7C3AED', fontWeight: 700, marginTop: '2px' }}>Active accounts</div>
+              <div style={{ fontSize: '0.72rem', color: '#0A0A0A', fontWeight: 700, marginTop: '2px' }}>Active accounts</div>
             </div>
           </div>
         </div>
@@ -7107,8 +7211,8 @@ export default function AdminView() {
                       </div>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '3px' }}>
-                      <div style={{ fontWeight: 800, color: '#10B981', fontSize: '0.88rem' }}>₹{(o.grandTotal || o.total || 0).toLocaleString('en-IN')}</div>
-                      <span style={{ fontSize: '0.68rem', fontWeight: 700, color: theme.primaryBlue, backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: '10px', border: '1px solid #DBEAFE', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontWeight: 800, color: '#0A0A0A', fontSize: '0.88rem' }}>₹{(o.grandTotal || o.total || 0).toLocaleString('en-IN')}</div>
+                      <span style={{ fontSize: '0.68rem', fontWeight: 700, color: theme.primaryBlue, backgroundColor: '#FFF8E1', padding: '2px 8px', borderRadius: '10px', border: '1px solid #FFF8E1', whiteSpace: 'nowrap' }}>
                         {o.status || 'Confirmed'}
                       </span>
                     </div>
@@ -7122,26 +7226,26 @@ export default function AdminView() {
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '14px', border: `1px solid ${theme.cardBorder}`, padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
             <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: theme.textDark, margin: 0 }}>Quick Actions</h3>
             <button className="admin-action-btn" onClick={() => handleTabChange('products')} style={{ padding: '0.75rem 0.9rem', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', color: theme.textDark, fontWeight: 700, fontSize: '0.82rem', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', width: '100%', transition: 'all 0.15s ease' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Package size={16} color={theme.primaryBlue} />
               </div>
               <span style={{ flex: 1 }}>+ Manage Products & Stock</span>
             </button>
             <button className="admin-action-btn" onClick={() => handleTabChange('categories')} style={{ padding: '0.75rem 0.9rem', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', color: theme.textDark, fontWeight: 700, fontSize: '0.82rem', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', width: '100%', transition: 'all 0.15s ease' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#F5F3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Layers size={16} color="#7C3AED" />
+              <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Layers size={16} color="#0A0A0A" />
               </div>
               <span style={{ flex: 1 }}>+ Edit Categories & Sections</span>
             </button>
             <button className="admin-action-btn" onClick={() => handleTabChange('coupons')} style={{ padding: '0.75rem 0.9rem', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', color: theme.textDark, fontWeight: 700, fontSize: '0.82rem', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', width: '100%', transition: 'all 0.15s ease' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#FFF7ED', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Tag size={16} color="#FF6B00" />
+              <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Tag size={16} color="#FFB800" />
               </div>
               <span style={{ flex: 1 }}>+ Create Promo Code</span>
             </button>
             <button className="admin-action-btn" onClick={() => handleTabChange('quotations')} style={{ padding: '0.75rem 0.9rem', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', color: theme.textDark, fontWeight: 700, fontSize: '0.82rem', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', width: '100%', transition: 'all 0.15s ease' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <MessageSquareQuote size={16} color="#10B981" />
+              <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#F2F2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <MessageSquareQuote size={16} color="#0A0A0A" />
               </div>
               <span style={{ flex: 1 }}>+ Review Project BOQ Quotes</span>
             </button>
@@ -7170,9 +7274,9 @@ export default function AdminView() {
                 letterSpacing: '0.05em',
                 padding: '2px 8px',
                 borderRadius: '12px',
-                backgroundColor: '#ECFDF5',
-                color: '#10B981',
-                border: '1px solid #A7F3D0',
+                backgroundColor: '#F2F2F2',
+                color: '#0A0A0A',
+                border: '1px solid #E5E7EB',
               }}>
                 LIVE
               </span>
@@ -7261,7 +7365,7 @@ export default function AdminView() {
               padding: '0.45rem 1rem',
               borderRadius: '9px',
               border: 'none',
-              backgroundColor: productCatalogTab === 'master' ? '#EFF6FF' : 'transparent',
+              backgroundColor: productCatalogTab === 'master' ? '#FFF8E1' : 'transparent',
               color: productCatalogTab === 'master' ? theme.primaryBlue : '#64748B',
               fontWeight: 800,
               fontSize: '0.8rem',
@@ -7278,7 +7382,7 @@ export default function AdminView() {
               fontWeight: 800,
               padding: '1px 6px',
               borderRadius: '6px',
-              backgroundColor: '#DBEAFE',
+              backgroundColor: '#FFF8E1',
               color: theme.primaryBlue,
             }}>
               LIVE APP
@@ -7294,7 +7398,7 @@ export default function AdminView() {
               padding: '0.45rem 1rem',
               borderRadius: '9px',
               border: 'none',
-              backgroundColor: productCatalogTab === 'seller' ? '#EFF6FF' : 'transparent',
+              backgroundColor: productCatalogTab === 'seller' ? '#FFF8E1' : 'transparent',
               color: productCatalogTab === 'seller' ? theme.primaryBlue : '#64748B',
               fontWeight: 800,
               fontSize: '0.8rem',
@@ -7317,8 +7421,8 @@ export default function AdminView() {
               padding: '0.45rem 1rem',
               borderRadius: '9px',
               border: 'none',
-              backgroundColor: productCatalogTab === 'alerts' ? '#FFF1F2' : 'transparent',
-              color: productCatalogTab === 'alerts' ? '#E11D48' : '#64748B',
+              backgroundColor: productCatalogTab === 'alerts' ? '#F2F2F2' : 'transparent',
+              color: productCatalogTab === 'alerts' ? '#0A0A0A' : '#64748B',
               fontWeight: 800,
               fontSize: '0.8rem',
               cursor: 'pointer',
@@ -7327,7 +7431,7 @@ export default function AdminView() {
               flexShrink: 0,
             }}
           >
-            <AlertTriangle size={14} color={productCatalogTab === 'alerts' ? '#E11D48' : '#94A3B8'} />
+            <AlertTriangle size={14} color={productCatalogTab === 'alerts' ? '#0A0A0A' : '#94A3B8'} />
             <span>LOW STOCK ALERTS</span>
             {(productStats.low + productStats.out) > 0 && (
               <span style={{
@@ -7335,8 +7439,8 @@ export default function AdminView() {
                 fontWeight: 800,
                 padding: '1px 6px',
                 borderRadius: '6px',
-                backgroundColor: '#FFE4E6',
-                color: '#E11D48',
+                backgroundColor: '#F2F2F2',
+                color: '#0A0A0A',
               }}>
                 {productStats.low + productStats.out}
               </span>
@@ -7352,13 +7456,13 @@ export default function AdminView() {
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '14px',
-              border: productStockFilter === 'All' ? '2px solid #F87171' : '1px solid #E2E8F0',
+              border: productStockFilter === 'All' ? '2px solid #6B7280' : '1px solid #E2E8F0',
               padding: '1.25rem',
               display: 'flex',
               alignItems: 'center',
               gap: '14px',
               cursor: 'pointer',
-              boxShadow: productStockFilter === 'All' ? '0 4px 12px rgba(248, 113, 113, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
+              boxShadow: productStockFilter === 'All' ? '0 4px 12px rgba(0, 0, 0, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
               transition: 'all 0.15s ease',
             }}
           >
@@ -7366,8 +7470,8 @@ export default function AdminView() {
               width: '44px',
               height: '44px',
               borderRadius: '10px',
-              backgroundColor: '#F5F3FF',
-              color: '#7C3AED',
+              backgroundColor: '#FFF8E1',
+              color: '#0A0A0A',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -7389,13 +7493,13 @@ export default function AdminView() {
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '14px',
-              border: productStockFilter === 'inStock' ? '2px solid #10B981' : '1px solid #E2E8F0',
+              border: productStockFilter === 'inStock' ? '2px solid #0A0A0A' : '1px solid #E2E8F0',
               padding: '1.25rem',
               display: 'flex',
               alignItems: 'center',
               gap: '14px',
               cursor: 'pointer',
-              boxShadow: productStockFilter === 'inStock' ? '0 4px 12px rgba(16, 185, 129, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
+              boxShadow: productStockFilter === 'inStock' ? '0 4px 12px rgba(0, 0, 0, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
               transition: 'all 0.15s ease',
             }}
           >
@@ -7403,8 +7507,8 @@ export default function AdminView() {
               width: '44px',
               height: '44px',
               borderRadius: '10px',
-              backgroundColor: '#ECFDF5',
-              color: '#10B981',
+              backgroundColor: '#F2F2F2',
+              color: '#0A0A0A',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -7426,13 +7530,13 @@ export default function AdminView() {
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '14px',
-              border: productStockFilter === 'lowStock' ? '2px solid #F59E0B' : '1px solid #E2E8F0',
+              border: productStockFilter === 'lowStock' ? '2px solid #FFB800' : '1px solid #E2E8F0',
               padding: '1.25rem',
               display: 'flex',
               alignItems: 'center',
               gap: '14px',
               cursor: 'pointer',
-              boxShadow: productStockFilter === 'lowStock' ? '0 4px 12px rgba(245, 158, 11, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
+              boxShadow: productStockFilter === 'lowStock' ? '0 4px 12px rgba(255, 184, 0, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
               transition: 'all 0.15s ease',
             }}
           >
@@ -7440,8 +7544,8 @@ export default function AdminView() {
               width: '44px',
               height: '44px',
               borderRadius: '10px',
-              backgroundColor: '#FFFBEB',
-              color: '#D97706',
+              backgroundColor: '#FFF8E1',
+              color: '#FFB800',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -7463,13 +7567,13 @@ export default function AdminView() {
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '14px',
-              border: productStockFilter === 'outOfStock' ? '2px solid #EF4444' : '1px solid #E2E8F0',
+              border: productStockFilter === 'outOfStock' ? '2px solid #0A0A0A' : '1px solid #E2E8F0',
               padding: '1.25rem',
               display: 'flex',
               alignItems: 'center',
               gap: '14px',
               cursor: 'pointer',
-              boxShadow: productStockFilter === 'outOfStock' ? '0 4px 12px rgba(239, 68, 68, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
+              boxShadow: productStockFilter === 'outOfStock' ? '0 4px 12px rgba(0, 0, 0, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
               transition: 'all 0.15s ease',
             }}
           >
@@ -7477,8 +7581,8 @@ export default function AdminView() {
               width: '44px',
               height: '44px',
               borderRadius: '10px',
-              backgroundColor: '#FEF2F2',
-              color: '#EF4444',
+              backgroundColor: '#F2F2F2',
+              color: '#0A0A0A',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -7608,7 +7712,7 @@ export default function AdminView() {
                 padding: '0.55rem 0.95rem',
                 borderRadius: '10px',
                 border: '1px solid #E2E8F0',
-                backgroundColor: (productSearch || productCategoryFilter !== 'All' || productSectionFilter !== 'All' || productStockFilter !== 'All') ? '#EFF6FF' : '#FFFFFF',
+                backgroundColor: (productSearch || productCategoryFilter !== 'All' || productSectionFilter !== 'All' || productStockFilter !== 'All') ? '#FFF8E1' : '#FFFFFF',
                 color: (productSearch || productCategoryFilter !== 'All' || productSectionFilter !== 'All' || productStockFilter !== 'All') ? theme.primaryBlue : '#475569',
                 fontSize: '0.8rem',
                 fontWeight: 700,
@@ -7638,7 +7742,7 @@ export default function AdminView() {
                   <th style={{ padding: '0.85rem 1rem', fontWeight: 800, fontSize: '0.72rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>VARIANT</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: 800, fontSize: '0.72rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>CATEGORY</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: 800, fontSize: '0.72rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>CUSTOMER PRICE</th>
-                  <th style={{ padding: '0.85rem 1rem', fontWeight: 800, fontSize: '0.72rem', letterSpacing: '0.04em', textTransform: 'uppercase', color: '#059669' }}>HUB MARGIN</th>
+                  <th style={{ padding: '0.85rem 1rem', fontWeight: 800, fontSize: '0.72rem', letterSpacing: '0.04em', textTransform: 'uppercase', color: '#0A0A0A' }}>HUB MARGIN</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: 800, fontSize: '0.72rem', letterSpacing: '0.04em', textTransform: 'uppercase' }}>STOCK</th>
                   <th style={{ padding: '0.85rem 1rem', fontWeight: 800, fontSize: '0.72rem', letterSpacing: '0.04em', textTransform: 'uppercase', textAlign: 'center' }}>ACTIONS</th>
                 </tr>
@@ -7652,7 +7756,7 @@ export default function AdminView() {
                         borderBottom: '1px solid #F1F5F9',
                         transition: 'background-color 0.15s ease',
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FAFCFE'}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFFFFF'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       {/* 1. PRODUCT (Thumbnail + Title + Spec) */}
@@ -7698,11 +7802,11 @@ export default function AdminView() {
                       {/* 3. VARIANT */}
                       <td style={{ padding: '0.85rem 1rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <div style={{ color: '#7C3AED' }}>
+                          <div style={{ color: '#0A0A0A' }}>
                             <FileText size={15} />
                           </div>
                           <div>
-                            <div style={{ fontWeight: 800, color: '#7C3AED', fontSize: '0.78rem' }}>
+                            <div style={{ fontWeight: 800, color: '#0A0A0A', fontSize: '0.78rem' }}>
                               {p.optionsCount ? `${p.optionsCount} Options` : '1 Variant'}
                             </div>
                             <div style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 600 }}>
@@ -7739,7 +7843,7 @@ export default function AdminView() {
                             <span style={{ fontSize: '0.72rem', color: '#94A3B8', textDecoration: 'line-through' }}>
                               ₹{p.mrp?.toLocaleString('en-IN')}
                             </span>
-                            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#10B981' }}>
+                            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0A0A0A' }}>
                               ₹{p.price?.toLocaleString('en-IN')}
                             </span>
                           </div>
@@ -7754,13 +7858,13 @@ export default function AdminView() {
                           alignItems: 'center',
                           padding: '4px 10px',
                           borderRadius: '8px',
-                          backgroundColor: '#ECFDF5',
-                          border: '1px solid #D1FAE5',
+                          backgroundColor: '#F2F2F2',
+                          border: '1px solid #F2F2F2',
                         }}>
-                          <span style={{ fontWeight: 800, color: '#059669', fontSize: '0.78rem' }}>
+                          <span style={{ fontWeight: 800, color: '#0A0A0A', fontSize: '0.78rem' }}>
                             ₹{p.marginAmount?.toLocaleString('en-IN') || '45'}
                           </span>
-                          <span style={{ fontSize: '0.65rem', color: '#059669', fontWeight: 700 }}>
+                          <span style={{ fontSize: '0.65rem', color: '#0A0A0A', fontWeight: 700 }}>
                             {p.marginPercent || 10}% margin
                           </span>
                         </div>
@@ -7773,8 +7877,9 @@ export default function AdminView() {
                             style={{
                               padding: '4px 10px',
                               borderRadius: '6px',
-                              backgroundColor: p.isOutOfStock ? '#FEF2F2' : (p.isLowStock ? '#FFFBEB' : '#ECFDF5'),
-                              color: p.isOutOfStock ? '#DC2626' : (p.isLowStock ? '#D97706' : '#059669'),
+                              backgroundColor: p.isOutOfStock ? '#F2F2F2' : (p.isLowStock ? '#FFF8E1' : '#FFFFFF'),
+                              border: p.isOutOfStock ? '1.5px dashed #0A0A0A' : (p.isLowStock ? '1px solid #FFE08A' : '1px solid #E5E7EB'),
+                              color: '#0A0A0A',
                               fontSize: '0.82rem',
                               fontWeight: 800,
                               display: 'inline-flex',
@@ -7787,7 +7892,7 @@ export default function AdminView() {
                                 width: '6px',
                                 height: '6px',
                                 borderRadius: '50%',
-                                backgroundColor: p.isOutOfStock ? '#EF4444' : (p.isLowStock ? '#F59E0B' : '#10B981'),
+                                backgroundColor: p.isOutOfStock ? '#0A0A0A' : (p.isLowStock ? '#FFB800' : '#4B5563'),
                               }}
                             />
                             <span>{typeof p.stock === 'number' ? p.stock.toLocaleString('en-IN') : (p.stockCount || 0)}</span>
@@ -7824,10 +7929,10 @@ export default function AdminView() {
                             onClick={() => toggleProductStock(p.id)}
                             style={{
                               padding: '5px 8px',
-                              backgroundColor: p.inStock ? '#ECFDF5' : '#FEF2F2',
-                              border: p.inStock ? '1px solid #A7F3D0' : '1px solid #FECACA',
+                              backgroundColor: p.inStock ? '#FFFFFF' : '#F2F2F2',
+                              border: p.inStock ? '1px solid #E5E7EB' : '1.5px dashed #0A0A0A',
                               borderRadius: '6px',
-                              color: p.inStock ? '#059669' : '#DC2626',
+                              color: '#0A0A0A',
                               fontSize: '0.72rem',
                               fontWeight: 800,
                               cursor: 'pointer',
@@ -7847,10 +7952,10 @@ export default function AdminView() {
                             }}
                             style={{
                               padding: '5px 7px',
-                              backgroundColor: '#FEF2F2',
-                              border: '1px solid #FCA5A5',
+                              backgroundColor: '#F2F2F2',
+                              border: '1px solid #9CA3AF',
                               borderRadius: '6px',
-                              color: '#EF4444',
+                              color: '#0A0A0A',
                               cursor: 'pointer',
                             }}
                             title="Delete SKU"
@@ -8007,7 +8112,7 @@ export default function AdminView() {
                 padding: '8px 14px',
                 borderRadius: '8px',
                 backgroundColor: '#FFFFFF',
-                border: '1px solid #D0E2F2',
+                border: '1px solid #E5E7EB',
                 color: theme.primaryBlue,
                 fontWeight: 700,
                 fontSize: '0.8rem',
@@ -8048,7 +8153,7 @@ export default function AdminView() {
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '8px',
-                backgroundColor: '#D84A16',
+                backgroundColor: '#E6A600',
                 border: 'none',
                 color: '#FFFFFF',
                 fontWeight: 800,
@@ -8067,33 +8172,33 @@ export default function AdminView() {
           <div style={{ backgroundColor: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: `1px solid ${theme.cardBorder}`, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
             <div style={{ fontSize: '0.78rem', fontWeight: 700, color: theme.textMuted, textTransform: 'uppercase' }}>Total Material Orders</div>
             <div style={{ fontSize: '1.7rem', fontWeight: 900, color: theme.textDark, marginTop: '4px' }}>{orders.length}</div>
-            <div style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: 700, marginTop: '4px' }}>₹{totalRevenue.toLocaleString('en-IN')} Total Value</div>
+            <div style={{ fontSize: '0.75rem', color: '#0A0A0A', fontWeight: 700, marginTop: '4px' }}>₹{totalRevenue.toLocaleString('en-IN')} Total Value</div>
           </div>
 
           <div style={{ backgroundColor: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: `1px solid ${theme.cardBorder}`, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#059669', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0A0A0A', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
               <CreditCard size={14} />
               <span>Online Paid Orders</span>
             </div>
-            <div style={{ fontSize: '1.7rem', fontWeight: 900, color: '#059669', marginTop: '4px' }}>{onlineOrdersCount}</div>
+            <div style={{ fontSize: '1.7rem', fontWeight: 900, color: '#0A0A0A', marginTop: '4px' }}>{onlineOrdersCount}</div>
             <div style={{ fontSize: '0.75rem', color: theme.textMuted, marginTop: '4px' }}>Instant Razorpay / UPI Settlement</div>
           </div>
 
           <div style={{ backgroundColor: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: `1px solid ${theme.cardBorder}`, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#D97706', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0A0A0A', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
               <DollarSign size={14} />
               <span>Cash on Site (COD)</span>
             </div>
-            <div style={{ fontSize: '1.7rem', fontWeight: 900, color: '#D97706', marginTop: '4px' }}>{codOrdersCount}</div>
+            <div style={{ fontSize: '1.7rem', fontWeight: 900, color: '#0A0A0A', marginTop: '4px' }}>{codOrdersCount}</div>
             <div style={{ fontSize: '0.75rem', color: theme.textMuted, marginTop: '4px' }}>Pay upon site unloading verification</div>
           </div>
 
           <div style={{ backgroundColor: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: `1px solid ${theme.cardBorder}`, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#2563EB', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0A0A0A', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
               <Truck size={14} />
               <span>Active Dispatches</span>
             </div>
-            <div style={{ fontSize: '1.7rem', fontWeight: 900, color: '#2563EB', marginTop: '4px' }}>
+            <div style={{ fontSize: '1.7rem', fontWeight: 900, color: '#0A0A0A', marginTop: '4px' }}>
               {orders.filter((o) => ['Confirmed', 'In Transit', 'Warehouse Dispatch', 'Out for Delivery'].includes(o.status)).length}
             </div>
             <div style={{ fontSize: '0.75rem', color: theme.textMuted, marginTop: '4px' }}>GPS tracked fleet vehicles</div>
@@ -8132,7 +8237,7 @@ export default function AdminView() {
                   padding: '6px 12px',
                   borderRadius: '20px',
                   border: 'none',
-                  backgroundColor: orderFilterTab === tab.id ? '#071E3D' : '#F1F5F9',
+                  backgroundColor: orderFilterTab === tab.id ? '#0A0A0A' : '#F1F5F9',
                   color: orderFilterTab === tab.id ? '#FFFFFF' : '#475467',
                   fontSize: '0.78rem',
                   fontWeight: 700,
@@ -8265,7 +8370,7 @@ export default function AdminView() {
 
                         {/* Payment Mode */}
                         <td style={{ padding: '0.85rem 1rem' }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 8px', borderRadius: '6px', backgroundColor: isOnline ? '#DCFCE7' : '#FEF3C7', color: isOnline ? '#15803D' : '#B45309', fontWeight: 800, fontSize: '0.72rem' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 8px', borderRadius: '6px', border: isOnline ? '1px solid #E5E7EB' : '1px solid #FFE08A', backgroundColor: isOnline ? '#F2F2F2' : '#FFF8E1', color: '#0A0A0A', fontWeight: 800, fontSize: '0.72rem' }}>
                             {isOnline ? <CreditCard size={12} /> : <DollarSign size={12} />}
                             <span>{isOnline ? 'Online (Paid)' : 'Cash / Pay on Site'}</span>
                           </div>
@@ -8276,7 +8381,7 @@ export default function AdminView() {
 
                         {/* Total Amount */}
                         <td style={{ padding: '0.85rem 1rem' }}>
-                          <div style={{ fontWeight: 900, color: '#10B981', fontSize: '0.95rem' }}>
+                          <div style={{ fontWeight: 900, color: '#0A0A0A', fontSize: '0.95rem' }}>
                             ₹{grandTotal.toLocaleString('en-IN')}
                           </div>
                           <div style={{ fontSize: '0.68rem', color: '#64748B' }}>GST 18% Included</div>
@@ -8292,15 +8397,20 @@ export default function AdminView() {
                             style={{
                               padding: '5px 8px',
                               borderRadius: '6px',
-                              border: '1.5px solid #E2E8F0',
                               fontSize: '0.75rem',
                               fontWeight: 800,
                               color:
                                 o.status === 'Delivered' || o.status === 'Delivered & Unloaded'
-                                  ? '#10B981'
+                                  ? '#0A0A0A'
                                   : o.status === 'Cancelled'
-                                  ? '#EF4444'
+                                  ? '#6B7280'
                                   : theme.primaryBlue,
+                              border:
+                                o.status === 'Delivered' || o.status === 'Delivered & Unloaded'
+                                  ? '2px solid #0A0A0A'
+                                  : o.status === 'Cancelled'
+                                  ? '1.5px dashed #CBD5E1'
+                                  : '1.5px solid #E2E8F0',
                               backgroundColor: '#FFFFFF',
                               cursor: 'pointer',
                             }}
@@ -8329,8 +8439,8 @@ export default function AdminView() {
                               title="View Full Order Details"
                               style={{
                                 padding: '4px 8px',
-                                backgroundColor: '#EFF6FF',
-                                border: '1px solid #BFDBFE',
+                                backgroundColor: '#FFF8E1',
+                                border: '1px solid #FFE08A',
                                 borderRadius: '6px',
                                 color: theme.primaryBlue,
                                 fontWeight: 700,
@@ -8382,7 +8492,7 @@ export default function AdminView() {
             style={{
               position: 'fixed',
               inset: 0,
-              backgroundColor: 'rgba(4, 22, 44, 0.75)',
+              backgroundColor: 'rgba(0, 0, 0, 0.75)',
               backdropFilter: 'blur(4px)',
               zIndex: 99999,
               display: 'flex',
@@ -8407,7 +8517,7 @@ export default function AdminView() {
               {/* Modal Header */}
               <div
                 style={{
-                  backgroundColor: '#071E3D',
+                  backgroundColor: '#0A0A0A',
                   color: '#FFFFFF',
                   padding: '1.25rem 1.5rem',
                   display: 'flex',
@@ -8476,17 +8586,17 @@ export default function AdminView() {
                 <div className="admin-modal-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                   <div style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
                     <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 700 }}>Payment Mode</div>
-                    <div style={{ fontWeight: 800, color: '#071E3D', marginTop: '2px' }}>
+                    <div style={{ fontWeight: 800, color: '#0A0A0A', marginTop: '2px' }}>
                       {selectedOrderDetailsModal.payment?.method || selectedOrderDetailsModal.paymentMethod || 'Online UPI'}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: selectedOrderDetailsModal.payment?.status === 'Paid' ? '#10B981' : '#D97706', fontWeight: 700, marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.75rem', color: selectedOrderDetailsModal.payment?.status === 'Paid' ? '#0A0A0A' : '#6B7280', fontWeight: 700, marginTop: '2px' }}>
                       Status: {selectedOrderDetailsModal.payment?.status || 'Paid'}
                     </div>
                   </div>
 
                   <div style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
                     <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 700 }}>Logistics Driver</div>
-                    <div style={{ fontWeight: 800, color: '#071E3D', marginTop: '2px' }}>
+                    <div style={{ fontWeight: 800, color: '#0A0A0A', marginTop: '2px' }}>
                       {selectedOrderDetailsModal.driverName || 'Ramesh Patel (Driver)'}
                     </div>
                     <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '2px' }}>
@@ -8542,8 +8652,8 @@ export default function AdminView() {
 
                 {/* Total Summary */}
                 <div style={{ padding: '12px', backgroundColor: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 800, fontSize: '1rem', color: '#071E3D' }}>Total Invoice Amount:</span>
-                  <span style={{ fontWeight: 900, fontSize: '1.35rem', color: '#10B981' }}>
+                  <span style={{ fontWeight: 800, fontSize: '1rem', color: '#0A0A0A' }}>Total Invoice Amount:</span>
+                  <span style={{ fontWeight: 900, fontSize: '1.35rem', color: '#0A0A0A' }}>
                     ₹{(selectedOrderDetailsModal.grandTotal || selectedOrderDetailsModal.total || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -8591,6 +8701,129 @@ export default function AdminView() {
   // -------------------------------------------------------------
   // 6. USERS
   // -------------------------------------------------------------
+  function renderVendorsView() {
+    const filteredVendors = vendors.filter((v) => {
+      const q = vendorSearch.trim().toLowerCase();
+      const matchesQuery =
+        !q ||
+        (v.businessName && v.businessName.toLowerCase().includes(q)) ||
+        (v.name && v.name.toLowerCase().includes(q)) ||
+        (v.email && v.email.toLowerCase().includes(q));
+      const matchesStatus = vendorStatusFilter === 'All' || v.vendorStatus === vendorStatusFilter.toLowerCase();
+      return matchesQuery && matchesStatus;
+    });
+
+    const pendingCount = vendors.filter((v) => v.vendorStatus === 'pending').length;
+    const approvedCount = vendors.filter((v) => v.vendorStatus === 'approved').length;
+    const rejectedCount = vendors.filter((v) => v.vendorStatus === 'rejected').length;
+
+    const statusPillStyle = (status) => ({
+      display: 'inline-flex',
+      padding: '3px 10px',
+      borderRadius: '999px',
+      fontSize: '0.72rem',
+      fontWeight: 700,
+      textTransform: 'capitalize',
+      backgroundColor: status === 'approved' ? '#DCFCE7' : status === 'rejected' ? '#FEE2E2' : '#FEF3C7',
+      color: status === 'approved' ? '#166534' : status === 'rejected' ? '#991B1B' : '#92400E',
+    });
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: theme.textDark, margin: 0 }}>Vendors</h1>
+          <p style={{ color: theme.textMuted, fontSize: '0.84rem', margin: '4px 0 0 0' }}>
+            Approve or reject marketplace sellers who register at /vendor.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>
+          {[
+            { label: 'Total Vendors', value: vendors.length },
+            { label: 'Pending Approval', value: pendingCount },
+            { label: 'Approved', value: approvedCount },
+            { label: 'Rejected', value: rejectedCount },
+          ].map((card) => (
+            <div key={card.label} style={{ backgroundColor: '#FFFFFF', borderRadius: '10px', border: `1px solid ${theme.cardBorder}`, padding: '12px 16px' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>{card.label}</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: theme.textDark, marginTop: '2px' }}>{card.value}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <input
+            value={vendorSearch}
+            onChange={(e) => setVendorSearch(e.target.value)}
+            placeholder="Search vendors by name, business, or email…"
+            style={{ flex: 1, minWidth: '220px', padding: '0.55rem 0.9rem', borderRadius: '8px', border: `1px solid ${theme.cardBorder}`, fontSize: '0.85rem' }}
+          />
+          <select
+            value={vendorStatusFilter}
+            onChange={(e) => setVendorStatusFilter(e.target.value)}
+            style={{ padding: '0.55rem 0.9rem', borderRadius: '8px', border: `1px solid ${theme.cardBorder}`, fontSize: '0.85rem' }}
+          >
+            {['All', 'Pending', 'Approved', 'Rejected'].map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: `1px solid ${theme.cardBorder}`, overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <thead>
+              <tr style={{ backgroundColor: theme.tableHeaderBg, textAlign: 'left' }}>
+                <th style={{ padding: '0.75rem 1rem' }}>Business</th>
+                <th style={{ padding: '0.75rem 1rem' }}>Contact</th>
+                <th style={{ padding: '0.75rem 1rem' }}>Status</th>
+                <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredVendors.length === 0 && (
+                <tr>
+                  <td colSpan={4} style={{ padding: '1.5rem', textAlign: 'center', color: theme.textMuted }}>
+                    {isLoadingVendors ? 'Loading…' : 'No vendors found.'}
+                  </td>
+                </tr>
+              )}
+              {filteredVendors.map((v) => (
+                <tr key={v._id} style={{ borderTop: `1px solid ${theme.tableBorder}` }}>
+                  <td style={{ padding: '0.75rem 1rem', fontWeight: 600 }}>{v.businessName || '—'}</td>
+                  <td style={{ padding: '0.75rem 1rem' }}>
+                    <div>{v.name}</div>
+                    <div style={{ color: theme.textMuted, fontSize: '0.78rem' }}>{v.email || v.phone}</div>
+                  </td>
+                  <td style={{ padding: '0.75rem 1rem' }}>
+                    <span style={statusPillStyle(v.vendorStatus)}>{v.vendorStatus}</span>
+                  </td>
+                  <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                    {v.vendorStatus !== 'approved' && (
+                      <button
+                        onClick={() => setVendorApprovalStatus(v._id, 'approved')}
+                        style={{ padding: '0.4rem 0.8rem', borderRadius: '6px', border: 'none', background: '#166534', color: '#fff', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer', marginRight: '8px' }}
+                      >
+                        Approve
+                      </button>
+                    )}
+                    {v.vendorStatus !== 'rejected' && (
+                      <button
+                        onClick={() => setVendorApprovalStatus(v._id, 'rejected')}
+                        style={{ padding: '0.4rem 0.8rem', borderRadius: '6px', border: `1px solid #FCA5A5`, background: '#FEF2F2', color: '#991B1B', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}
+                      >
+                        Reject
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
   function renderUsersView(title) {
     const filteredUsers = (usersList || []).filter((u) => {
       const q = userSearchTerm.trim().toLowerCase();
@@ -8641,14 +8874,14 @@ export default function AdminView() {
               alignItems: 'center',
               gap: '8px',
               padding: '0.6rem 1.1rem',
-              backgroundColor: '#15803D',
+              backgroundColor: '#0A0A0A',
               color: '#FFFFFF',
               borderRadius: '8px',
               border: 'none',
               fontWeight: 700,
               fontSize: '0.85rem',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(21, 128, 61, 0.25)',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.25)',
             }}
           >
             <Plus size={16} />
@@ -8663,16 +8896,16 @@ export default function AdminView() {
             <div style={{ fontSize: '1.4rem', fontWeight: 800, color: theme.textDark, marginTop: '2px' }}>{totalAccounts}</div>
           </div>
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '10px', border: `1px solid ${theme.cardBorder}`, padding: '12px 16px' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10B981', textTransform: 'uppercase' }}>Active Accounts</div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#10B981', marginTop: '2px' }}>{activeCount}</div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0A0A0A', textTransform: 'uppercase' }}>Active Accounts</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0A0A0A', marginTop: '2px' }}>{activeCount}</div>
           </div>
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '10px', border: `1px solid ${theme.cardBorder}`, padding: '12px 16px' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#EF4444', textTransform: 'uppercase' }}>Deactivated</div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#EF4444', marginTop: '2px' }}>{deactivatedCount}</div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0A0A0A', textTransform: 'uppercase' }}>Deactivated</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0A0A0A', marginTop: '2px' }}>{deactivatedCount}</div>
           </div>
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '10px', border: `1px solid ${theme.cardBorder}`, padding: '12px 16px' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#3B82F6', textTransform: 'uppercase' }}>Contractors / Tiered</div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#3B82F6', marginTop: '2px' }}>{contractorCount}</div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0A0A0A', textTransform: 'uppercase' }}>Contractors / Tiered</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0A0A0A', marginTop: '2px' }}>{contractorCount}</div>
           </div>
         </div>
 
@@ -8824,7 +9057,7 @@ export default function AdminView() {
 
                         {/* Role & Tier */}
                         <td style={{ padding: '0.85rem 1rem' }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '2px 8px', borderRadius: '6px', backgroundColor: '#EFF6FF', color: '#1D4ED8', fontSize: '0.74rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '2px 8px', borderRadius: '6px', backgroundColor: '#FFF8E1', color: '#0A0A0A', fontSize: '0.74rem', fontWeight: 700, textTransform: 'uppercase' }}>
                             {u.role || 'Customer'}
                           </div>
                           <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', marginTop: '3px' }}>
@@ -8854,9 +9087,9 @@ export default function AdminView() {
                               gap: '4px',
                               padding: '3px 10px',
                               borderRadius: '12px',
-                              border: isActive ? '1px solid #A7F3D0' : '1px solid #FECACA',
-                              backgroundColor: isActive ? '#ECFDF5' : '#FEF2F2',
-                              color: isActive ? '#059669' : '#DC2626',
+                              border: isActive ? '1px solid #E5E7EB' : '1px solid #E5E7EB',
+                              backgroundColor: isActive ? '#F2F2F2' : '#F2F2F2',
+                              color: isActive ? '#0A0A0A' : '#0A0A0A',
                               fontWeight: 700,
                               fontSize: '0.74rem',
                               cursor: 'pointer',
@@ -8899,9 +9132,9 @@ export default function AdminView() {
                               style={{
                                 padding: '6px',
                                 borderRadius: '6px',
-                                border: isActive ? '1px solid #FECACA' : '1px solid #A7F3D0',
-                                backgroundColor: isActive ? '#FEF2F2' : '#ECFDF5',
-                                color: isActive ? '#DC2626' : '#059669',
+                                border: isActive ? '1px solid #E5E7EB' : '1px solid #E5E7EB',
+                                backgroundColor: isActive ? '#F2F2F2' : '#F2F2F2',
+                                color: isActive ? '#0A0A0A' : '#0A0A0A',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -8919,9 +9152,9 @@ export default function AdminView() {
                               style={{
                                 padding: '6px',
                                 borderRadius: '6px',
-                                border: '1px solid #FEE2E2',
-                                backgroundColor: '#FEF2F2',
-                                color: '#EF4444',
+                                border: '1px solid #F2F2F2',
+                                backgroundColor: '#F2F2F2',
+                                color: '#0A0A0A',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -9256,12 +9489,12 @@ export default function AdminView() {
                       padding: '0.6rem 1.5rem',
                       borderRadius: '8px',
                       border: 'none',
-                      backgroundColor: '#15803D',
+                      backgroundColor: '#0A0A0A',
                       color: '#FFFFFF',
                       fontWeight: 800,
                       fontSize: '0.85rem',
                       cursor: 'pointer',
-                      boxShadow: '0 2px 6px rgba(21, 128, 61, 0.25)',
+                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.25)',
                     }}
                   >
                     {editingUser ? 'Save Changes' : 'Create User Account'}
@@ -9318,7 +9551,7 @@ export default function AdminView() {
             type="button"
             onClick={handleOpenAddCouponModal}
             style={{
-              backgroundColor: '#15803D',
+              backgroundColor: '#0A0A0A',
               color: '#FFFFFF',
               border: 'none',
               borderRadius: '10px',
@@ -9329,7 +9562,7 @@ export default function AdminView() {
               alignItems: 'center',
               gap: '8px',
               cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(21, 128, 61, 0.25)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
             }}
           >
             <Plus size={18} />
@@ -9344,16 +9577,16 @@ export default function AdminView() {
             <div style={{ fontSize: '1.5rem', fontWeight: 800, color: theme.textDark }}>{coupons.length}</div>
           </div>
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '16px', border: `1px solid ${theme.cardBorder}` }}>
-            <div style={{ fontSize: '0.78rem', color: '#15803D', fontWeight: 700, marginBottom: '4px' }}>Active on Storefront</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#15803D' }}>{activeCount}</div>
+            <div style={{ fontSize: '0.78rem', color: '#0A0A0A', fontWeight: 700, marginBottom: '4px' }}>Active on Storefront</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0A0A0A' }}>{activeCount}</div>
           </div>
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '16px', border: `1px solid ${theme.cardBorder}` }}>
-            <div style={{ fontSize: '0.78rem', color: '#2563EB', fontWeight: 700, marginBottom: '4px' }}>Total Customer Claims</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#2563EB' }}>{totalClaims}</div>
+            <div style={{ fontSize: '0.78rem', color: '#0A0A0A', fontWeight: 700, marginBottom: '4px' }}>Total Customer Claims</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0A0A0A' }}>{totalClaims}</div>
           </div>
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '16px', border: `1px solid ${theme.cardBorder}` }}>
-            <div style={{ fontSize: '0.78rem', color: '#D97706', fontWeight: 700, marginBottom: '4px' }}>Disabled / Inactive</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#D97706' }}>{disabledCount}</div>
+            <div style={{ fontSize: '0.78rem', color: '#0A0A0A', fontWeight: 700, marginBottom: '4px' }}>Disabled / Inactive</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0A0A0A' }}>{disabledCount}</div>
           </div>
         </div>
 
@@ -9431,7 +9664,7 @@ export default function AdminView() {
                   style={{
                     backgroundColor: '#FFFFFF',
                     borderRadius: '14px',
-                    border: `1.5px solid ${c.isActive !== false ? '#E2E8F0' : '#FECDD3'}`,
+                    border: `1.5px solid ${c.isActive !== false ? '#E2E8F0' : '#E5E7EB'}`,
                     padding: '16px',
                     boxShadow: '0 1px 4px rgba(0,0,0,0.02)',
                     display: 'flex',
@@ -9448,13 +9681,13 @@ export default function AdminView() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <div
                           style={{
-                            border: '1.5px dashed #0284C7',
-                            backgroundColor: '#F0F9FF',
+                            border: '1.5px dashed #0A0A0A',
+                            backgroundColor: '#FFF8E1',
                             padding: '4px 10px',
                             borderRadius: '8px',
                             fontSize: '0.95rem',
                             fontWeight: 800,
-                            color: '#0369A1',
+                            color: '#0A0A0A',
                             letterSpacing: '1px',
                             display: 'inline-flex',
                             alignItems: 'center',
@@ -9466,7 +9699,7 @@ export default function AdminView() {
                         </div>
 
                         {c.badge && (
-                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#C2410C', backgroundColor: '#FFEDD5', padding: '2px 6px', borderRadius: '4px' }}>
+                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#0A0A0A', backgroundColor: '#FFF8E1', padding: '2px 6px', borderRadius: '4px' }}>
                             {c.badge}
                           </span>
                         )}
@@ -9479,8 +9712,8 @@ export default function AdminView() {
                           padding: '3px 10px',
                           borderRadius: '12px',
                           border: 'none',
-                          backgroundColor: c.isActive !== false ? '#DCFCE7' : '#FEE2E2',
-                          color: c.isActive !== false ? '#15803D' : '#DC2626',
+                          backgroundColor: c.isActive !== false ? '#F2F2F2' : '#F2F2F2',
+                          color: c.isActive !== false ? '#0A0A0A' : '#0A0A0A',
                           fontWeight: 700,
                           fontSize: '0.72rem',
                           cursor: 'pointer',
@@ -9490,7 +9723,7 @@ export default function AdminView() {
                       </button>
                     </div>
 
-                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#15803D', marginBottom: '4px' }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0A0A0A', marginBottom: '4px' }}>
                       {discountText}
                     </div>
 
@@ -9546,8 +9779,8 @@ export default function AdminView() {
                         type="button"
                         onClick={() => handleDeleteCouponConfirm(c.code)}
                         style={{
-                          backgroundColor: '#FEE2E2',
-                          color: '#DC2626',
+                          backgroundColor: '#F2F2F2',
+                          color: '#0A0A0A',
                           border: 'none',
                           borderRadius: '6px',
                           padding: '5px 8px',
@@ -9598,7 +9831,7 @@ export default function AdminView() {
               {/* Modal Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', paddingBottom: '12px', borderBottom: '1px solid #E2E8F0' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#15803D' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#F2F2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A0A0A' }}>
                     <Tag size={18} />
                   </div>
                   <div>
@@ -9625,7 +9858,7 @@ export default function AdminView() {
                 {/* Coupon Code Input */}
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
-                    Promo Code (e.g. MISTRI100, SITE500) *
+                    Promo Code (e.g. BUILDMYDESTINY100, SITE500) *
                   </label>
                   <input
                     type="text"
@@ -9678,11 +9911,11 @@ export default function AdminView() {
                       style={{
                         padding: '10px',
                         borderRadius: '8px',
-                        border: `1.5px solid ${couponFormData.discountType === 'percentage' ? '#15803D' : '#E2E8F0'}`,
-                        backgroundColor: couponFormData.discountType === 'percentage' ? '#F0FDF4' : '#FFFFFF',
+                        border: `1.5px solid ${couponFormData.discountType === 'percentage' ? '#0A0A0A' : '#E2E8F0'}`,
+                        backgroundColor: couponFormData.discountType === 'percentage' ? '#F2F2F2' : '#FFFFFF',
                         fontWeight: 700,
                         fontSize: '0.84rem',
-                        color: couponFormData.discountType === 'percentage' ? '#15803D' : '#475569',
+                        color: couponFormData.discountType === 'percentage' ? '#0A0A0A' : '#475569',
                         cursor: 'pointer',
                       }}
                     >
@@ -9695,11 +9928,11 @@ export default function AdminView() {
                       style={{
                         padding: '10px',
                         borderRadius: '8px',
-                        border: `1.5px solid ${couponFormData.discountType === 'flat' ? '#15803D' : '#E2E8F0'}`,
-                        backgroundColor: couponFormData.discountType === 'flat' ? '#F0FDF4' : '#FFFFFF',
+                        border: `1.5px solid ${couponFormData.discountType === 'flat' ? '#0A0A0A' : '#E2E8F0'}`,
+                        backgroundColor: couponFormData.discountType === 'flat' ? '#F2F2F2' : '#FFFFFF',
                         fontWeight: 700,
                         fontSize: '0.84rem',
-                        color: couponFormData.discountType === 'flat' ? '#15803D' : '#475569',
+                        color: couponFormData.discountType === 'flat' ? '#0A0A0A' : '#475569',
                         cursor: 'pointer',
                       }}
                     >
@@ -9806,7 +10039,7 @@ export default function AdminView() {
                     type="checkbox"
                     checked={couponFormData.isActive}
                     onChange={(e) => setCouponFormData({ ...couponFormData, isActive: e.target.checked })}
-                    style={{ width: '18px', height: '18px', accentColor: '#15803D' }}
+                    style={{ width: '18px', height: '18px', accentColor: '#0A0A0A' }}
                   />
                   <div>
                     <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0F172A' }}>Active & Visible on Storefront</span>
@@ -9839,12 +10072,12 @@ export default function AdminView() {
                       padding: '8px 20px',
                       borderRadius: '8px',
                       border: 'none',
-                      backgroundColor: '#15803D',
+                      backgroundColor: '#0A0A0A',
                       color: '#FFFFFF',
                       fontWeight: 800,
                       fontSize: '0.88rem',
                       cursor: 'pointer',
-                      boxShadow: '0 2px 6px rgba(21, 128, 61, 0.25)',
+                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.25)',
                     }}
                   >
                     {editingCoupon ? 'Save Changes' : 'Create Promo Code'}
@@ -9904,7 +10137,7 @@ export default function AdminView() {
               alignItems: 'center',
               gap: '8px',
               cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(11, 41, 71, 0.2)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
             }}
           >
             <Plus size={18} />
@@ -9992,7 +10225,7 @@ export default function AdminView() {
                   }}
                 >
                   {/* Banner Image / Graphic Preview */}
-                  <div style={{ position: 'relative', height: '150px', backgroundColor: '#0B2947', overflow: 'hidden' }}>
+                  <div style={{ position: 'relative', height: '150px', backgroundColor: '#0A0A0A', overflow: 'hidden' }}>
                     {b.image ? (
                       <img
                         src={typeof b.image === 'object' ? b.image?.url : b.image}
@@ -10004,7 +10237,7 @@ export default function AdminView() {
                         style={{
                           width: '100%',
                           height: '100%',
-                          background: b.gradient || 'linear-gradient(135deg, #0B2947 0%, #163E68 100%)',
+                          background: b.gradient || 'linear-gradient(135deg, #0A0A0A 0%, #262626 100%)',
                           display: 'flex',
                           alignItems: 'center',
                           justify: 'center',
@@ -10025,7 +10258,7 @@ export default function AdminView() {
                           borderRadius: '20px',
                           fontSize: '0.68rem',
                           fontWeight: 800,
-                          backgroundColor: isHero ? '#0B2947' : '#059669',
+                          backgroundColor: isHero ? '#0A0A0A' : '#0A0A0A',
                           color: '#FFFFFF',
                           boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
                           textTransform: 'uppercase',
@@ -10043,7 +10276,7 @@ export default function AdminView() {
                           borderRadius: '20px',
                           fontSize: '0.68rem',
                           fontWeight: 800,
-                          backgroundColor: b.isActive !== false ? '#10B981' : '#64748B',
+                          backgroundColor: b.isActive !== false ? '#0A0A0A' : '#64748B',
                           color: '#FFFFFF',
                           boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
                         }}
@@ -10057,7 +10290,7 @@ export default function AdminView() {
                   <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between', gap: '1rem' }}>
                     <div>
                       {b.badge && (
-                        <span style={{ fontSize: '0.7rem', fontWeight: 800, color: theme.primaryBlue, backgroundColor: '#EFF6FF', padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>
+                        <span style={{ fontSize: '0.7rem', fontWeight: 800, color: theme.primaryBlue, backgroundColor: '#FFF8E1', padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>
                           {b.badge}
                         </span>
                       )}
@@ -10068,7 +10301,7 @@ export default function AdminView() {
                         {b.subtitle || b.desc}
                       </p>
                       {(b.ctaText || b.cta) && (
-                        <div style={{ marginTop: '8px', fontSize: '0.75rem', fontWeight: 700, color: '#059669' }}>
+                        <div style={{ marginTop: '8px', fontSize: '0.75rem', fontWeight: 700, color: '#0A0A0A' }}>
                           Button: "{b.ctaText || b.cta}" {b.target ? `→ Target: ${b.target}` : ''}
                         </div>
                       )}
@@ -10089,7 +10322,7 @@ export default function AdminView() {
                           fontSize: '0.78rem',
                           fontWeight: 700,
                           cursor: 'pointer',
-                          color: b.isActive !== false ? '#059669' : '#64748B',
+                          color: b.isActive !== false ? '#0A0A0A' : '#64748B',
                         }}
                       >
                         {b.isActive !== false ? <Eye size={14} /> : <EyeOff size={14} />}
@@ -10125,9 +10358,9 @@ export default function AdminView() {
                           style={{
                             padding: '6px 10px',
                             borderRadius: '8px',
-                            border: '1px solid #FEE2E2',
-                            backgroundColor: '#FEF2F2',
-                            color: '#EF4444',
+                            border: '1px solid #F2F2F2',
+                            backgroundColor: '#F2F2F2',
+                            color: '#0A0A0A',
                             fontSize: '0.78rem',
                             fontWeight: 700,
                             cursor: 'pointer',
@@ -10395,7 +10628,7 @@ export default function AdminView() {
                           style={{
                             background: 'none',
                             border: 'none',
-                            color: '#F87171',
+                            color: '#6B7280',
                             fontSize: '0.75rem',
                             fontWeight: '700',
                             cursor: 'pointer',
@@ -10430,7 +10663,7 @@ export default function AdminView() {
                           width: '44px',
                           height: '44px',
                           borderRadius: '50%',
-                          backgroundColor: '#EFF6FF',
+                          backgroundColor: '#FFF8E1',
                           color: theme.primaryBlue,
                           display: 'flex',
                           alignItems: 'center',
@@ -10552,7 +10785,7 @@ export default function AdminView() {
                       fontWeight: 700,
                       fontSize: '0.85rem',
                       cursor: 'pointer',
-                      boxShadow: '0 4px 12px rgba(11, 41, 71, 0.2)',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
                     }}
                   >
                     {editingBanner ? 'Save Changes' : 'Publish Banner'}
@@ -10591,7 +10824,7 @@ export default function AdminView() {
                   <td style={{ padding: '0.75rem 1rem' }}>{b.mistriName || 'Unassigned'}</td>
                   <td style={{ padding: '0.75rem 1rem' }}>{b.date} ({b.timeSlot})</td>
                   <td style={{ padding: '0.75rem 1rem' }}>
-                    <span style={{ padding: '2px 8px', borderRadius: '10px', backgroundColor: '#EFF6FF', color: theme.primaryBlue, fontWeight: 700, fontSize: '0.72rem' }}>
+                    <span style={{ padding: '2px 8px', borderRadius: '10px', backgroundColor: '#FFF8E1', color: theme.primaryBlue, fontWeight: 700, fontSize: '0.72rem' }}>
                       {b.status}
                     </span>
                   </td>
@@ -10613,7 +10846,7 @@ export default function AdminView() {
             <div key={s.id} style={{ backgroundColor: '#FFFFFF', borderRadius: '14px', border: `1px solid ${theme.cardBorder}`, padding: '1.25rem' }}>
               <img src={s.image} alt={s.title} style={{ width: '100%', height: '120px', borderRadius: '10px', objectFit: 'cover', marginBottom: '0.75rem' }} />
               <div style={{ fontWeight: 800, color: theme.textDark, fontSize: '0.9rem' }}>{s.title}</div>
-              <div style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: 800, marginTop: '4px' }}>Base Rate: ₹{s.basePrice} ({s.durationHours} hrs)</div>
+              <div style={{ fontSize: '0.75rem', color: '#0A0A0A', fontWeight: 800, marginTop: '4px' }}>Base Rate: ₹{s.basePrice} ({s.durationHours} hrs)</div>
             </div>
           ))}
         </div>
@@ -10645,9 +10878,9 @@ export default function AdminView() {
                     <div style={{ fontSize: '0.72rem', color: theme.textMuted }}>{q.company}</div>
                   </td>
                   <td style={{ padding: '0.75rem 1rem', maxWidth: '300px' }}>{q.requiredMaterials}</td>
-                  <td style={{ padding: '0.75rem 1rem', fontWeight: 800, color: '#10B981' }}>₹{q.estimatedTotal?.toLocaleString('en-IN')}</td>
+                  <td style={{ padding: '0.75rem 1rem', fontWeight: 800, color: '#0A0A0A' }}>₹{q.estimatedTotal?.toLocaleString('en-IN')}</td>
                   <td style={{ padding: '0.75rem 1rem' }}>
-                    <span style={{ padding: '2px 8px', borderRadius: '10px', backgroundColor: '#FFF7ED', color: '#FF6B00', fontWeight: 700, fontSize: '0.72rem' }}>
+                    <span style={{ padding: '2px 8px', borderRadius: '10px', backgroundColor: '#FFF8E1', color: '#0A0A0A', fontWeight: 700, fontSize: '0.72rem' }}>
                       {q.status}
                     </span>
                   </td>
@@ -10732,7 +10965,7 @@ export default function AdminView() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A0A0A' }}>
                 <Truck size={20} />
               </div>
               <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: theme.textDark, margin: 0 }}>
@@ -10778,14 +11011,14 @@ export default function AdminView() {
                 alignItems: 'center',
                 gap: '6px',
                 padding: '0.65rem 1.4rem',
-                backgroundColor: theme.primaryBlue || '#2563EB',
+                backgroundColor: theme.primaryBlue || '#0A0A0A',
                 color: '#FFFFFF',
                 border: 'none',
                 borderRadius: '8px',
                 fontWeight: 700,
                 fontSize: '0.86rem',
                 cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(37,99,235,0.25)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
               }}
             >
               <CheckCircle size={16} />
@@ -10806,7 +11039,7 @@ export default function AdminView() {
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', paddingBottom: '0.85rem', borderBottom: '1px solid #F1F5F9' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#F2F2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A0A0A' }}>
                 <Truck size={16} />
               </div>
               <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
@@ -10819,9 +11052,9 @@ export default function AdminView() {
                 fontWeight: 700,
                 padding: '3px 10px',
                 borderRadius: '9999px',
-                backgroundColor: currentDelType === 'free' ? '#ECFDF5' : '#EFF6FF',
-                color: currentDelType === 'free' ? '#059669' : '#2563EB',
-                border: currentDelType === 'free' ? '1px solid #A7F3D0' : '1px solid #BFDBFE',
+                backgroundColor: currentDelType === 'free' ? '#F2F2F2' : '#FFF8E1',
+                color: currentDelType === 'free' ? '#0A0A0A' : '#0A0A0A',
+                border: currentDelType === 'free' ? '1px solid #E5E7EB' : '1px solid #FFE08A',
               }}
             >
               Active: {currentDelType === 'free' ? '100% Free Delivery' : currentDelType === 'km_based' ? 'Distance / KM-Based' : currentDelType === 'min_order_free' ? 'Threshold Free' : 'Flat Fee'}
@@ -10845,8 +11078,8 @@ export default function AdminView() {
             <div
               onClick={() => updateSiteSettings({ deliveryType: 'free' })}
               style={{
-                border: currentDelType === 'free' ? '2px solid #10B981' : '1px solid #E2E8F0',
-                backgroundColor: currentDelType === 'free' ? '#F0FDF4' : '#F8FAFC',
+                border: currentDelType === 'free' ? '2px solid #0A0A0A' : '1px solid #E2E8F0',
+                backgroundColor: currentDelType === 'free' ? '#F2F2F2' : '#F8FAFC',
                 borderRadius: '12px',
                 padding: '14px',
                 cursor: 'pointer',
@@ -10854,7 +11087,7 @@ export default function AdminView() {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontWeight: 800, fontSize: '0.92rem', color: currentDelType === 'free' ? '#065F46' : '#0F172A' }}>
+                <span style={{ fontWeight: 800, fontSize: '0.92rem', color: currentDelType === 'free' ? '#0A0A0A' : '#0F172A' }}>
                   🚚 100% Free
                 </span>
                 <input
@@ -10862,7 +11095,7 @@ export default function AdminView() {
                   name="deliveryTypeRadio"
                   checked={currentDelType === 'free'}
                   onChange={() => updateSiteSettings({ deliveryType: 'free' })}
-                  style={{ accentColor: '#10B981' }}
+                  style={{ accentColor: '#0A0A0A' }}
                 />
               </div>
               <p style={{ fontSize: '0.78rem', color: '#64748B', margin: 0, lineHeight: '1.35' }}>
@@ -10874,8 +11107,8 @@ export default function AdminView() {
             <div
               onClick={() => updateSiteSettings({ deliveryType: 'km_based' })}
               style={{
-                border: currentDelType === 'km_based' ? '2px solid #2563EB' : '1px solid #E2E8F0',
-                backgroundColor: currentDelType === 'km_based' ? '#EFF6FF' : '#F8FAFC',
+                border: currentDelType === 'km_based' ? '2px solid #0A0A0A' : '1px solid #E2E8F0',
+                backgroundColor: currentDelType === 'km_based' ? '#FFF8E1' : '#F8FAFC',
                 borderRadius: '12px',
                 padding: '14px',
                 cursor: 'pointer',
@@ -10883,7 +11116,7 @@ export default function AdminView() {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontWeight: 800, fontSize: '0.92rem', color: currentDelType === 'km_based' ? '#1E40AF' : '#0F172A' }}>
+                <span style={{ fontWeight: 800, fontSize: '0.92rem', color: currentDelType === 'km_based' ? '#0A0A0A' : '#0F172A' }}>
                   📍 Per KM Distance
                 </span>
                 <input
@@ -10891,7 +11124,7 @@ export default function AdminView() {
                   name="deliveryTypeRadio"
                   checked={currentDelType === 'km_based'}
                   onChange={() => updateSiteSettings({ deliveryType: 'km_based' })}
-                  style={{ accentColor: '#2563EB' }}
+                  style={{ accentColor: '#0A0A0A' }}
                 />
               </div>
               <p style={{ fontSize: '0.78rem', color: '#64748B', margin: 0, lineHeight: '1.35' }}>
@@ -10903,8 +11136,8 @@ export default function AdminView() {
             <div
               onClick={() => updateSiteSettings({ deliveryType: 'min_order_free' })}
               style={{
-                border: currentDelType === 'min_order_free' ? '2px solid #7C3AED' : '1px solid #E2E8F0',
-                backgroundColor: currentDelType === 'min_order_free' ? '#F5F3FF' : '#F8FAFC',
+                border: currentDelType === 'min_order_free' ? '2px solid #0A0A0A' : '1px solid #E2E8F0',
+                backgroundColor: currentDelType === 'min_order_free' ? '#FFF8E1' : '#F8FAFC',
                 borderRadius: '12px',
                 padding: '14px',
                 cursor: 'pointer',
@@ -10912,7 +11145,7 @@ export default function AdminView() {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontWeight: 800, fontSize: '0.92rem', color: currentDelType === 'min_order_free' ? '#5B21B6' : '#0F172A' }}>
+                <span style={{ fontWeight: 800, fontSize: '0.92rem', color: currentDelType === 'min_order_free' ? '#0A0A0A' : '#0F172A' }}>
                   📦 Free Over Minimum
                 </span>
                 <input
@@ -10920,7 +11153,7 @@ export default function AdminView() {
                   name="deliveryTypeRadio"
                   checked={currentDelType === 'min_order_free'}
                   onChange={() => updateSiteSettings({ deliveryType: 'min_order_free' })}
-                  style={{ accentColor: '#7C3AED' }}
+                  style={{ accentColor: '#0A0A0A' }}
                 />
               </div>
               <p style={{ fontSize: '0.78rem', color: '#64748B', margin: 0, lineHeight: '1.35' }}>
@@ -10932,8 +11165,8 @@ export default function AdminView() {
             <div
               onClick={() => updateSiteSettings({ deliveryType: 'flat' })}
               style={{
-                border: currentDelType === 'flat' ? '2px solid #EA580C' : '1px solid #E2E8F0',
-                backgroundColor: currentDelType === 'flat' ? '#FFF7ED' : '#F8FAFC',
+                border: currentDelType === 'flat' ? '2px solid #FFB800' : '1px solid #E2E8F0',
+                backgroundColor: currentDelType === 'flat' ? '#FFF8E1' : '#F8FAFC',
                 borderRadius: '12px',
                 padding: '14px',
                 cursor: 'pointer',
@@ -10941,7 +11174,7 @@ export default function AdminView() {
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontWeight: 800, fontSize: '0.92rem', color: currentDelType === 'flat' ? '#9A3412' : '#0F172A' }}>
+                <span style={{ fontWeight: 800, fontSize: '0.92rem', color: currentDelType === 'flat' ? '#0A0A0A' : '#0F172A' }}>
                   🏷️ Flat Delivery Fee
                 </span>
                 <input
@@ -10949,7 +11182,7 @@ export default function AdminView() {
                   name="deliveryTypeRadio"
                   checked={currentDelType === 'flat'}
                   onChange={() => updateSiteSettings({ deliveryType: 'flat' })}
-                  style={{ accentColor: '#EA580C' }}
+                  style={{ accentColor: '#FFB800' }}
                 />
               </div>
               <p style={{ fontSize: '0.78rem', color: '#64748B', margin: 0, lineHeight: '1.35' }}>
@@ -10962,14 +11195,14 @@ export default function AdminView() {
           {currentDelType === 'km_based' && (
             <div
               style={{
-                backgroundColor: '#F0F9FF',
-                border: '1px solid #BAE6FD',
+                backgroundColor: '#FFF8E1',
+                border: '1px solid #FFE08A',
                 borderRadius: '12px',
                 padding: '16px',
                 marginBottom: '1rem',
               }}
             >
-              <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0369A1', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0A0A0A', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Sliders size={16} /> Distance / KM-Based Rate Configuration
               </div>
 
@@ -11031,7 +11264,7 @@ export default function AdminView() {
                 </div>
               </div>
 
-              <div style={{ marginTop: '12px', padding: '10px 12px', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #BAE6FD', fontSize: '0.78rem', color: '#0369A1' }}>
+              <div style={{ marginTop: '12px', padding: '10px 12px', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #FFE08A', fontSize: '0.78rem', color: '#0A0A0A' }}>
                 <strong>Formula:</strong> Total Delivery Fee = Base Charge (₹{siteSettings.deliveryBaseFee || 0}) + [Max(0, Site Distance - {siteSettings.deliveryBaseKm || 5} km) × ₹{siteSettings.deliveryPerKmFee || 15}/km]
               </div>
             </div>
@@ -11040,14 +11273,14 @@ export default function AdminView() {
           {currentDelType === 'min_order_free' && (
             <div
               style={{
-                backgroundColor: '#FAF5FF',
-                border: '1px solid #E9D5FF',
+                backgroundColor: '#FFF8E1',
+                border: '1px solid #FFF8E1',
                 borderRadius: '12px',
                 padding: '16px',
                 marginBottom: '1rem',
               }}
             >
-              <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#6B21A8', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0A0A0A', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Sliders size={16} /> Order Value Threshold Configuration
               </div>
 
@@ -11061,7 +11294,7 @@ export default function AdminView() {
                     min="0"
                     value={siteSettings.minFreeDeliveryOrder ?? 500}
                     onChange={(e) => updateSiteSettings({ minFreeDeliveryOrder: Math.max(0, Number(e.target.value)) })}
-                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '8px', border: '1px solid #C084FC', fontSize: '0.88rem', fontWeight: 700 }}
+                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '8px', border: '1px solid #FFE08A', fontSize: '0.88rem', fontWeight: 700 }}
                   />
                   <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Orders equal to or above this cart value get 100% FREE delivery.</span>
                 </div>
@@ -11075,7 +11308,7 @@ export default function AdminView() {
                     min="0"
                     value={siteSettings.flatDeliveryFee ?? 99}
                     onChange={(e) => updateSiteSettings({ flatDeliveryFee: Math.max(0, Number(e.target.value)) })}
-                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '8px', border: '1px solid #C084FC', fontSize: '0.88rem', fontWeight: 700 }}
+                    style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '8px', border: '1px solid #FFE08A', fontSize: '0.88rem', fontWeight: 700 }}
                   />
                   <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Charged on orders below ₹{(siteSettings.minFreeDeliveryOrder || 500).toLocaleString('en-IN')}.</span>
                 </div>
@@ -11086,14 +11319,14 @@ export default function AdminView() {
           {currentDelType === 'flat' && (
             <div
               style={{
-                backgroundColor: '#FFF7ED',
-                border: '1px solid #FED7AA',
+                backgroundColor: '#FFF8E1',
+                border: '1px solid #FFE08A',
                 borderRadius: '12px',
                 padding: '16px',
                 marginBottom: '1rem',
               }}
             >
-              <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#C2410C', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0A0A0A', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Sliders size={16} /> Fixed Flat Rate Configuration
               </div>
 
@@ -11106,7 +11339,7 @@ export default function AdminView() {
                   min="0"
                   value={siteSettings.flatDeliveryFee ?? 49}
                   onChange={(e) => updateSiteSettings({ flatDeliveryFee: Math.max(0, Number(e.target.value)) })}
-                  style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '8px', border: '1px solid #FB923C', fontSize: '0.88rem', fontWeight: 700 }}
+                  style={{ width: '100%', padding: '0.55rem 0.75rem', borderRadius: '8px', border: '1px solid #FFB800', fontSize: '0.88rem', fontWeight: 700 }}
                 />
                 <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Every checkout order will be charged exactly this amount.</span>
               </div>
@@ -11116,19 +11349,19 @@ export default function AdminView() {
           {currentDelType === 'free' && (
             <div
               style={{
-                backgroundColor: '#F0FDF4',
-                border: '1px solid #BBF7D0',
+                backgroundColor: '#F2F2F2',
+                border: '1px solid #E5E7EB',
                 borderRadius: '12px',
                 padding: '14px 16px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
-                color: '#15803D',
+                color: '#0A0A0A',
                 fontSize: '0.82rem',
                 fontWeight: 600,
               }}
             >
-              <CheckCircle size={18} color="#16A34A" />
+              <CheckCircle size={18} color="#0A0A0A" />
               <span>100% Free delivery is currently enabled for all products, customer carts, and pincodes.</span>
             </div>
           )}
@@ -11145,7 +11378,7 @@ export default function AdminView() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.25rem', paddingBottom: '0.85rem', borderBottom: '1px solid #F1F5F9' }}>
-            <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#FDF4FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A855F7' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A0A0A' }}>
               <Sparkles size={16} />
             </div>
             <div>
@@ -11238,16 +11471,16 @@ export default function AdminView() {
               style={{
                 backgroundColor: '#FFFFFF',
                 borderRadius: '12px',
-                border: '1.5px solid #2563EB',
+                border: '1.5px solid #0A0A0A',
                 padding: '16px',
-                boxShadow: '0 4px 12px rgba(37,99,235,0.08)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #F1F5F9' }}>
                 <span style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0F172A', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   🧾 Customer Bill Breakdown Preview
                 </span>
-                <span style={{ fontSize: '0.72rem', backgroundColor: '#EFF6FF', color: '#2563EB', fontWeight: 700, padding: '2px 8px', borderRadius: '4px' }}>
+                <span style={{ fontSize: '0.72rem', backgroundColor: '#FFF8E1', color: '#0A0A0A', fontWeight: 700, padding: '2px 8px', borderRadius: '4px' }}>
                   Live Match
                 </span>
               </div>
@@ -11263,7 +11496,7 @@ export default function AdminView() {
                     <span>Delivery Freight:</span>
                     <span style={{ fontSize: '0.72rem', color: '#64748B', display: 'block' }}>({simDelRule})</span>
                   </div>
-                  <span style={{ fontWeight: 700, color: simDelFee === 0 ? '#10B981' : '#0F172A' }}>
+                  <span style={{ fontWeight: 700, color: simDelFee === 0 ? '#0A0A0A' : '#0F172A' }}>
                     {simDelFee === 0 ? 'FREE' : `₹${simDelFee.toLocaleString('en-IN')}`}
                   </span>
                 </div>
@@ -11276,7 +11509,7 @@ export default function AdminView() {
                         {simUnloading === 0 ? 'Free (>= ₹' + (siteSettings.freeUnloadingThreshold || 50000).toLocaleString('en-IN') + ')' : 'Standard Labor Charge'}
                       </span>
                     </div>
-                    <span style={{ fontWeight: 700, color: simUnloading === 0 ? '#10B981' : '#0F172A' }}>
+                    <span style={{ fontWeight: 700, color: simUnloading === 0 ? '#0A0A0A' : '#0F172A' }}>
                       {simUnloading === 0 ? 'FREE' : `₹${simUnloading.toLocaleString('en-IN')}`}
                     </span>
                   </div>
@@ -11316,7 +11549,7 @@ export default function AdminView() {
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', paddingBottom: '0.85rem', borderBottom: '1px solid #F1F5F9', flexWrap: 'wrap', gap: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFB800' }}>
                 <Package size={16} />
               </div>
               <div>
@@ -11331,14 +11564,14 @@ export default function AdminView() {
 
             {/* Toggle Switch */}
             <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: siteSettings.enableUnloadingFee ? '#16A34A' : '#64748B' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: siteSettings.enableUnloadingFee ? '#0A0A0A' : '#64748B' }}>
                 {siteSettings.enableUnloadingFee ? 'ENABLED (Active)' : 'DISABLED (Recommended for Retail)'}
               </span>
               <input
                 type="checkbox"
                 checked={Boolean(siteSettings.enableUnloadingFee)}
                 onChange={(e) => updateSiteSettings({ enableUnloadingFee: e.target.checked })}
-                style={{ width: '18px', height: '18px', accentColor: '#2563EB', cursor: 'pointer' }}
+                style={{ width: '18px', height: '18px', accentColor: '#0A0A0A', cursor: 'pointer' }}
               />
             </label>
           </div>
@@ -11420,9 +11653,9 @@ export default function AdminView() {
                           fontSize: '0.72rem',
                           fontWeight: '700',
                           borderRadius: '4px',
-                          border: siteSettings.unloadingChargeStandard === amt ? '1px solid #2563EB' : '1px solid #CBD5E1',
-                          backgroundColor: siteSettings.unloadingChargeStandard === amt ? '#EFF6FF' : '#FFFFFF',
-                          color: siteSettings.unloadingChargeStandard === amt ? '#2563EB' : '#475569',
+                          border: siteSettings.unloadingChargeStandard === amt ? '1px solid #0A0A0A' : '1px solid #CBD5E1',
+                          backgroundColor: siteSettings.unloadingChargeStandard === amt ? '#FFF8E1' : '#FFFFFF',
+                          color: siteSettings.unloadingChargeStandard === amt ? '#0A0A0A' : '#475569',
                           cursor: 'pointer',
                         }}
                       >
@@ -11492,8 +11725,8 @@ export default function AdminView() {
               </div>
 
               {/* Customer Live Preview Box */}
-              <div style={{ backgroundColor: '#F0FDF4', borderRadius: '12px', border: '1px solid #BBF7D0', padding: '12px' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#166534', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+              <div style={{ backgroundColor: '#F2F2F2', borderRadius: '12px', border: '1px solid #E5E7EB', padding: '12px' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#0A0A0A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Live Customer Preview:
                 </span>
                 <div style={{ fontSize: '0.74rem', color: '#374151', marginBottom: '8px' }}>
@@ -11508,7 +11741,7 @@ export default function AdminView() {
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <span style={{ display: 'inline-block', border: '1.5px solid #16A34A', color: '#16A34A', borderRadius: '6px', padding: '2px 14px', fontSize: '0.78rem', fontWeight: '700' }}>
+                    <span style={{ display: 'inline-block', border: '1.5px solid #0A0A0A', color: '#0A0A0A', borderRadius: '6px', padding: '2px 14px', fontSize: '0.78rem', fontWeight: '700' }}>
                       Add
                     </span>
                     <div style={{ fontSize: '0.84rem', fontWeight: '800', color: '#0F172A', marginTop: '2px' }}>
@@ -11578,7 +11811,7 @@ export default function AdminView() {
                     name="gstMode"
                     checked={!siteSettings.isGstInclusive}
                     onChange={() => updateSiteSettings({ isGstInclusive: false })}
-                    style={{ accentColor: '#2563EB' }}
+                    style={{ accentColor: '#0A0A0A' }}
                   />
                   <span>
                     <strong>Exclusive:</strong> Add GST on top at Checkout (B2B Standard)
@@ -11591,7 +11824,7 @@ export default function AdminView() {
                     name="gstMode"
                     checked={Boolean(siteSettings.isGstInclusive)}
                     onChange={() => updateSiteSettings({ isGstInclusive: true })}
-                    style={{ accentColor: '#2563EB' }}
+                    style={{ accentColor: '#0A0A0A' }}
                   />
                   <span>
                     <strong>Inclusive:</strong> Catalog prices already include GST (B2C Retail)
@@ -11615,7 +11848,7 @@ export default function AdminView() {
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', paddingBottom: '0.85rem', borderBottom: '1px solid #F1F5F9', flexWrap: 'wrap', gap: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A0A0A' }}>
                 <MapPin size={16} />
               </div>
               <div>
@@ -11629,23 +11862,23 @@ export default function AdminView() {
             </div>
 
             {/* Strict Restriction Mode Toggle */}
-            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', backgroundColor: siteSettings.restrictToServiceableAreas !== false ? '#F0FDF4' : '#F8FAFC', padding: '6px 12px', borderRadius: '8px', border: siteSettings.restrictToServiceableAreas !== false ? '1px solid #BBF7D0' : '1px solid #E2E8F0' }}>
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: siteSettings.restrictToServiceableAreas !== false ? '#15803D' : '#64748B' }}>
+            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', backgroundColor: siteSettings.restrictToServiceableAreas !== false ? '#F2F2F2' : '#F8FAFC', padding: '6px 12px', borderRadius: '8px', border: siteSettings.restrictToServiceableAreas !== false ? '1px solid #E5E7EB' : '1px solid #E2E8F0' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: siteSettings.restrictToServiceableAreas !== false ? '#0A0A0A' : '#64748B' }}>
                 {siteSettings.restrictToServiceableAreas !== false ? '✅ RESTRICTION ACTIVE (Orders checked)' : '⚪ OPEN (Accept all areas)'}
               </span>
               <input
                 type="checkbox"
                 checked={siteSettings.restrictToServiceableAreas !== false}
                 onChange={(e) => updateSiteSettings({ restrictToServiceableAreas: e.target.checked })}
-                style={{ width: '18px', height: '18px', accentColor: '#16A34A', cursor: 'pointer' }}
+                style={{ width: '18px', height: '18px', accentColor: '#0A0A0A', cursor: 'pointer' }}
               />
             </label>
           </div>
 
           {/* 1. Depot Address & Location Details */}
           <div style={{ marginBottom: '1.5rem', backgroundColor: '#F8FAFC', borderRadius: '12px', padding: '14px', border: '1px solid #E2E8F0' }}>
-            <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#1E293B', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Building size={16} color="#2563EB" />
+            <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#1A1A1A', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Building size={16} color="#0A0A0A" />
               <span>Central Depot Dispatch Address</span>
             </div>
 
@@ -11706,17 +11939,17 @@ export default function AdminView() {
           </div>
 
           {/* 2. Maximum Delivery Radius / Range */}
-          <div style={{ marginBottom: '1.5rem', backgroundColor: '#F0F9FF', borderRadius: '12px', padding: '14px', border: '1px solid #BAE6FD' }}>
+          <div style={{ marginBottom: '1.5rem', backgroundColor: '#FFF8E1', borderRadius: '12px', padding: '14px', border: '1px solid #FFE08A' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
               <div>
-                <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#0369A1', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#0A0A0A', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Truck size={16} /> Maximum Delivery Radius / Range from Depot (KM)
                 </span>
-                <span style={{ fontSize: '0.74rem', color: '#0284C7', display: 'block', marginTop: '2px' }}>
+                <span style={{ fontSize: '0.74rem', color: '#0A0A0A', display: 'block', marginTop: '2px' }}>
                   Orders with calculated distance beyond this radius will be flagged or rejected.
                 </span>
               </div>
-              <span style={{ fontSize: '1rem', fontWeight: 800, color: '#0369A1', backgroundColor: '#E0F2FE', padding: '3px 12px', borderRadius: '9999px', border: '1px solid #BAE6FD' }}>
+              <span style={{ fontSize: '1rem', fontWeight: 800, color: '#0A0A0A', backgroundColor: '#FFF8E1', padding: '3px 12px', borderRadius: '9999px', border: '1px solid #FFE08A' }}>
                 {Number(siteSettings.maxDeliveryRadiusKm) > 0 ? `${siteSettings.maxDeliveryRadiusKm} KM` : 'Unlimited'}
               </span>
             </div>
@@ -11742,8 +11975,8 @@ export default function AdminView() {
                       fontSize: '0.76rem',
                       fontWeight: 700,
                       cursor: 'pointer',
-                      border: siteSettings.maxDeliveryRadiusKm === km ? '1.5px solid #0284C7' : '1px solid #CBD5E1',
-                      backgroundColor: siteSettings.maxDeliveryRadiusKm === km ? '#0284C7' : '#FFFFFF',
+                      border: siteSettings.maxDeliveryRadiusKm === km ? '1.5px solid #0A0A0A' : '1px solid #CBD5E1',
+                      backgroundColor: siteSettings.maxDeliveryRadiusKm === km ? '#0A0A0A' : '#FFFFFF',
                       color: siteSettings.maxDeliveryRadiusKm === km ? '#FFFFFF' : '#334155',
                       transition: 'all 0.15s ease',
                     }}
@@ -11759,7 +11992,7 @@ export default function AdminView() {
           <div style={{ marginBottom: '1.5rem', backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '14px', border: '1px solid #E2E8F0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
               <div>
-                <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#1E293B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#1A1A1A', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   🏙️ Serviceable Operational Cities ({Array.isArray(siteSettings.serviceableCities) ? siteSettings.serviceableCities.length : 0})
                 </span>
                 <span style={{ fontSize: '0.74rem', color: '#64748B', display: 'block', marginTop: '2px' }}>
@@ -11805,7 +12038,7 @@ export default function AdminView() {
                 style={{
                   padding: '0.55rem 1.2rem',
                   borderRadius: '8px',
-                  backgroundColor: '#2563EB',
+                  backgroundColor: '#0A0A0A',
                   color: '#FFFFFF',
                   border: 'none',
                   fontWeight: 700,
@@ -11858,9 +12091,9 @@ export default function AdminView() {
                 <span
                   key={idx}
                   style={{
-                    backgroundColor: '#EFF6FF',
-                    border: '1px solid #BFDBFE',
-                    color: '#1E40AF',
+                    backgroundColor: '#FFF8E1',
+                    border: '1px solid #FFE08A',
+                    color: '#0A0A0A',
                     borderRadius: '9999px',
                     padding: '4px 12px',
                     fontSize: '0.82rem',
@@ -11884,7 +12117,7 @@ export default function AdminView() {
                       padding: '0',
                       display: 'flex',
                       alignItems: 'center',
-                      color: '#1E40AF',
+                      color: '#0A0A0A',
                     }}
                     title={`Remove ${city}`}
                   >
@@ -11899,7 +12132,7 @@ export default function AdminView() {
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '14px', border: '1px solid #E2E8F0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
               <div>
-                <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#1E293B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '0.86rem', fontWeight: 800, color: '#1A1A1A', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   📮 Serviceable Pincodes Acceptance List ({Array.isArray(siteSettings.serviceablePincodes) ? siteSettings.serviceablePincodes.length : 0})
                 </span>
                 <span style={{ fontSize: '0.74rem', color: '#64748B', display: 'block', marginTop: '2px' }}>
@@ -11919,9 +12152,9 @@ export default function AdminView() {
                   style={{
                     padding: '3px 10px',
                     borderRadius: '6px',
-                    backgroundColor: '#F0FDF4',
-                    border: '1px solid #86EFAC',
-                    color: '#166534',
+                    backgroundColor: '#F2F2F2',
+                    border: '1px solid #E5E7EB',
+                    color: '#0A0A0A',
                     fontSize: '0.74rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -11939,9 +12172,9 @@ export default function AdminView() {
                   style={{
                     padding: '3px 10px',
                     borderRadius: '6px',
-                    backgroundColor: '#FEF2F2',
-                    border: '1px solid #FECDD3',
-                    color: '#991B1B',
+                    backgroundColor: '#F2F2F2',
+                    border: '1px solid #E5E7EB',
+                    color: '#0A0A0A',
                     fontSize: '0.74rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -12079,7 +12312,7 @@ export default function AdminView() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.25rem', paddingBottom: '0.85rem', borderBottom: '1px solid #F1F5F9' }}>
-            <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#EEF2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4F46E5' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#FFF8E1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A0A0A' }}>
               <Settings size={16} />
             </div>
             <div>

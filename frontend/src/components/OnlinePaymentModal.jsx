@@ -222,7 +222,7 @@ export const OnlinePaymentModal = ({
         amount: serverPayment.order.amount,
         currency: serverPayment.order.currency || 'INR',
         order_id: serverPayment.order.id,
-        name: 'MISTRI / NOYOONLINE',
+        name: 'BuildMyDestiny',
         description: `Order Payment for ${orderItems.length || 1} items`,
         image: 'https://cdn-icons-png.flaticon.com/512/891/891462.png',
         handler: function (response) {
@@ -240,10 +240,10 @@ export const OnlinePaymentModal = ({
         },
         notes: {
           address: 'Direct site delivery',
-          store: 'Mistri Online Direct',
+          store: 'BuildMyDestiny Online Direct',
         },
         theme: {
-          color: '#5F259F',
+          color: '#FFB800',
         },
         modal: {
           ondismiss: function () {
@@ -342,18 +342,18 @@ export const OnlinePaymentModal = ({
                 width: '36px',
                 height: '36px',
                 borderRadius: '10px',
-                backgroundColor: '#FF7A00',
+                backgroundColor: '#FFB800',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 10px rgba(255, 122, 0, 0.25)',
+                boxShadow: '0 4px 10px rgba(255, 184, 0, 0.35)',
                 flexShrink: 0,
               }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M16 11V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V11M5 9H19L20 21H4L5 9Z"
-                  stroke="#FFFFFF"
+                  stroke="#0A0A0A"
                   strokeWidth="2.4"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -409,13 +409,13 @@ export const OnlinePaymentModal = ({
                   width: '72px',
                   height: '72px',
                   borderRadius: '50%',
-                  backgroundColor: '#DCFCE7',
-                  color: '#16A34A',
+                  backgroundColor: '#FFB800',
+                  color: '#0A0A0A',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 16px auto',
-                  boxShadow: '0 8px 24px rgba(22, 163, 74, 0.2)',
+                  boxShadow: '0 8px 24px rgba(255, 184, 0, 0.35)',
                 }}
               >
                 <CheckCircle2 size={44} strokeWidth={2.6} />
@@ -450,7 +450,7 @@ export const OnlinePaymentModal = ({
                   width: '56px',
                   height: '56px',
                   border: '4px solid #E2E8F0',
-                  borderTopColor: '#5F259F',
+                  borderTopColor: '#FFB800',
                   borderRadius: '50%',
                   animation: 'opmSpin 0.75s linear infinite',
                   margin: '0 auto 18px auto',
@@ -475,9 +475,9 @@ export const OnlinePaymentModal = ({
                   backgroundColor: '#FFFFFF',
                   borderRadius: '16px',
                   padding: '20px 16px',
-                  border: '1px solid #FEE2E2',
+                  border: '1px solid #E2E8F0',
                   textAlign: 'center',
-                  boxShadow: '0 4px 14px rgba(239, 68, 68, 0.08)',
+                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.05)',
                 }}
               >
                 <div
@@ -485,8 +485,8 @@ export const OnlinePaymentModal = ({
                     width: '52px',
                     height: '52px',
                     borderRadius: '50%',
-                    backgroundColor: '#FEE2E2',
-                    color: '#DC2626',
+                    backgroundColor: '#F2F2F2',
+                    color: '#0A0A0A',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -512,7 +512,7 @@ export const OnlinePaymentModal = ({
                       width: '100%',
                       height: '44px',
                       borderRadius: '10px',
-                      backgroundColor: '#16A34A',
+                      backgroundColor: '#0A0A0A',
                       color: '#FFFFFF',
                       border: 'none',
                       fontWeight: '800',
@@ -522,7 +522,7 @@ export const OnlinePaymentModal = ({
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '8px',
-                      boxShadow: '0 4px 12px rgba(22, 163, 74, 0.25)',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
                     }}
                   >
                     <Zap size={18} />
@@ -538,8 +538,8 @@ export const OnlinePaymentModal = ({
                       width: '100%',
                       height: '42px',
                       borderRadius: '10px',
-                      backgroundColor: '#5F259F',
-                      color: '#FFFFFF',
+                      backgroundColor: '#FFB800',
+                      color: '#0A0A0A',
                       border: 'none',
                       fontWeight: '800',
                       fontSize: '0.9rem',
@@ -587,7 +587,7 @@ export const OnlinePaymentModal = ({
                   gap: '6px',
                   background: 'none',
                   border: 'none',
-                  color: '#5F259F',
+                  color: '#0A0A0A',
                   fontWeight: '700',
                   fontSize: '0.86rem',
                   cursor: 'pointer',
@@ -722,13 +722,13 @@ export const OnlinePaymentModal = ({
                     width: '100%',
                     height: '44px',
                     borderRadius: '10px',
-                    backgroundColor: '#5F259F',
-                    color: '#FFFFFF',
+                    backgroundColor: '#FFB800',
+                    color: '#0A0A0A',
                     border: 'none',
                     fontWeight: '800',
                     fontSize: '0.95rem',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(95, 37, 159, 0.3)',
+                    boxShadow: '0 4px 12px rgba(255, 184, 0, 0.35)',
                   }}
                 >
                   Pay ₹{Number(amount).toFixed(2)} Securely
@@ -747,7 +747,7 @@ export const OnlinePaymentModal = ({
                   gap: '6px',
                   background: 'none',
                   border: 'none',
-                  color: '#5F259F',
+                  color: '#0A0A0A',
                   fontWeight: '700',
                   fontSize: '0.86rem',
                   cursor: 'pointer',
@@ -807,8 +807,8 @@ export const OnlinePaymentModal = ({
                       style={{
                         padding: '10px',
                         borderRadius: '10px',
-                        border: `1.5px solid ${selectedBank === bank.code ? '#5F259F' : '#E2E8F0'}`,
-                        backgroundColor: selectedBank === bank.code ? '#F9F5FF' : '#FFFFFF',
+                        border: `1.5px solid ${selectedBank === bank.code ? '#FFB800' : '#E2E8F0'}`,
+                        backgroundColor: selectedBank === bank.code ? '#FFF8E1' : '#FFFFFF',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
@@ -818,7 +818,7 @@ export const OnlinePaymentModal = ({
                       <div style={{ fontWeight: '700', fontSize: '0.84rem', color: '#0F172A' }}>
                         {bank.name}
                       </div>
-                      {selectedBank === bank.code && <Check size={16} color="#5F259F" strokeWidth={3} />}
+                      {selectedBank === bank.code && <Check size={16} color="#0A0A0A" strokeWidth={3} />}
                     </div>
                   ))}
                 </div>
@@ -830,13 +830,13 @@ export const OnlinePaymentModal = ({
                     width: '100%',
                     height: '44px',
                     borderRadius: '10px',
-                    backgroundColor: '#5F259F',
-                    color: '#FFFFFF',
+                    backgroundColor: '#FFB800',
+                    color: '#0A0A0A',
                     border: 'none',
                     fontWeight: '800',
                     fontSize: '0.95rem',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(95, 37, 159, 0.3)',
+                    boxShadow: '0 4px 12px rgba(255, 184, 0, 0.35)',
                   }}
                 >
                   Proceed with {selectedBank} NetBanking
@@ -855,7 +855,7 @@ export const OnlinePaymentModal = ({
                   gap: '6px',
                   background: 'none',
                   border: 'none',
-                  color: '#5F259F',
+                  color: '#0A0A0A',
                   fontWeight: '700',
                   fontSize: '0.86rem',
                   cursor: 'pointer',
@@ -888,40 +888,40 @@ export const OnlinePaymentModal = ({
                     display: 'inline-block',
                     padding: '12px',
                     borderRadius: '14px',
-                    border: '2px solid #5F259F',
+                    border: '2px solid #0A0A0A',
                     backgroundColor: '#FFFFFF',
                     marginBottom: '12px',
-                    boxShadow: '0 4px 16px rgba(95, 37, 159, 0.1)',
+                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
                   }}
                 >
                   <svg width="150" height="150" viewBox="0 0 100 100" style={{ display: 'block' }}>
                     <rect width="100" height="100" fill="#FFFFFF" />
-                    <rect x="5" y="5" width="28" height="28" rx="4" fill="#5F259F" />
+                    <rect x="5" y="5" width="28" height="28" rx="4" fill="#0A0A0A" />
                     <rect x="9" y="9" width="20" height="20" rx="2" fill="#FFFFFF" />
-                    <rect x="13" y="13" width="12" height="12" rx="1" fill="#5F259F" />
+                    <rect x="13" y="13" width="12" height="12" rx="1" fill="#0A0A0A" />
 
-                    <rect x="67" y="5" width="28" height="28" rx="4" fill="#5F259F" />
+                    <rect x="67" y="5" width="28" height="28" rx="4" fill="#0A0A0A" />
                     <rect x="71" y="9" width="20" height="20" rx="2" fill="#FFFFFF" />
-                    <rect x="75" y="13" width="12" height="12" rx="1" fill="#5F259F" />
+                    <rect x="75" y="13" width="12" height="12" rx="1" fill="#0A0A0A" />
 
-                    <rect x="5" y="67" width="28" height="28" rx="4" fill="#5F259F" />
+                    <rect x="5" y="67" width="28" height="28" rx="4" fill="#0A0A0A" />
                     <rect x="9" y="71" width="20" height="20" rx="2" fill="#FFFFFF" />
-                    <rect x="13" y="75" width="12" height="12" rx="1" fill="#5F259F" />
+                    <rect x="13" y="75" width="12" height="12" rx="1" fill="#0A0A0A" />
 
                     <rect x="40" y="8" width="6" height="6" fill="#1E293B" />
-                    <rect x="50" y="8" width="6" height="6" fill="#5F259F" />
+                    <rect x="50" y="8" width="6" height="6" fill="#0A0A0A" />
                     <rect x="40" y="20" width="8" height="8" fill="#1E293B" />
-                    <rect x="52" y="22" width="6" height="6" fill="#5F259F" />
+                    <rect x="52" y="22" width="6" height="6" fill="#0A0A0A" />
                     <rect x="8" y="40" width="8" height="8" fill="#1E293B" />
                     <rect x="22" y="42" width="6" height="6" fill="#1E293B" />
-                    <rect x="36" y="36" width="28" height="28" rx="4" fill="#5F259F" />
+                    <rect x="36" y="36" width="28" height="28" rx="4" fill="#0A0A0A" />
                     <rect x="42" y="42" width="16" height="16" rx="2" fill="#FFFFFF" />
-                    <circle cx="50" cy="50" r="4" fill="#5F259F" />
+                    <circle cx="50" cy="50" r="4" fill="#0A0A0A" />
                     <rect x="72" y="40" width="8" height="6" fill="#1E293B" />
                     <rect x="84" y="46" width="8" height="8" fill="#1E293B" />
                     <rect x="40" y="70" width="6" height="6" fill="#1E293B" />
                     <rect x="52" y="76" width="8" height="8" fill="#1E293B" />
-                    <rect x="68" y="70" width="6" height="6" fill="#5F259F" />
+                    <rect x="68" y="70" width="6" height="6" fill="#0A0A0A" />
                     <rect x="80" y="74" width="8" height="8" fill="#1E293B" />
                     <rect x="70" y="86" width="16" height="6" fill="#1E293B" />
                   </svg>
@@ -938,13 +938,13 @@ export const OnlinePaymentModal = ({
                     width: '100%',
                     height: '44px',
                     borderRadius: '10px',
-                    backgroundColor: '#16A34A',
-                    color: '#FFFFFF',
+                    backgroundColor: '#FFB800',
+                    color: '#0A0A0A',
                     border: 'none',
                     fontWeight: '800',
                     fontSize: '0.95rem',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(22, 163, 74, 0.25)',
+                    boxShadow: '0 4px 12px rgba(255, 184, 0, 0.35)',
                   }}
                 >
                   ✓ I Have Scanned & Paid
@@ -983,7 +983,7 @@ export const OnlinePaymentModal = ({
                       backgroundColor: '#FFFFFF',
                       borderRadius: '14px',
                       padding: '12px 14px',
-                      border: selectedMethod === 'phonepe' ? '2px solid #5F259F' : '1px solid #E5E7EB',
+                      border: selectedMethod === 'phonepe' ? '2px solid #FFB800' : '1px solid #E5E7EB',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px',
@@ -991,7 +991,7 @@ export const OnlinePaymentModal = ({
                       transition: 'all 0.15s ease',
                       boxShadow:
                         selectedMethod === 'phonepe'
-                          ? '0 4px 12px rgba(95, 37, 159, 0.15)'
+                          ? '0 4px 12px rgba(255, 184, 0, 0.25)'
                           : '0 1px 3px rgba(0,0,0,0.02)',
                     }}
                   >
@@ -1037,7 +1037,7 @@ export const OnlinePaymentModal = ({
                       backgroundColor: '#FFFFFF',
                       borderRadius: '14px',
                       padding: '12px 14px',
-                      border: selectedMethod === 'gpay' ? '2px solid #5F259F' : '1px solid #E5E7EB',
+                      border: selectedMethod === 'gpay' ? '2px solid #FFB800' : '1px solid #E5E7EB',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px',
@@ -1045,7 +1045,7 @@ export const OnlinePaymentModal = ({
                       transition: 'all 0.15s ease',
                       boxShadow:
                         selectedMethod === 'gpay'
-                          ? '0 4px 12px rgba(95, 37, 159, 0.15)'
+                          ? '0 4px 12px rgba(255, 184, 0, 0.25)'
                           : '0 1px 3px rgba(0,0,0,0.02)',
                     }}
                   >
@@ -1087,7 +1087,7 @@ export const OnlinePaymentModal = ({
                       backgroundColor: '#FFFFFF',
                       borderRadius: '14px',
                       padding: '12px 14px',
-                      border: selectedMethod === 'paytm' ? '2px solid #5F259F' : '1px solid #E5E7EB',
+                      border: selectedMethod === 'paytm' ? '2px solid #FFB800' : '1px solid #E5E7EB',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px',
@@ -1095,7 +1095,7 @@ export const OnlinePaymentModal = ({
                       transition: 'all 0.15s ease',
                       boxShadow:
                         selectedMethod === 'paytm'
-                          ? '0 4px 12px rgba(95, 37, 159, 0.15)'
+                          ? '0 4px 12px rgba(255, 184, 0, 0.25)'
                           : '0 1px 3px rgba(0,0,0,0.02)',
                     }}
                   >
@@ -1137,7 +1137,7 @@ export const OnlinePaymentModal = ({
                       backgroundColor: '#FFFFFF',
                       borderRadius: '14px',
                       padding: '12px 14px',
-                      border: selectedMethod === 'apps_qr' ? '2px solid #5F259F' : '1px solid #E5E7EB',
+                      border: selectedMethod === 'apps_qr' ? '2px solid #FFB800' : '1px solid #E5E7EB',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px',
@@ -1145,7 +1145,7 @@ export const OnlinePaymentModal = ({
                       transition: 'all 0.15s ease',
                       boxShadow:
                         selectedMethod === 'apps_qr'
-                          ? '0 4px 12px rgba(95, 37, 159, 0.15)'
+                          ? '0 4px 12px rgba(255, 184, 0, 0.25)'
                           : '0 1px 3px rgba(0,0,0,0.02)',
                     }}
                   >
@@ -1435,7 +1435,7 @@ export const OnlinePaymentModal = ({
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#475569' }}>
                 <span>Delivery & Logistics</span>
-                <span style={{ fontWeight: '700', color: '#16A34A' }}>FREE</span>
+                <span style={{ fontWeight: '700', color: '#0A0A0A' }}>FREE</span>
               </div>
               {summary.gstAmount > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#475569' }}>
@@ -1446,7 +1446,7 @@ export const OnlinePaymentModal = ({
                 </div>
               )}
               {summary.discountAmount > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#DC2626' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#0A0A0A' }}>
                   <span>Discounts Applied</span>
                   <span style={{ fontWeight: '700' }}>
                     -₹{Number(summary.discountAmount).toFixed(2)}
@@ -1498,7 +1498,7 @@ export const OnlinePaymentModal = ({
                     border: 'none',
                     padding: 0,
                     margin: '3px 0 0 0',
-                    color: '#5F259F',
+                    color: '#0A0A0A',
                     fontSize: '0.82rem',
                     fontWeight: '700',
                     cursor: 'pointer',
@@ -1515,15 +1515,15 @@ export const OnlinePaymentModal = ({
                   type="button"
                   onClick={handlePayClick}
                   style={{
-                    backgroundColor: '#5F259F',
-                    color: '#FFFFFF',
+                    backgroundColor: '#FFB800',
+                    color: '#0A0A0A',
                     border: 'none',
                     borderRadius: '10px',
                     padding: '12px 34px',
                     fontSize: '1.02rem',
                     fontWeight: '800',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 14px rgba(95, 37, 159, 0.35)',
+                    boxShadow: '0 4px 14px rgba(255, 184, 0, 0.4)',
                     transition: 'all 0.15s ease',
                     letterSpacing: '0.2px',
                   }}
@@ -1535,7 +1535,7 @@ export const OnlinePaymentModal = ({
 
             <div
               style={{
-                backgroundColor: '#FDEEE8',
+                backgroundColor: '#FFF8E1',
                 borderRadius: '20px',
                 padding: '7px 14px',
                 display: 'flex',
@@ -1543,7 +1543,7 @@ export const OnlinePaymentModal = ({
                 justifyContent: 'center',
                 gap: '6px',
                 fontSize: '0.76rem',
-                color: '#9A3412',
+                color: '#0A0A0A',
                 fontWeight: '600',
               }}
             >
@@ -1552,11 +1552,11 @@ export const OnlinePaymentModal = ({
                   width: '14px',
                   height: '14px',
                   borderRadius: '50%',
-                  backgroundColor: '#EA580C',
+                  backgroundColor: '#FFB800',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#FFFFFF',
+                  color: '#0A0A0A',
                 }}
               >
                 <Clock size={9} strokeWidth={3} />

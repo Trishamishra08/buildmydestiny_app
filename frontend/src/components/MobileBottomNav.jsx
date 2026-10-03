@@ -23,13 +23,13 @@ export const MobileBottomNav = () => {
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: '#FFFFFF',
-        borderTop: '1px solid var(--border-subtle)',
+        backgroundColor: '#0A0A0A',
+        borderTop: '1px solid #1F1F1F',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         zIndex: 9000,
-        boxShadow: '0 -3px 14px rgba(8,39,76,0.08)',
+        boxShadow: '0 -3px 14px rgba(0,0,0,0.25)',
         height: '62px',
         padding: '0 8px calc(env(safe-area-inset-bottom, 0px) + 2px) 8px',
       }}
@@ -46,13 +46,13 @@ export const MobileBottomNav = () => {
           gap: '2px',
           background: 'none',
           border: 'none',
-          color: isHomeActive ? 'var(--primary-orange)' : 'var(--text-secondary)',
+          color: isHomeActive ? 'var(--primary-orange)' : '#9CA3AF',
           cursor: 'pointer',
           padding: '4px 0',
           transition: 'var(--transition)',
         }}
       >
-        <Home size={21} fill={isHomeActive ? '#FFE8DE' : 'none'} strokeWidth={isHomeActive ? 2.5 : 2} />
+        <Home size={21} fill="none" strokeWidth={isHomeActive ? 2.5 : 2} />
         <span style={{ fontSize: '0.68rem', fontWeight: isHomeActive ? '800' : '600' }}>
           Home
         </span>
@@ -70,7 +70,7 @@ export const MobileBottomNav = () => {
           gap: '2px',
           background: 'none',
           border: 'none',
-          color: isCategoriesActive ? 'var(--primary-orange)' : 'var(--text-secondary)',
+          color: isCategoriesActive ? 'var(--primary-orange)' : '#9CA3AF',
           cursor: 'pointer',
           padding: '4px 0',
           transition: 'var(--transition)',
@@ -94,7 +94,7 @@ export const MobileBottomNav = () => {
           gap: '2px',
           background: 'none',
           border: 'none',
-          color: isOrdersActive ? 'var(--primary-orange)' : 'var(--text-secondary)',
+          color: isOrdersActive ? 'var(--primary-orange)' : '#9CA3AF',
           cursor: 'pointer',
           position: 'relative',
           padding: '4px 0',
@@ -109,8 +109,8 @@ export const MobileBottomNav = () => {
                 position: 'absolute',
                 top: '-4px',
                 right: '-8px',
-                backgroundColor: 'var(--qc-green)',
-                color: '#FFFFFF',
+                backgroundColor: 'var(--primary-orange)',
+                color: '#0A0A0A',
                 fontSize: '0.58rem',
                 fontWeight: '900',
                 width: '14px',
@@ -119,7 +119,7 @@ export const MobileBottomNav = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: '1.5px solid #FFFFFF',
+                border: '1.5px solid #0A0A0A',
               }}
             >
               {activeOrdersCount}
@@ -143,7 +143,7 @@ export const MobileBottomNav = () => {
           gap: '2px',
           background: 'none',
           border: 'none',
-          color: isAccountActive ? 'var(--primary-orange)' : 'var(--text-secondary)',
+          color: isAccountActive ? 'var(--primary-orange)' : '#9CA3AF',
           cursor: 'pointer',
           padding: '4px 0',
           transition: 'var(--transition)',
@@ -161,8 +161,8 @@ export const MobileBottomNav = () => {
           type="button"
           onClick={() => setIsQuotationOpen(true)}
           style={{
-            background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
-            color: '#FFFFFF',
+            background: 'var(--primary-orange)',
+            color: '#0A0A0A',
             border: 'none',
             borderRadius: '9px',
             padding: '6px 8px',
@@ -171,7 +171,7 @@ export const MobileBottomNav = () => {
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: '0 2px 10px rgba(5, 150, 105, 0.35)',
+            boxShadow: '0 2px 10px rgba(255, 184, 0, 0.4)',
             lineHeight: '1.15',
             minWidth: '66px',
             transition: 'transform 0.15s ease',
@@ -183,7 +183,7 @@ export const MobileBottomNav = () => {
           <span style={{ fontSize: '0.62rem', fontWeight: '900', letterSpacing: '0.04em' }}>
             GET
           </span>
-          <span style={{ fontSize: '0.64rem', fontWeight: '900', letterSpacing: '0.04em', color: '#FEF08A' }}>
+          <span style={{ fontSize: '0.64rem', fontWeight: '900', letterSpacing: '0.04em', color: '#0A0A0A' }}>
             QUOTE
           </span>
         </button>

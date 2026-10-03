@@ -61,7 +61,7 @@ export const TermsView = () => {
           Terms & Conditions of Supply
         </h1>
         <p style={{ color: '#64748B', fontSize: '0.85rem', margin: 0 }}>
-          Last Updated: September 2026 • MISTRI Technologies & Building Logistics Pvt. Ltd.
+          Last Updated: September 2026 • BuildMyDestiny Technologies & Building Logistics Pvt. Ltd.
         </p>
       </div>
 
@@ -71,7 +71,7 @@ export const TermsView = () => {
             1. Scope of Material Supply & Direct Site Delivery
           </h2>
           <p style={{ color: '#475569', fontSize: '0.88rem', margin: 0 }}>
-            MISTRI acts as an authorized direct-procurement platform facilitating the supply of primary structural construction materials (including Cement, TMT Rebars, AAC Blocks, Sand, Plumbing, Electrical, Tiles, and Tools) directly from certified manufacturer mother plants and logistics hubs to the buyer's specified site.
+            BuildMyDestiny acts as an authorized direct-procurement platform facilitating the supply of primary structural construction materials (including Cement, TMT Rebars, AAC Blocks, Sand, Plumbing, Electrical, Tiles, and Tools) directly from certified manufacturer mother plants and logistics hubs to the buyer's specified site.
           </p>
         </section>
 
@@ -108,15 +108,15 @@ export const TermsView = () => {
             type="button"
             onClick={() => navigateTo(user ? 'home' : 'login')}
             style={{
-              backgroundColor: '#EA580C',
-              color: '#FFFFFF',
+              backgroundColor: '#FFB800',
+              color: '#0A0A0A',
               border: 'none',
               borderRadius: '8px',
               padding: '10px 24px',
               fontWeight: '700',
               fontSize: '0.9rem',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(234,88,12,0.25)',
+              boxShadow: '0 2px 6px rgba(255,184,0,0.35)',
             }}
           >
             {user ? 'Return to Home Store' : 'Return to Sign In'}
