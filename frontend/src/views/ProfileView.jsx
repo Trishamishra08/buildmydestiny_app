@@ -22,6 +22,7 @@ import {
   Sliders,
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { PANELS_ENABLED } from '../config/appMode';
 
 export const ProfileView = () => {
   const { user, adminUser, logout, navigateTo, addToast, addresses, orders, openLoginModal } = useStore();
@@ -59,7 +60,7 @@ export const ProfileView = () => {
     navigateTo('home');
   };
 
-  const isAdmin = user?.role?.toLowerCase() === 'admin' || !!adminUser;
+  const isAdmin = PANELS_ENABLED && (user?.role?.toLowerCase() === 'admin' || !!adminUser);
 
   const menuItems = [
     ...(isAdmin

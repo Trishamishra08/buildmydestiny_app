@@ -306,7 +306,7 @@ const publicProfile = (user) => ({
  */
 export const otpLogin = async (req, res, next) => {
   try {
-    const { phone, otp, role } = req.body || {};
+    const { phone, otp, role, intent, name, email } = req.body || {};
     const targetRole = ['vendor', 'customer', 'admin'].includes(role) ? role : 'customer';
     const digits = last10Digits(phone);
     const enteredOtp = String(otp || '').trim();
@@ -357,15 +357,35 @@ export const otpLogin = async (req, res, next) => {
       return res.json({ success: true, data: publicProfile(vendor) });
     }
 
-    // Customer: find existing account by phone or auto-register on OTP verification
+    // Customer: signing in needs an existing account; signing up (intent: 'signup') creates one
+    // once the OTP is verified.
     let customer = await User.findOne({ phone: phonePatternFor(digits), role: 'customer' });
-    if (!customer) {
-      customer = await User.create({
-        name: `Customer ${digits.slice(-4)}`,
-        phone: `+91 ${digits}`,
-        password: crypto.randomBytes(24).toString('hex'),
-        role: 'customer',
-      });
+    if (intent === 'signup') {
+      if (customer) {
+        return res.status(409).json({ success: false, message: 'This mobile number is already registered. Please login instead.' });
+      }
+      const cleanName = typeof name === 'string' ? name.trim() : '';
+      if (!cleanName) {
+        return res.status(400).json({ success: false, message: 'Please enter your full name' });
+      }
+      const cleanEmail = typeof email === 'string' && email.trim() ? email.trim().toLowerCase() : undefined;
+      if (cleanEmail && (await User.exists({ email: cleanEmail }))) {
+        return res.status(409).json({ success: false, message: 'An account with this email already exists' });
+      }
+      try {
+        customer = await User.create({
+          name: cleanName,
+          phone: `+91 ${digits}`,
+          ...(cleanEmail ? { email: cleanEmail } : {}),
+          password: crypto.randomBytes(24).toString('hex'),
+          role: 'customer',
+        });
+      } catch (err) {
+        if (err?.name === 'ValidationError') return res.status(400).json({ success: false, message: err.message });
+        throw err;
+      }
+    } else if (!customer) {
+      return res.status(404).json({ success: false, message: 'No account found for this number. Please sign up first.' });
     }
 
     if (isDeactivated(customer)) {

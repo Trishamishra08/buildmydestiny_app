@@ -213,6 +213,8 @@ const INITIAL_SETTINGS = {
 };
 
 // Storage helper with fallback
+import { PANELS_ENABLED, USER_APP_ENABLED } from '../config/appMode';
+
 const getStored = (key, fallback) => {
   try {
     const item = localStorage.getItem(`mistri_${key}`);
@@ -282,6 +284,13 @@ const parseRouteFromUrl = () => {
     }
     if (params.q && !params.query) {
       params.query = params.q;
+    }
+
+    // Surfaces this build does not serve fall back to the entry screen (see config/appMode.js).
+    const isPanelView = viewName === 'admin' || viewName === 'vendor';
+    if ((!PANELS_ENABLED && isPanelView) || (!USER_APP_ENABLED && !isPanelView)) {
+      if (cleanPath) window.history.replaceState({}, '', '/');
+      return { view: 'home', params: {} };
     }
 
     return { view: viewName, params };
@@ -1091,15 +1100,31 @@ export const StoreProvider = ({ children }) => {
       const message =
         err?.status === 0
           ? 'Cannot reach the server. Please check your connection and try again.'
-          : err?.status === 401
-            ? 'Invalid phone number or OTP.'
-            : err?.message || 'OTP login failed. Please try again.';
+          : err?.message || 'OTP login failed. Please try again.';
       throw new Error(message);
     }
 
     const profile = profileFromServer(res.data);
     trackUserLogin('otp');
     return completeSignIn(profile, res.data.token, callback, `Welcome back, ${profile.name}!`);
+  };
+
+  // Sign up with a mobile number: the OTP proves the number, then the account is created and signed in.
+  const userOtpSignup = async ({ name, phone, email, otp }, callback = null) => {
+    let res;
+    try {
+      res = await api.otpLogin(phone, otp, 'customer', { intent: 'signup', name, email });
+    } catch (err) {
+      const message =
+        err?.status === 0
+          ? 'Cannot reach the server. Please check your connection and try again.'
+          : err?.message || 'Sign up failed. Please try again.';
+      throw new Error(message);
+    }
+
+    const profile = profileFromServer(res.data);
+    trackUserSignUp('otp');
+    return completeSignIn(profile, res.data.token, callback, `Account created! Welcome to BuildMyDestiny, ${profile.name}.`);
   };
 
   const login = async (emailOrPhone, password, callback = null) => {
@@ -2558,6 +2583,7 @@ export const StoreProvider = ({ children }) => {
         setUser,
         login,
         userOtpLogin,
+        userOtpSignup,
         loginWithGoogle,
         signup,
         logout,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Phone, Mail, MapPin, ShieldCheck, Truck, Award, FileText, ArrowUpRight } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { PANELS_ENABLED, PANEL_URL } from '../config/appMode';
 import Logo from './Logo';
 
 export const Footer = () => {
@@ -129,7 +130,11 @@ export const Footer = () => {
                 </h4>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.55rem', fontSize: '0.84rem', color: '#94A3B8' }}>
                   <li><button onClick={() => navigateTo('about')} style={{ background: 'none', color: '#CBD5E1', cursor: 'pointer', textAlign: 'left' }}>About BuildMyDestiny</button></li>
-                  <li><button onClick={() => navigateTo('vendor')} style={{ background: 'none', color: '#FFB800', fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}>Sell on BuildMyDestiny</button></li>
+                  {PANELS_ENABLED ? (
+                    <li><button onClick={() => navigateTo('vendor')} style={{ background: 'none', color: '#FFB800', fontWeight: 700, cursor: 'pointer', textAlign: 'left' }}>Sell on BuildMyDestiny</button></li>
+                  ) : PANEL_URL ? (
+                    <li><a href={`${PANEL_URL}/vendor`} style={{ color: '#FFB800', fontWeight: 700, textAlign: 'left' }}>Sell on BuildMyDestiny</a></li>
+                  ) : null}
                   <li><button onClick={() => navigateTo('contact')} style={{ background: 'none', color: '#CBD5E1', cursor: 'pointer', textAlign: 'left' }}>Headquarters</button></li>
                   <li><button onClick={() => navigateTo('terms')} style={{ background: 'none', color: '#CBD5E1', cursor: 'pointer', textAlign: 'left' }}>Terms & Conditions</button></li>
                   <li><button onClick={() => navigateTo('privacy')} style={{ background: 'none', color: '#CBD5E1', cursor: 'pointer', textAlign: 'left' }}>Privacy Policy</button></li>

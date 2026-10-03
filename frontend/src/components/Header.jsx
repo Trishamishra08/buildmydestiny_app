@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import Logo from './Logo';
+import { PANELS_ENABLED } from '../config/appMode';
 import { Sliders } from 'lucide-react';
 
 export const Header = () => {
@@ -623,7 +624,8 @@ export const Header = () => {
           </div>
 
           {/* Quick Admin Dashboard Shortcut in Category Bar */}
-          <button
+          {PANELS_ENABLED && (
+<button
             onClick={() => navigateTo('admin')}
             style={{
               backgroundColor: 'rgba(255,255,255,0.1)',
@@ -645,6 +647,7 @@ export const Header = () => {
             <Sliders size={14} />
             <span>Admin Hub</span>
           </button>
+          )}
         </div>
       </nav>
     </header>

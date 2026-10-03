@@ -92,7 +92,7 @@ export const api = {
   // Authentication
   // Callers show these errors to the person signing in, so they are not logged here.
   login: (email, password) => request('/auth/login', json('POST', { email, password }, { quiet: true })),
-  otpLogin: (phone, otp, role) => request('/auth/otp-login', json('POST', { phone, otp, role }, { quiet: true })),
+  otpLogin: (phone, otp, role, extra = {}) => request('/auth/otp-login', json('POST', { phone, otp, role, ...extra }, { quiet: true })),
   register: (userData) => request('/auth/register', json('POST', userData, { quiet: true })),
   firebaseLogin: (idToken) => request('/auth/firebase', json('POST', { idToken }, { quiet: true })),
   getMe: (auth) => request('/auth/me', { auth, quiet: true }),

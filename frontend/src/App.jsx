@@ -40,12 +40,15 @@ import TermsView from './views/TermsView';
 import PrivacyPolicyView from './views/PrivacyPolicyView';
 import AdminView from './views/AdminView';
 import VendorView from './views/VendorView';
+import PanelHome from './components/PanelHome';
+import { PANELS_ENABLED, USER_APP_ENABLED } from './config/appMode';
 
 function MainAppLayout() {
   const { currentView, user } = useStore();
 
-  const isAdminView = currentView === 'admin';
-  const isVendorView = currentView === 'vendor';
+  // Which surfaces exist depends on the build (see config/appMode.js).
+  const isAdminView = PANELS_ENABLED && currentView === 'admin';
+  const isVendorView = PANELS_ENABLED && currentView === 'vendor';
 
   if (isAdminView) {
     return (
@@ -66,6 +69,16 @@ function MainAppLayout() {
         </main>
         <ToastContainer />
       </div>
+    );
+  }
+
+  // The panel site has no storefront: anything but a panel shows the portal entry screen.
+  if (!USER_APP_ENABLED) {
+    return (
+      <>
+        <PanelHome />
+        <ToastContainer />
+      </>
     );
   }
 
@@ -113,8 +126,6 @@ function MainAppLayout() {
 
   const renderActiveView = () => {
     switch (currentView) {
-      case 'admin':
-        return <AdminView />;
       case 'home':
         return <HomeView />;
       case 'categories':
@@ -222,7 +233,7 @@ export default function App() {
 
   return (
     <StoreProvider>
-      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+      {showSplash && USER_APP_ENABLED && <SplashScreen onFinish={() => setShowSplash(false)} />}
       <MainAppLayout />
     </StoreProvider>
   );
