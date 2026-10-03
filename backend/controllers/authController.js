@@ -42,8 +42,8 @@ export const registerUser = async (req, res, next) => {
     // Never let a request self-assign a privileged role.
     const safeRole = ['customer', 'mistri', 'vendor'].includes(role) ? role : 'customer';
 
-    if (!name || !password) {
-      return res.status(400).json({ success: false, message: 'Please provide your name and a password' });
+    if (!name) {
+      return res.status(400).json({ success: false, message: 'Please provide your name' });
     }
 
     const cleanEmail = email && typeof email === 'string' && email.trim() ? email.trim().toLowerCase() : null;
@@ -77,9 +77,14 @@ export const registerUser = async (req, res, next) => {
         }
       }
 
+      // Sign-in is by mobile OTP, so an account that did not choose a password gets an unguessable one.
+      if (!password && !cleanPhone) {
+        return res.status(400).json({ success: false, message: 'Please provide a mobile number or a password' });
+      }
+
       const userData = {
         name: name.trim(),
-        password,
+        password: password || crypto.randomBytes(24).toString('hex'),
         phone: cleanPhone,
         role: safeRole,
         company: company || '',
@@ -260,17 +265,42 @@ export const loginUser = async (req, res, next) => {
   }
 };
 
-// Fixed test OTP credential. No SMS/OTP provider is wired up yet, so this is the only
-// phone+OTP pair that can sign in - swap this block for a real provider (Twilio/MSG91/etc.)
-// once one is configured, instead of hardcoding further numbers here.
-const TEST_OTP_PHONE = '8839044030';
-const TEST_OTP_CODE = '123456';
+// Test OTP credential. No SMS/OTP provider is wired up yet, so every number signs in with this
+// fixed code - swap this block for a real provider (Twilio/MSG91/etc.) once one is configured.
+const TEST_OTP_CODE = process.env.TEST_OTP_CODE || '123456';
+
+// Default panel credentials: phone 9876543210 / OTP 123456 for both the vendor and the admin
+// panel. Both accounts are created by `npm run seed`.
+const DEFAULT_PANEL_PHONE = '9876543210';
+const adminPhone = () => String(process.env.ADMIN_PHONE || DEFAULT_PANEL_PHONE).replace(/\D/g, '').slice(-10);
 
 const last10Digits = (value) => String(value || '').replace(/\D/g, '').slice(-10);
+const phonePatternFor = (digits) => new RegExp(`${digits.split('').join('\\D*')}$`);
+const isDeactivated = (user) => user.status === 'Deactivated' || user.status === 'Inactive';
+
+const publicProfile = (user) => ({
+  _id: user._id,
+  name: user.name,
+  email: user.email || '',
+  role: user.role,
+  phone: user.phone,
+  avatar: user.avatar,
+  company: user.company,
+  gstin: user.gstin,
+  city: user.city,
+  tier: user.tier,
+  status: user.status,
+  businessName: user.businessName || '',
+  vendorStatus: user.vendorStatus,
+  token: generateToken(user._id, user.role),
+});
 
 /**
  * @desc    Sign in with a phone number + OTP (customer, vendor, or admin). Currently only
- *          accepts the fixed test credential above; real SMS delivery is not yet integrated.
+ *          accepts the fixed test OTP; real SMS delivery is not yet integrated.
+ *          - customer: any number; the account is created on first sign-in
+ *          - vendor:   must be a registered vendor (default seeded vendor: 9876543210)
+ *          - admin:    only the configured administrator number (default 9876543210)
  * @route   POST /api/auth/otp-login
  * @access  Public
  */
@@ -281,65 +311,54 @@ export const otpLogin = async (req, res, next) => {
     const digits = last10Digits(phone);
     const enteredOtp = String(otp || '').trim();
 
-    if (!digits || digits.length < 10) {
+    if (digits.length < 10) {
       return res.status(400).json({ success: false, message: 'Please enter a valid 10-digit mobile number' });
     }
-
     if (enteredOtp.length !== 6) {
-      return res.status(400).json({ success: false, message: 'Please enter a 6-digit OTP' });
+      return res.status(400).json({ success: false, message: 'Please enter the 6-digit OTP' });
     }
-
-    // Accept test OTP '123456' or fixed credential
-    if (enteredOtp !== '123456' && enteredOtp !== TEST_OTP_CODE) {
-      return res.status(401).json({ success: false, message: 'Invalid OTP. Please enter 123456' });
+    if (enteredOtp !== TEST_OTP_CODE) {
+      return res.status(401).json({ success: false, message: `Invalid OTP. Please try again (test OTP: ${TEST_OTP_CODE})` });
     }
 
     if (targetRole === 'admin') {
-      return res.json({
-        success: true,
-        data: {
-          _id: 'usr_admin_root',
-          name: 'Root Administrator',
-          email: process.env.ADMIN_EMAIL || 'admin@gmail.com',
-          role: 'admin',
-          phone: `+91 ${digits}`,
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-          token: generateToken('usr_admin_root', 'admin'),
-        },
-      });
+      if (digits !== adminPhone()) {
+        return res.status(401).json({ success: false, message: 'This number is not registered as an administrator' });
+      }
+      const admin = await User.findOne({ phone: phonePatternFor(digits), role: 'admin' });
+      if (!admin) {
+        // Built-in administrator with no database document yet.
+        return res.json({
+          success: true,
+          data: {
+            _id: 'usr_admin_root',
+            name: 'Root Administrator',
+            email: process.env.ADMIN_EMAIL || 'admin@gmail.com',
+            role: 'admin',
+            phone: `+91 ${digits}`,
+            token: generateToken('usr_admin_root', 'admin'),
+          },
+        });
+      }
+      return res.json({ success: true, data: publicProfile(admin) });
     }
 
     if (targetRole === 'vendor') {
-      let vendor = await User.findOne({ phone: new RegExp(`${digits}$`), role: 'vendor' });
+      const vendor = await User.findOne({ phone: phonePatternFor(digits), role: 'vendor' });
       if (!vendor) {
-        vendor = await User.create({
-          name: 'Vendor Partner',
-          phone: `+91 ${digits}`,
-          password: crypto.randomBytes(24).toString('hex'),
-          role: 'vendor',
-          businessName: 'Vendor Store',
-          vendorStatus: 'approved',
+        return res.status(404).json({
+          success: false,
+          message: 'No vendor account found for this number. Please register as a vendor first.',
         });
       }
-
-      return res.json({
-        success: true,
-        data: {
-          _id: vendor._id,
-          name: vendor.name,
-          email: vendor.email || '',
-          phone: vendor.phone,
-          role: vendor.role,
-          businessName: vendor.businessName || '',
-          vendorStatus: vendor.vendorStatus,
-          token: generateToken(vendor._id, vendor.role),
-        },
-      });
+      if (isDeactivated(vendor)) {
+        return res.status(403).json({ success: false, message: 'Your vendor account has been deactivated. Please contact support.' });
+      }
+      return res.json({ success: true, data: publicProfile(vendor) });
     }
 
     // Customer: find existing account by phone or auto-register on OTP verification
-    const phonePattern = new RegExp(`${digits}$`);
-    let customer = await User.findOne({ phone: phonePattern, role: 'customer' });
+    let customer = await User.findOne({ phone: phonePatternFor(digits), role: 'customer' });
     if (!customer) {
       customer = await User.create({
         name: `Customer ${digits.slice(-4)}`,
@@ -349,29 +368,14 @@ export const otpLogin = async (req, res, next) => {
       });
     }
 
-    if ((customer.status === 'Deactivated' || customer.status === 'Inactive') && customer.role !== 'admin') {
+    if (isDeactivated(customer)) {
       return res.status(403).json({
         success: false,
         message: 'Your account has been deactivated. Please contact support.',
       });
     }
 
-    return res.json({
-      success: true,
-      data: {
-        _id: customer._id,
-        name: customer.name,
-        email: customer.email || '',
-        role: customer.role,
-        phone: customer.phone,
-        avatar: customer.avatar,
-        company: customer.company,
-        gstin: customer.gstin,
-        tier: customer.tier,
-        status: customer.status,
-        token: generateToken(customer._id, customer.role),
-      },
-    });
+    return res.json({ success: true, data: publicProfile(customer) });
   } catch (error) {
     next(error);
   }

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Mistri - On-Demand Home Services & Technician Booking (MVC Architecture)",
   "scripts": {
+    "dev": "node scripts/dev.mjs",
     "backend:dev": "npm --prefix backend run dev",
     "backend:start": "npm --prefix backend start",
     "backend:seed": "npm --prefix backend run seed",
@@ -10,7 +11,14 @@
     "frontend:build": "npm --prefix frontend run build",
     "build": "npm --prefix frontend run build"
   },
-  "keywords": ["mistri", "mvc", "express", "react", "vite", "home-services"],
+  "keywords": [
+    "mistri",
+    "mvc",
+    "express",
+    "react",
+    "vite",
+    "home-services"
+  ],
   "author": "Appzeto",
   "license": "ISC"
 }

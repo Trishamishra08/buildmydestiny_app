@@ -5,6 +5,7 @@ import buildCrud from './crudFactory.js';
 import { notifyNewOrder } from './notificationHooks.js';
 import { priceCart } from '../utils/orderPricing.js';
 import { confirmPayment, sandboxAllowed } from '../utils/razorpay.js';
+import { FLOW, buildTracking, orderFieldsForStep, applyStatusToItems } from '../utils/orderFlow.js';
 
 /**
  * Material orders
@@ -46,21 +47,13 @@ const newOrderId = async () => {
   return `MST-${Date.now()}`;
 };
 
-const initialTracking = (body) => ({
-  currentStep: 2,
-  driverName: body?.tracking?.driverName || body?.driverName || '',
-  driverPhone: body?.tracking?.driverPhone || body?.driverPhone || '',
-  vehicleNumber: body?.tracking?.vehicleNumber || body?.vehicleNumber || '',
-  liveEtaMinutes: 720,
-  steps: [
-    { title: 'Order Placed', time: 'Just now', done: true, desc: 'Material order received & approved' },
-    { title: 'Order Confirmed', time: 'In Progress', done: true, desc: 'Depot stock allocated' },
-    { title: 'Warehouse Dispatch', time: 'Pending', done: false, desc: 'Will load on crane vehicle' },
-    { title: 'In Transit', time: 'Pending', done: false, desc: 'En route to construction site' },
-    { title: 'Out for Delivery', time: 'Pending', done: false, desc: 'Driver will call 30 mins prior' },
-    { title: 'Delivered & Unloaded', time: 'Pending', done: false, desc: 'Site sign-off required' },
-  ],
-});
+const initialTracking = (body) =>
+  buildTracking(2, {
+    driverName: body?.tracking?.driverName || body?.driverName || '',
+    driverPhone: body?.tracking?.driverPhone || body?.driverPhone || '',
+    vehicleNumber: body?.tracking?.vehicleNumber || body?.vehicleNumber || '',
+    liveEtaMinutes: 720,
+  });
 
 /**
  * @desc  Place an order. Customers send what they want (products, quantities, variants,
@@ -211,6 +204,51 @@ export const placeOrder = async (req, res) => {
     if (intentId && !error.status) {
       await PaymentIntent.updateOne({ id: intentId }, { $set: { status: 'created' } }).catch(() => {});
     }
+    fail(res, error.status || 500, error.message);
+  }
+};
+
+/**
+ * @desc  Admin update of an order. The admin panel sends back the whole order it holds, which may
+ *        be stale - vendors move their own line items meanwhile - so line items are never taken
+ *        from the request. A changed order status / tracking step is carried down to the line
+ *        items, so vendors and customers see the same progress.
+ * @route PATCH /api/orders/:key
+ * @access Admin
+ */
+export const patchOrder = async (req, res) => {
+  try {
+    const existing = await Order.findOne({ id: req.params.key }).lean();
+    if (!existing) return fail(res, 404, 'Record not found');
+
+    const { _id, __v, id: _id2, items: _items, ...fields } = req.body || {};
+
+    const trackingStepChanged =
+      fields.tracking?.currentStep !== undefined && Number(fields.tracking.currentStep) !== Number(existing.tracking?.currentStep);
+    const statusChanged = fields.status !== undefined && fields.status !== existing.status;
+    const flowEntry = FLOW.find((f) => f.status === fields.status);
+
+    let step = null;
+    if (trackingStepChanged) step = Number(fields.tracking.currentStep);
+    else if (statusChanged && flowEntry) step = flowEntry.step;
+
+    const update = { ...fields };
+    if (step) {
+      Object.assign(update, orderFieldsForStep(step, { ...(existing.tracking || {}), ...(fields.tracking || {}) }));
+      const flow = FLOW[Math.min(Math.max(step, 1), FLOW.length) - 1];
+      update.items = applyStatusToItems(existing.items, flow.status);
+      if (flow.step === FLOW.length && /cash|pay on site|pending/i.test(String(existing.paymentStatus || ''))) {
+        update.paymentStatus = 'Paid (Cash Collected)';
+        update.payment = { ...(existing.payment || {}), status: 'Paid (Cash Collected)' };
+      }
+    } else if (statusChanged && /cancel/i.test(String(fields.status))) {
+      update.statusCode = 'cancelled';
+    }
+
+    const saved = await Order.findOneAndUpdate({ id: req.params.key }, { $set: update }, { new: true }).lean();
+    const { _id: _drop, ...clean } = saved;
+    res.json({ success: true, data: clean });
+  } catch (error) {
     fail(res, error.status || 500, error.message);
   }
 };

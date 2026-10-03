@@ -75,6 +75,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import Logo from '../components/Logo';
+import PanelLogin from '../components/PanelLogin';
 import api from '../services/api';
 import { uploadCloudFile } from '../services/storageService';
 import { uploadBannerToCloud } from '../services/cloudinaryService';
@@ -1443,394 +1444,19 @@ export default function AdminView() {
     badgeRedLight: '#F2F2F2',
   };
 
-  // Local state for Admin Login Form
-  const [adminEmailInput, setAdminEmailInput] = useState('admin@gmail.com');
-  const [adminPasswordInput, setAdminPasswordInput] = useState('');
-  const [showAdminPassword, setShowAdminPassword] = useState(false);
-  const [adminAuthError, setAdminAuthError] = useState('');
-  const [isAdminSubmitting, setIsAdminSubmitting] = useState(false);
-  const [useAdminOtp, setUseAdminOtp] = useState(false);
-  const [adminPhoneInput, setAdminPhoneInput] = useState('');
-  const [adminOtpInput, setAdminOtpInput] = useState('');
-
-  const handleAdminLoginSubmit = async (e) => {
-    if (e) e.preventDefault();
-    setAdminAuthError('');
-    setIsAdminSubmitting(true);
-
-    try {
-      const res = useAdminOtp
-        ? await adminOtpLogin(adminPhoneInput, adminOtpInput)
-        : await adminLogin(adminEmailInput, adminPasswordInput);
-      if (!res.success) {
-        setAdminAuthError(res.message || 'Invalid administrator credentials');
-      }
-    } catch (err) {
-      setAdminAuthError(err.message || 'Authentication error');
-    } finally {
-      setIsAdminSubmitting(false);
-    }
-  };
-
   // -------------------------------------------------------------
-  // Exclusive Admin Authentication Gate
+  // Exclusive Admin Authentication Gate (mobile OTP only)
   // -------------------------------------------------------------
   if (!adminUser) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#000000',
-        backgroundImage: 'radial-gradient(circle at 50% 20%, rgba(0, 0, 0, 0.18) 0%, transparent 60%), radial-gradient(circle at 80% 80%, rgba(255, 184, 0, 0.15) 0%, transparent 50%)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1.5rem',
-        position: 'relative',
-        overflow: 'hidden',
-        fontFamily: "'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif",
-      }}>
-        {/* Ambient Grid Pattern Overlay */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-          pointerEvents: 'none',
-        }} />
-
-        {/* Central Auth Card Container */}
-        <div style={{
-          width: '100%',
-          maxWidth: '460px',
-          backgroundColor: '#000000',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          borderRadius: '24px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(0, 0, 0, 0.15)',
-          padding: '2.5rem 2.25rem',
-          position: 'relative',
-          zIndex: 10,
-          backdropFilter: 'blur(16px)',
-        }}>
-          {/* Header & Security Badge */}
-          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '64px',
-              height: '64px',
-              borderRadius: '18px',
-              background: 'linear-gradient(135deg, #0A0A0A 0%, #000000 100%)',
-              color: '#FFFFFF',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
-              marginBottom: '1rem',
-            }}>
-              <ShieldCheck size={34} />
-            </div>
-
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '4px 12px',
-              borderRadius: '9999px',
-              backgroundColor: 'rgba(255, 184, 0, 0.15)',
-              border: '1px solid rgba(255, 184, 0, 0.35)',
-              color: '#0A0A0A',
-              fontSize: '0.7rem',
-              fontWeight: 800,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              marginBottom: '0.75rem',
-            }}>
-              <Lock size={12} /> RESTRICTED ACCESS • ADMIN ONLY
-            </div>
-
-            <h1 style={{
-              fontSize: '1.65rem',
-              fontWeight: 900,
-              color: '#FFFFFF',
-              margin: '0 0 0.4rem 0',
-              letterSpacing: '-0.02em',
-            }}>
-              BuildMyDestiny Admin Login
-            </h1>
-            <p style={{
-              fontSize: '0.84rem',
-              color: '#94A3B8',
-              margin: 0,
-              lineHeight: 1.45,
-            }}>
-              Authorized system administrator access only. Enter root credentials to manage the platform.
-            </p>
-          </div>
-
-
-          {/* Error Alert Banner */}
-          {adminAuthError && (
-            <div style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.15)',
-              border: '1px solid rgba(0, 0, 0, 0.4)',
-              borderRadius: '10px',
-              padding: '0.75rem 1rem',
-              color: '#9CA3AF',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              marginBottom: '1.25rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}>
-              <AlertCircle size={16} color="#0A0A0A" style={{ flexShrink: 0 }} />
-              <span>{adminAuthError}</span>
-            </div>
-          )}
-
-          {/* Admin Login Form */}
-          <form onSubmit={handleAdminLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
-            {useAdminOtp ? (
-              <>
-                {/* Phone Field */}
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, color: '#CBD5E1', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '6px' }}>
-                    Phone Number
-                  </label>
-                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <Phone size={17} color="#64748B" style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }} />
-                    <input
-                      type="tel"
-                      required
-                      value={adminPhoneInput}
-                      onChange={(e) => setAdminPhoneInput(e.target.value)}
-                      placeholder="Enter phone number"
-                      style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.65rem', borderRadius: '10px', border: '1px solid #262626', backgroundColor: '#000000', color: '#FFFFFF', fontSize: '0.9rem', fontWeight: 600, outline: 'none' }}
-                    />
-                  </div>
-                </div>
-
-                {/* OTP Field */}
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 800, color: '#CBD5E1', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '6px' }}>
-                    OTP
-                  </label>
-                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <Key size={17} color="#64748B" style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }} />
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={6}
-                      required
-                      value={adminOtpInput}
-                      onChange={(e) => setAdminOtpInput(e.target.value)}
-                      placeholder="Enter 6-digit OTP"
-                      style={{ width: '100%', padding: '0.75rem 1rem 0.75rem 2.65rem', borderRadius: '10px', border: '1px solid #262626', backgroundColor: '#000000', color: '#FFFFFF', fontSize: '0.9rem', fontWeight: 600, outline: 'none' }}
-                    />
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Email Field */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '0.74rem',
-                    fontWeight: 800,
-                    color: '#CBD5E1',
-                    letterSpacing: '0.04em',
-                    textTransform: 'uppercase',
-                    marginBottom: '6px',
-                  }}>
-                    Administrator Email
-                  </label>
-                  <div style={{
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}>
-                    <Mail
-                      size={17}
-                      color="#64748B"
-                      style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }}
-                    />
-                    <input
-                      type="email"
-                      required
-                      value={adminEmailInput}
-                      onChange={(e) => setAdminEmailInput(e.target.value)}
-                      placeholder="admin@gmail.com"
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem 1rem 0.75rem 2.65rem',
-                        borderRadius: '10px',
-                        border: '1px solid #262626',
-                        backgroundColor: '#000000',
-                        color: '#FFFFFF',
-                        fontSize: '0.9rem',
-                        fontWeight: 600,
-                        outline: 'none',
-                        transition: 'border-color 0.15s ease',
-                      }}
-                      onFocus={(e) => e.target.style.borderColor = '#0A0A0A'}
-                      onBlur={(e) => e.target.style.borderColor = '#262626'}
-                    />
-                  </div>
-                </div>
-
-                {/* Password Field */}
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <label style={{
-                      fontSize: '0.74rem',
-                      fontWeight: 800,
-                      color: '#CBD5E1',
-                      letterSpacing: '0.04em',
-                      textTransform: 'uppercase',
-                    }}>
-                      Admin Password
-                    </label>
-                  </div>
-                  <div style={{
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}>
-                    <Lock
-                      size={17}
-                      color="#64748B"
-                      style={{ position: 'absolute', left: '14px', pointerEvents: 'none' }}
-                    />
-                    <input
-                      type={showAdminPassword ? 'text' : 'password'}
-                      required
-                      value={adminPasswordInput}
-                      onChange={(e) => setAdminPasswordInput(e.target.value)}
-                      placeholder="Enter admin password"
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem 2.75rem 0.75rem 2.65rem',
-                        borderRadius: '10px',
-                        border: '1px solid #262626',
-                        backgroundColor: '#000000',
-                        color: '#FFFFFF',
-                        fontSize: '0.9rem',
-                        fontWeight: 600,
-                        outline: 'none',
-                        transition: 'border-color 0.15s ease',
-                      }}
-                      onFocus={(e) => e.target.style.borderColor = '#0A0A0A'}
-                      onBlur={(e) => e.target.style.borderColor = '#262626'}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowAdminPassword(!showAdminPassword)}
-                      style={{
-                        position: 'absolute',
-                        right: '12px',
-                        background: 'none',
-                        border: 'none',
-                        color: '#64748B',
-                        cursor: 'pointer',
-                        padding: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      {showAdminPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Toggle between password and OTP login */}
-            <button
-              type="button"
-              onClick={() => { setUseAdminOtp((prev) => !prev); setAdminAuthError(''); }}
-              style={{
-                display: 'block',
-                margin: '-0.6rem 0 0 auto',
-                background: 'none',
-                border: 'none',
-                color: '#FFB800',
-                fontWeight: 700,
-                fontSize: '0.78rem',
-                cursor: 'pointer',
-              }}
-            >
-              {useAdminOtp ? 'Use email & password instead' : 'Use OTP instead'}
-            </button>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isAdminSubmitting}
-              style={{
-                marginTop: '0.5rem',
-                width: '100%',
-                padding: '0.85rem 1.5rem',
-                borderRadius: '12px',
-                border: 'none',
-                background: 'linear-gradient(135deg, #0A0A0A 0%, #262626 100%)',
-                color: '#FFFFFF',
-                fontWeight: 800,
-                fontSize: '0.9rem',
-                letterSpacing: '0.03em',
-                cursor: isAdminSubmitting ? 'not-allowed' : 'pointer',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={(e) => {
-                if (!isAdminSubmitting) e.currentTarget.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                if (!isAdminSubmitting) e.currentTarget.style.transform = 'none';
-              }}
-            >
-              {isAdminSubmitting ? (
-                <>
-                  <RefreshCw size={18} style={{ animation: 'spin 0.6s linear infinite' }} />
-                  <span>AUTHENTICATING...</span>
-                </>
-              ) : (
-                <>
-                  <Key size={18} />
-                  <span>LOG IN TO ADMIN HUB</span>
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Return to Customer Store */}
-          <div style={{ marginTop: '1.75rem', textAlign: 'center', paddingTop: '1.25rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
-            <button
-              type="button"
-              onClick={() => navigateTo('home')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#94A3B8',
-                fontSize: '0.82rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'color 0.15s ease',
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#94A3B8'}
-            >
-              <ArrowLeft size={14} /> Return to Customer Storefront
-            </button>
-          </div>
-        </div>
-      </div>
+      <PanelLogin
+        badge="Admin Panel · Restricted Access"
+        subtitle="Sign in with your administrator mobile number"
+        demoPhone="9876543210"
+        onLogin={adminOtpLogin}
+        onBack={() => navigateTo('home')}
+        footer={<span>Authorized administrators only</span>}
+      />
     );
   }
 
@@ -8301,13 +7927,13 @@ export default function AdminView() {
                       o.shippingAddress?.fullName ||
                       o.shippingAddress?.recipientName ||
                       o.siteAddress?.recipientName ||
-                      'Er. Rajesh Malviya';
+                      'Customer';
 
                     const phone =
                       o.customerPhone ||
                       o.shippingAddress?.phone ||
                       o.siteAddress?.phone ||
-                      '+91 98260 11223';
+                      '—';
 
                     const siteCity =
                       o.shippingAddress?.city ||
@@ -8316,8 +7942,10 @@ export default function AdminView() {
 
                     const siteAddressLine =
                       o.shippingAddress?.addressLine ||
+                      o.shippingAddress?.street ||
                       o.siteAddress?.addressLine ||
-                      'Plot 42, Super Corridor';
+                      o.siteAddress?.street ||
+                      '—';
 
                     const itemsCount =
                       o.items?.reduce((acc, it) => acc + (it.quantity || 1), 0) ||
@@ -8562,10 +8190,10 @@ export default function AdminView() {
                       Customer Contact
                     </div>
                     <div style={{ fontWeight: 800, fontSize: '0.95rem', marginTop: '2px' }}>
-                      {selectedOrderDetailsModal.customerName || selectedOrderDetailsModal.siteAddress?.recipientName || 'Er. Rajesh Malviya'}
+                      {selectedOrderDetailsModal.customerName || selectedOrderDetailsModal.siteAddress?.recipientName || 'Customer'}
                     </div>
                     <div style={{ fontSize: '0.8rem', color: '#475467', marginTop: '2px' }}>
-                      Phone: {selectedOrderDetailsModal.customerPhone || selectedOrderDetailsModal.siteAddress?.phone || '+91 98260 11223'}
+                      Phone: {selectedOrderDetailsModal.customerPhone || selectedOrderDetailsModal.siteAddress?.phone || '—'}
                     </div>
                   </div>
 
@@ -8574,10 +8202,10 @@ export default function AdminView() {
                       Delivery Site Destination
                     </div>
                     <div style={{ fontSize: '0.85rem', fontWeight: 700, marginTop: '2px' }}>
-                      {selectedOrderDetailsModal.siteAddress?.title || 'Main Construction Site'}
+                      {selectedOrderDetailsModal.siteAddress?.label || selectedOrderDetailsModal.siteAddress?.title || 'Delivery Site'}
                     </div>
                     <div style={{ fontSize: '0.78rem', color: '#475467' }}>
-                      {selectedOrderDetailsModal.siteAddress?.addressLine || 'Super Corridor Tech Zone'}, {selectedOrderDetailsModal.siteAddress?.city || 'Indore'} - {selectedOrderDetailsModal.siteAddress?.pincode || '452005'}
+                      {[selectedOrderDetailsModal.siteAddress?.street || selectedOrderDetailsModal.siteAddress?.addressLine, selectedOrderDetailsModal.siteAddress?.city].filter(Boolean).join(', ') || '—'}{selectedOrderDetailsModal.siteAddress?.pincode ? ` - ${selectedOrderDetailsModal.siteAddress.pincode}` : ''}
                     </div>
                   </div>
                 </div>
@@ -8587,20 +8215,20 @@ export default function AdminView() {
                   <div style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
                     <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 700 }}>Payment Mode</div>
                     <div style={{ fontWeight: 800, color: '#0A0A0A', marginTop: '2px' }}>
-                      {selectedOrderDetailsModal.payment?.method || selectedOrderDetailsModal.paymentMethod || 'Online UPI'}
+                      {selectedOrderDetailsModal.payment?.method || selectedOrderDetailsModal.paymentMethod || '—'}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: selectedOrderDetailsModal.payment?.status === 'Paid' ? '#0A0A0A' : '#6B7280', fontWeight: 700, marginTop: '2px' }}>
-                      Status: {selectedOrderDetailsModal.payment?.status || 'Paid'}
+                    <div style={{ fontSize: '0.75rem', color: /^paid/i.test(selectedOrderDetailsModal.payment?.status || selectedOrderDetailsModal.paymentStatus || '') ? '#15803D' : '#B45309', fontWeight: 700, marginTop: '2px' }}>
+                      Status: {selectedOrderDetailsModal.payment?.status || selectedOrderDetailsModal.paymentStatus || 'Pending'}
                     </div>
                   </div>
 
                   <div style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
                     <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 700 }}>Logistics Driver</div>
                     <div style={{ fontWeight: 800, color: '#0A0A0A', marginTop: '2px' }}>
-                      {selectedOrderDetailsModal.driverName || 'Ramesh Patel (Driver)'}
+                      {selectedOrderDetailsModal.tracking?.driverName || selectedOrderDetailsModal.driverName || 'Not assigned yet'}
                     </div>
                     <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '2px' }}>
-                      Truck: {selectedOrderDetailsModal.vehicleNumber || 'MP-09-TR-4421'}
+                      Truck: {selectedOrderDetailsModal.tracking?.vehicleNumber || selectedOrderDetailsModal.vehicleNumber || '—'}
                     </div>
                   </div>
                 </div>
@@ -8615,6 +8243,8 @@ export default function AdminView() {
                       <thead>
                         <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#64748B', textAlign: 'left' }}>
                           <th style={{ padding: '8px 12px' }}>Material</th>
+                          <th style={{ padding: '8px 12px' }}>Vendor</th>
+                          <th style={{ padding: '8px 12px' }}>Fulfilment</th>
                           <th style={{ padding: '8px 12px', textAlign: 'center' }}>Qty</th>
                           <th style={{ padding: '8px 12px', textAlign: 'right' }}>Price</th>
                           <th style={{ padding: '8px 12px', textAlign: 'right' }}>Total</th>
@@ -8632,6 +8262,12 @@ export default function AdminView() {
                             <tr key={idx} style={{ borderBottom: '1px solid #F1F5F9' }}>
                               <td style={{ padding: '8px 12px', fontWeight: 700, color: theme.textDark }}>
                                 {it.product?.name || it.name || 'Building Material Item'}
+                              </td>
+                              <td style={{ padding: '8px 12px', color: '#475467' }}>{it.product?.vendorName || 'Platform'}</td>
+                              <td style={{ padding: '8px 12px' }}>
+                                <span style={{ background: it.vendorStatus === 'Delivered' ? '#DCFCE7' : '#FFF8E1', color: it.vendorStatus === 'Delivered' ? '#15803D' : '#92400E', fontWeight: 700, fontSize: '0.72rem', padding: '2px 8px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+                                  {it.vendorStatus || 'Processing'}
+                                </span>
                               </td>
                               <td style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 700 }}>
                                 {qty}{unit ? ` ${unit}` : ''}

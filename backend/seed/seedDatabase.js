@@ -3,8 +3,9 @@ import mongoose from 'mongoose';
 import Category from '../models/Category.js';
 import CategorySection from '../models/CategorySection.js';
 import Product from '../models/Product.js';
+import { pathToFileURL } from 'url';
 
-const SEED_SECTIONS = [
+export const SEED_SECTIONS = [
   {
     id: 'sec-structural',
     title: 'Structural & Masonry',
@@ -31,7 +32,7 @@ const SEED_SECTIONS = [
   },
 ];
 
-const SEED_CATEGORIES = [
+export const SEED_CATEGORIES = [
   {
     id: 'cat-cement',
     name: 'Cement',
@@ -144,7 +145,7 @@ const SEED_CATEGORIES = [
   },
 ];
 
-const SEED_PRODUCTS = [
+export const SEED_PRODUCTS = [
   {
     id: 'prod-polycab-wire',
     name: 'Polycab Wire',
@@ -560,4 +561,5 @@ async function seed() {
   }
 }
 
-seed();
+// Only run when executed directly (`node seed/seedDatabase.js`), not when imported by seedAll.js.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) seed();

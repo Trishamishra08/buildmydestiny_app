@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import Product from '../models/Product.js';
 import Order from '../models/Order.js';
+import { VENDOR_ITEM_STATUSES, rollupFromItems } from '../utils/orderFlow.js';
 
 const fail = (res, status, message) => res.status(status).json({ success: false, message });
 
@@ -10,6 +11,16 @@ const clean = (doc) => {
   const { _id, __v, ...rest } = doc;
   return rest;
 };
+
+// A vendor only ever sees (and earns from) their own line items of an order.
+const vendorLines = (order, vendorId) =>
+  (order.items || []).filter((line) => String(line?.product?.vendorId) === String(vendorId));
+const lineSum = (items) => items.reduce((acc, line) => acc + (line.lineTotal ?? (line.price || 0) * (line.quantity || 0)), 0);
+
+const slowestItemStatus = (items) =>
+  items
+    .map((line) => line.vendorStatus || 'Processing')
+    .sort((a, b) => VENDOR_ITEM_STATUSES.indexOf(a) - VENDOR_ITEM_STATUSES.indexOf(b))[0] || 'Processing';
 
 const isApprovedVendor = (req) => req.user?.role === 'vendor' && req.user?.vendorStatus === 'approved';
 
@@ -69,25 +80,65 @@ export const updateVendorProfile = async (req, res, next) => {
 export const getVendorStats = async (req, res, next) => {
   try {
     const vendorId = String(req.user._id);
-    const [productCount, orders] = await Promise.all([
-      Product.countDocuments({ vendorId }),
-      Order.find({ 'items.product.vendorId': vendorId }).lean(),
+    const [products, orders] = await Promise.all([
+      Product.find({ vendorId }).select('stockCount inStock').lean(),
+      Order.find({ 'items.product.vendorId': vendorId }).sort({ _id: -1 }).lean(),
     ]);
 
     let revenue = 0;
-    let orderCount = 0;
+    let deliveredRevenue = 0;
+    let pendingOrders = 0;
+    let deliveredOrders = 0;
+    const recentOrders = [];
     for (const order of orders) {
-      const items = (order.items || []).filter((line) => String(line?.product?.vendorId) === vendorId);
+      const items = vendorLines(order, vendorId);
       if (!items.length) continue;
-      orderCount += 1;
-      revenue += items.reduce((acc, line) => acc + (line.lineTotal ?? line.price * line.quantity ?? 0), 0);
+      const total = lineSum(items);
+      revenue += total;
+      const allDelivered = items.every((line) => line.vendorStatus === 'Delivered');
+      if (allDelivered) {
+        deliveredOrders += 1;
+        deliveredRevenue += total;
+      } else if (!/cancel/i.test(String(order.status))) {
+        pendingOrders += 1;
+      }
+      if (recentOrders.length < 5) {
+        recentOrders.push({
+          id: order.id,
+          orderNumber: order.orderNumber || order.id,
+          customerName: order.customerName || 'Customer',
+          // The vendor's own progress: their slowest item.
+          status: slowestItemStatus(items),
+          vendorTotal: total,
+          createdAt: order.createdAt,
+        });
+      }
     }
 
-    res.json({ success: true, data: { productCount, orderCount, revenue } });
+    res.json({
+      success: true,
+      data: {
+        productCount: products.length,
+        lowStockCount: products.filter((p) => p.inStock !== false && Number(p.stockCount) <= 10).length,
+        outOfStockCount: products.filter((p) => p.inStock === false || Number(p.stockCount) === 0).length,
+        orderCount: pendingOrders + deliveredOrders,
+        pendingOrders,
+        deliveredOrders,
+        revenue,
+        deliveredRevenue,
+        recentOrders,
+      },
+    });
   } catch (error) {
     next(error);
   }
 };
+
+const slugify = (text) =>
+  String(text || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 
 const newVendorProductId = async () => {
   for (let attempt = 0; attempt < 8; attempt++) {
@@ -121,8 +172,28 @@ export const createMyProduct = async (req, res, next) => {
     let id = req.body?.id ? String(req.body.id).trim() : '';
     if (!id || (await Product.exists({ id }))) id = await newVendorProductId();
 
+    const body = clean(req.body || {});
+    const price = Number(body.price) || 0;
+    const mrp = Number(body.mrp) || price;
+    const stockCount = Number(body.stockCount) || 0;
+    const discountPercent = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
+
+    // Storefront fields the customer app relies on get sensible defaults; the vendor's own
+    // values win. Ownership is always stamped from the signed-in vendor.
     const doc = {
-      ...clean(req.body || {}),
+      rating: 4.5,
+      reviewsCount: 0,
+      moq: 1,
+      isFeatured: false,
+      isPopular: false,
+      ...body,
+      slug: body.slug || slugify(body.name),
+      price,
+      mrp,
+      stockCount,
+      inStock: body.inStock !== false && stockCount > 0,
+      discountPercent,
+      discount: discountPercent ? `${discountPercent}% OFF` : '',
       id,
       vendorId: String(req.user._id),
       vendorName: req.user.businessName || req.user.name || 'Vendor',
@@ -151,11 +222,29 @@ const loadOwnedProduct = async (req) => {
  */
 export const updateMyProduct = async (req, res, next) => {
   try {
-    const { notFound, forbidden } = await loadOwnedProduct(req);
+    const { notFound, forbidden, product } = await loadOwnedProduct(req);
     if (notFound) return fail(res, 404, 'Product not found');
     if (forbidden) return fail(res, 403, 'You can only edit your own products');
 
-    const { id: _id, vendorId: _vendorId, ...fields } = clean(req.body || {});
+    const { id: _id, vendorId: _vendorId, vendorName: _vendorName, ...fields } = clean(req.body || {});
+
+    // Keep the derived storefront fields in step with price / stock edits.
+    const price = fields.price !== undefined ? Number(fields.price) || 0 : undefined;
+    const mrp = fields.mrp !== undefined ? Number(fields.mrp) || 0 : undefined;
+    const stockCount = fields.stockCount !== undefined ? Number(fields.stockCount) || 0 : undefined;
+    if (price !== undefined) fields.price = price;
+    if (stockCount !== undefined) {
+      fields.stockCount = stockCount;
+      if (fields.inStock !== false) fields.inStock = stockCount > 0;
+    }
+    if (price !== undefined || mrp !== undefined) {
+      const effectivePrice = price ?? Number(product.price) ?? 0;
+      const effectiveMrp = Math.max(mrp ?? Number(product.mrp) ?? 0, effectivePrice);
+      fields.mrp = effectiveMrp;
+      const pct = effectiveMrp > effectivePrice ? Math.round(((effectiveMrp - effectivePrice) / effectiveMrp) * 100) : 0;
+      fields.discountPercent = pct;
+      fields.discount = pct ? `${pct}% OFF` : '';
+    }
     const saved = await Product.findOneAndUpdate(
       { id: req.params.key },
       { $set: fields },
@@ -198,9 +287,8 @@ export const listMyOrders = async (req, res, next) => {
     const orders = await Order.find({ 'items.product.vendorId': vendorId }).sort({ _id: -1 }).lean();
 
     const scoped = orders.map((order) => {
-      const items = (order.items || []).filter((line) => String(line?.product?.vendorId) === vendorId);
-      const vendorTotal = items.reduce((acc, line) => acc + (line.lineTotal ?? line.price * line.quantity ?? 0), 0);
-      return clean({ ...order, items, vendorTotal });
+      const items = vendorLines(order, vendorId);
+      return clean({ ...order, items, vendorTotal: lineSum(items) });
     });
 
     res.json({ success: true, count: scoped.length, data: scoped });
@@ -209,7 +297,7 @@ export const listMyOrders = async (req, res, next) => {
   }
 };
 
-const ITEM_STATUSES = ['Processing', 'Ready to Ship', 'Shipped', 'Delivered'];
+const ITEM_STATUSES = VENDOR_ITEM_STATUSES;
 
 /**
  * @desc    Update the fulfilment status of the vendor's own line item within an order
@@ -241,8 +329,16 @@ export const updateMyOrderItemStatus = async (req, res, next) => {
 
     if (!found) return fail(res, 403, 'This item does not belong to you');
 
-    await Order.updateOne({ id: req.params.orderId }, { $set: { items: nextItems } });
-    res.json({ success: true, data: found });
+    // The customer sees the slowest item's progress across all vendors in the order.
+    const rollup = rollupFromItems(nextItems, order.tracking || {});
+    const update = { items: nextItems, ...(rollup || {}) };
+    if (rollup?.statusCode === 'delivered' && /cash|pay on site|pending/i.test(String(order.paymentStatus || ''))) {
+      update.paymentStatus = 'Paid (Cash Collected)';
+      update.payment = { ...(order.payment || {}), status: 'Paid (Cash Collected)' };
+    }
+
+    await Order.updateOne({ id: req.params.orderId }, { $set: update });
+    res.json({ success: true, data: found, order: { id: order.id, status: update.status || order.status } });
   } catch (error) {
     next(error);
   }

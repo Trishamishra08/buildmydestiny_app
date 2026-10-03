@@ -1237,7 +1237,7 @@ export const StoreProvider = ({ children }) => {
       const message =
         err?.status === 0
           ? 'Cannot reach the server. Please check your connection and try again.'
-          : 'Access Denied: Invalid phone number or OTP';
+          : err?.message || 'Invalid phone number or OTP';
       addToast(message, 'error');
       return { success: false, message };
     }
@@ -1288,9 +1288,9 @@ export const StoreProvider = ({ children }) => {
   };
 
   const vendorSignup = async (formData) => {
-    if (!formData.password) {
-      addToast('Please choose a password.', 'warning');
-      return { success: false, message: 'Please choose a password.' };
+    if (String(formData.phone || '').replace(/\D/g, '').length < 10) {
+      addToast('Please enter a valid 10-digit mobile number.', 'warning');
+      return { success: false, message: 'Please enter a valid 10-digit mobile number.' };
     }
     if (!formData.businessName) {
       addToast('Please provide your business/shop name.', 'warning');
@@ -1302,7 +1302,6 @@ export const StoreProvider = ({ children }) => {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        password: formData.password,
         role: 'vendor',
         businessName: formData.businessName,
         city: formData.city || currentCity,
@@ -1341,7 +1340,7 @@ export const StoreProvider = ({ children }) => {
       const message =
         err?.status === 0
           ? 'Cannot reach the server. Please check your connection and try again.'
-          : 'Access Denied: Invalid phone number or OTP';
+          : err?.message || 'Invalid phone number or OTP';
       addToast(message, 'error');
       return { success: false, message };
     }
