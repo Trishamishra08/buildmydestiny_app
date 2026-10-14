@@ -44,6 +44,8 @@ const formatDate = (value) => {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
+const SHOW_DEMO_OTP = import.meta.env.DEV || import.meta.env.VITE_SHOW_DEMO_LOGIN === 'true';
+
 // Fulfilment steps a vendor moves their own items through (mirrors backend utils/orderFlow.js).
 const ITEM_STATUSES = ['Processing', 'Ready to Ship', 'Shipped', 'Out for Delivery', 'Delivered'];
 const NEXT_ACTION = {
@@ -106,7 +108,7 @@ function VendorAuthScreen() {
   const { vendorOtpLogin, vendorSignup, navigateTo } = useStore();
   const [mode, setMode] = useState('login'); // 'login' | 'register'
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({ name: '', businessName: '', phone: '', email: '', city: '' });
+  const [form, setForm] = useState({ name: '', businessName: '', phone: '', email: '', city: '', otp: '' });
   const update = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
   const register = async (e) => {
@@ -148,6 +150,17 @@ function VendorAuthScreen() {
       />
       <input style={inputStyle} type="email" placeholder="Email (optional)" value={form.email} onChange={update('email')} />
       <input style={inputStyle} placeholder="City" value={form.city} onChange={update('city')} />
+      <input
+        style={{ ...inputStyle, letterSpacing: '0.35em', textAlign: 'center', fontWeight: 800 }}
+        type="text"
+        inputMode="numeric"
+        maxLength={6}
+        placeholder="6-digit OTP *"
+        value={form.otp}
+        onChange={(e) => setForm((prev) => ({ ...prev, otp: e.target.value.replace(/D/g, '').slice(0, 6) }))}
+        required
+      />
+      {SHOW_DEMO_OTP && <p style={{ margin: '-0.4rem 0 0', fontSize: '0.75rem', color: MUTED, textAlign: 'center' }}>Demo OTP: 123456</p>}
       <button
         type="submit"
         disabled={submitting}
@@ -156,7 +169,7 @@ function VendorAuthScreen() {
         {submitting ? 'Please wait...' : 'Create Vendor Account'}
       </button>
       <p style={{ margin: 0, fontSize: '0.76rem', color: MUTED, textAlign: 'center' }}>
-        Your account is reviewed by our team. You can sign in right away; listing products unlocks once approved.
+        Your mobile number is verified with the OTP. Our team then reviews your account; listing products unlocks once approved.
       </p>
     </form>
   );

@@ -1,4 +1,4 @@
-// Runs the API (port 5000) and the Vite storefront (port 5173) together: `npm run dev`
+// Runs the API (port 5001) and the Vite storefront (port 5173) together: `npm run dev`
 import { spawn } from 'node:child_process';
 
 const run = (name, args) => {

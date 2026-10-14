@@ -1325,6 +1325,10 @@ export const StoreProvider = ({ children }) => {
       addToast('Please enter a valid 10-digit mobile number.', 'warning');
       return { success: false, message: 'Please enter a valid 10-digit mobile number.' };
     }
+    if (String(formData.otp || '').length !== 6) {
+      addToast('Please enter the 6-digit OTP sent to your mobile number.', 'warning');
+      return { success: false, message: 'Please enter the 6-digit OTP.' };
+    }
     if (!formData.businessName) {
       addToast('Please provide your business/shop name.', 'warning');
       return { success: false, message: 'Please provide your business/shop name.' };
@@ -1335,6 +1339,7 @@ export const StoreProvider = ({ children }) => {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
+        otp: formData.otp,
         role: 'vendor',
         businessName: formData.businessName,
         city: formData.city || currentCity,

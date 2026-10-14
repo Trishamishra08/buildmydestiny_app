@@ -37,7 +37,12 @@ let mockUsers = [
  */
 export const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password, phone, role, company, gstin, city, businessName } = req.body;
+    const { name, email, password, phone, role, company, gstin, city, businessName, otp } = req.body;
+
+    // The mobile number must be verified before any account is created.
+    if (String(otp || '').trim() !== TEST_OTP_CODE) {
+      return res.status(401).json({ success: false, message: 'Please enter the correct 6-digit OTP to verify your mobile number' });
+    }
 
     // Never let a request self-assign a privileged role.
     const safeRole = ['customer', 'mistri', 'vendor'].includes(role) ? role : 'customer';
