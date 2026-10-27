@@ -1445,15 +1445,15 @@ export default function AdminView() {
   };
 
   // -------------------------------------------------------------
-  // Exclusive Admin Authentication Gate (mobile OTP only)
+  // Exclusive Admin Authentication Gate (email + password)
   // -------------------------------------------------------------
   if (!adminUser) {
     return (
       <PanelLogin
         badge="Admin Panel · Restricted Access"
-        subtitle="Sign in with your administrator mobile number"
-        demoPhone="9876543210"
-        onLogin={adminOtpLogin}
+        subtitle="Sign in with your administrator email and password"
+        credentials="email"
+        onLogin={adminLogin}
         onBack={() => navigateTo('home')}
         footer={<span>Authorized administrators only</span>}
       />

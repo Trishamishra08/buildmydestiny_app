@@ -25,7 +25,11 @@ export default function PanelLogin({
   footer,
   submitLabel = 'LOGIN',
   customForm = null, // replaces the OTP form (e.g. a registration form) inside the same card
+  credentials = 'phone', // 'phone' = mobile + OTP, 'email' = email + password (onLogin(email, password))
 }) {
+  const isEmailMode = credentials === 'email';
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
@@ -63,14 +67,22 @@ export default function PanelLogin({
   const submit = async (e) => {
     e.preventDefault();
     setError('');
-    const digits = phone.replace(/\D/g, '').slice(-10);
-    if (digits.length < 10) return setError('Please enter a valid 10-digit mobile number');
-    const code = otp.join('');
-    if (code.length !== 6) return setError('Please enter the complete 6-digit OTP');
+    let first;
+    let second;
+    if (isEmailMode) {
+      first = email.trim();
+      second = password;
+      if (!first || !second) return setError('Please enter your email and password');
+    } else {
+      first = phone.replace(/\D/g, '').slice(-10);
+      if (first.length < 10) return setError('Please enter a valid 10-digit mobile number');
+      second = otp.join('');
+      if (second.length !== 6) return setError('Please enter the complete 6-digit OTP');
+    }
 
     setLoading(true);
     try {
-      const res = await onLogin(digits, code);
+      const res = await onLogin(first, second);
       if (res && res.success === false) setError(res.message || 'Sign in failed. Please try again.');
     } catch (err) {
       setError(err?.message || 'Sign in failed. Please try again.');
@@ -140,6 +152,29 @@ export default function PanelLogin({
 
         {customForm || (
         <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {isEmailMode ? (
+            <>
+              <input
+                type="email"
+                required
+                autoComplete="username"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{ padding: '14px 16px', borderRadius: 14, border: '1.5px solid #CBD5E1', background: '#F8FAFC', outline: 'none', fontFamily: 'inherit', fontSize: '0.98rem', fontWeight: 600, color: '#0F172A' }}
+              />
+              <input
+                type="password"
+                required
+                autoComplete="current-password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ padding: '14px 16px', borderRadius: 14, border: '1.5px solid #CBD5E1', background: '#F8FAFC', outline: 'none', fontFamily: 'inherit', fontSize: '0.98rem', fontWeight: 600, color: '#0F172A' }}
+              />
+            </>
+          ) : (
+          <>
           <div style={{ display: 'flex', alignItems: 'center', background: '#F8FAFC', borderRadius: 14, border: '1.5px solid #CBD5E1', overflow: 'hidden' }}>
             <div style={{ padding: '14px 16px', background: '#F1F5F9', borderRight: '1.5px solid #CBD5E1', color: '#0F172A', fontFamily: "'Montserrat', 'Outfit', sans-serif", fontWeight: 800, fontSize: '0.95rem' }}>
               +91
@@ -179,6 +214,8 @@ export default function PanelLogin({
               ))}
             </div>
           </div>
+          </>
+          )}
 
           {error && (
             <div role="alert" style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#B91C1C', borderRadius: 10, padding: '0.65rem 0.85rem', fontSize: '0.82rem', fontWeight: 600 }}>
