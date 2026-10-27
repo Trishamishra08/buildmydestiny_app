@@ -7,7 +7,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://mistri-s2c0.onrender.com/api/:path*"
+      "destination": "https://buildmydestiny-app.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
