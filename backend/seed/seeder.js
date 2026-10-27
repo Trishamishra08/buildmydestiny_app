@@ -18,7 +18,7 @@ const toAppRecord = ({ _id, id, ...rest }) => ({ id: String(id || _id), ...rest 
  */
 const importData = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/mistri_db');
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/buildmydestiny');
 
     for (const [Model, records] of [
       [CategorySection, initialCategorySections],
@@ -52,7 +52,7 @@ const destroyData = async () => {
   }
 
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/mistri_db');
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/buildmydestiny');
 
     await Service.deleteMany();
     await Mistri.deleteMany();

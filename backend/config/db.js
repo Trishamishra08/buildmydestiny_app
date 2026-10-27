@@ -22,7 +22,7 @@ const syncModelIndexes = async () => {
  */
 export const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/mistri_db');
+    const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/buildmydestiny');
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     await syncModelIndexes();
     return true;
