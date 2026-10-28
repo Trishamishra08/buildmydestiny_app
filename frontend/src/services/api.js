@@ -174,6 +174,23 @@ export const api = {
   getVendorOrders: () => request('/vendor/orders', { auth: 'vendor' }),
   updateVendorOrderItemStatus: (orderId, productId, status) =>
     request(`/vendor/orders/${encodeURIComponent(orderId)}/items/${encodeURIComponent(productId)}/status`, json('PATCH', { status }, { auth: 'vendor' })),
+  // Move all of this vendor's items in an order at once, with the delivery person's details.
+  updateVendorOrderStatus: (orderId, data) =>
+    request(`/vendor/orders/${encodeURIComponent(orderId)}/status`, json('PATCH', data, { auth: 'vendor' })),
+  // The vendor's saved delivery people
+  getDeliveryMen: () => request('/vendor/delivery-men', { auth: 'vendor' }),
+  createDeliveryMan: (data) => request('/vendor/delivery-men', json('POST', data, { auth: 'vendor' })),
+  updateDeliveryMan: (id, data) => request(`/vendor/delivery-men/${encodeURIComponent(id)}`, json('PATCH', data, { auth: 'vendor' })),
+  deleteDeliveryMan: (id) => request(`/vendor/delivery-men/${encodeURIComponent(id)}`, { method: 'DELETE', auth: 'vendor' }),
+  // Live form data: GST slabs, the admin's categories, delivery zones, defaults.
+  getVendorMeta: () => request('/vendor/meta', { auth: 'vendor' }),
+
+  // Delivery zones (public read, admin write) and customer-facing delivery tracking
+  getZones: () => request('/zones'),
+  checkPincode: (pincode) => request(`/zones/check?pincode=${encodeURIComponent(pincode)}`),
+  saveZone: (zone) => request(`/zones/${encodeURIComponent(zone.id)}`, json('PUT', zone, { auth: 'admin' })),
+  deleteZone: (id) => request(`/zones/${encodeURIComponent(id)}`, { method: 'DELETE', auth: 'admin' }),
+  trackOrder: (orderId) => request(`/orders/${encodeURIComponent(orderId)}/track`, { auth: 'user' }),
 
   // Admin: vendor account approval
   getVendors: () => request('/vendor/admin/list', { auth: 'admin' }),

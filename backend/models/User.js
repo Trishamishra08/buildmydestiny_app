@@ -48,6 +48,29 @@ const userSchema = new mongoose.Schema(
       enum: ['pending', 'approved', 'rejected'],
       default: 'pending',
     },
+    // Business & compliance details a vendor keeps on their profile
+    businessType: { type: String, default: '' }, // Manufacturer | Distributor | Dealer | Retailer
+    businessDescription: { type: String, default: '' },
+    logo: { type: String, default: '' },
+    supportPhone: { type: String, default: '' },
+    pan: { type: String, uppercase: true, trim: true, default: '' },
+    gstRegistered: { type: Boolean, default: false },
+    pickupAddress: {
+      street: { type: String, default: '' },
+      landmark: { type: String, default: '' },
+      city: { type: String, default: '' },
+      state: { type: String, default: '' },
+      pincode: { type: String, default: '' },
+    },
+    bankDetails: {
+      accountHolder: { type: String, default: '' },
+      accountNumber: { type: String, default: '' },
+      ifsc: { type: String, uppercase: true, trim: true, default: '' },
+      bankName: { type: String, default: '' },
+      upiId: { type: String, default: '' },
+    },
+    // Vendors can pause new orders (their products stop being purchasable) without leaving.
+    isAcceptingOrders: { type: Boolean, default: true },
     // Delivery zones (DeliveryZone ids) this vendor delivers to. Empty = every zone.
     serviceZones: { type: [String], default: [] },
     avatar: {
