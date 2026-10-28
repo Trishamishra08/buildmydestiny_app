@@ -12,6 +12,11 @@ const Category = createAppModel('Category', {
     subcategories: [Mixed],
     subcategoryImages: Mixed,
     isActive: Mixed,
+    // Defaults every product in this category inherits (a vendor may override GST / HSN per product).
+    gstRatePercent: Mixed,
+    hsnCode: Mixed,
+    // Platform commission (% of taxable value) charged to the vendor on sales in this category.
+    commissionPercent: Mixed,
     createdOn: Mixed,
     lastUpdated: Mixed,
   },

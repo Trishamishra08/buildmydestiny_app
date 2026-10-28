@@ -158,7 +158,7 @@ export const trackingView = (order, now = new Date()) => {
       message: statusLabel(status),
       step: VENDOR_ITEM_STATUSES.indexOf(status) + 1,
       totalSteps: VENDOR_ITEM_STATUSES.length,
-      rider: s.rider || null,
+      rider: s.rider ? { name: s.rider.name, phone: s.rider.phone, vehicleNumber: s.rider.vehicleNumber } : null,
       promisedBy: s.promisedBy || null,
       minutesLeft,
       isDelayed: minutesLeft !== null && minutesLeft < 0,

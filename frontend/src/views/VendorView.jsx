@@ -23,6 +23,7 @@ import {
   Truck,
   ChevronRight,
   Store,
+  Users,
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import Logo from '../components/Logo';
@@ -157,7 +158,7 @@ function VendorAuthScreen() {
         maxLength={6}
         placeholder="6-digit OTP *"
         value={form.otp}
-        onChange={(e) => setForm((prev) => ({ ...prev, otp: e.target.value.replace(/D/g, '').slice(0, 6) }))}
+        onChange={(e) => setForm((prev) => ({ ...prev, otp: e.target.value.replace(/\D/g, '').slice(0, 6) }))}
         required
       />
       {SHOW_DEMO_OTP && <p style={{ margin: '-0.4rem 0 0', fontSize: '0.75rem', color: MUTED, textAlign: 'center' }}>Demo OTP: 123456</p>}
@@ -275,6 +276,37 @@ function DashboardTab({ stats, loading, canSell, goTo, openNewProduct }) {
         ))}
       </div>
 
+      {stats?.earnings && (
+        <div style={{ ...cardStyle, padding: '1.1rem 1.25rem', marginBottom: '1.25rem' }}>
+          <div style={{ fontWeight: 800, fontSize: '0.95rem', marginBottom: '0.8rem' }}>Earnings &amp; tax</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
+            {[
+              ['Payout (delivered)', money(stats.earnings.delivered.payout), '#166534'],
+              ['In progress', money(stats.earnings.inProgress.payout), DARK],
+              ['GST collected', money(stats.earnings.delivered.gstAmount + stats.earnings.inProgress.gstAmount), DARK],
+              ['Platform fee', money(stats.earnings.delivered.commission + stats.earnings.inProgress.commission), '#B45309'],
+            ].map(([label, value, tone]) => (
+              <div key={label}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: MUTED }}>{label}</div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: tone }}>{value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {stats?.delayedOrders > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0.8rem 1rem', borderRadius: 12, background: '#FEF2F2', border: '1px solid #FECACA', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+          <Clock size={18} color="#DC2626" />
+          <span style={{ fontSize: '0.85rem', color: '#991B1B', fontWeight: 600, flex: 1 }}>
+            {stats.delayedOrders} order{stats.delayedOrders > 1 ? 's are' : ' is'} past the delivery time promised to the customer.
+          </span>
+          <button onClick={() => goTo('orders')} style={{ background: 'none', border: 'none', color: '#991B1B', fontWeight: 800, cursor: 'pointer', fontSize: '0.82rem' }}>
+            Open orders →
+          </button>
+        </div>
+      )}
+
       {stats && (stats.lowStockCount > 0 || stats.outOfStockCount > 0) && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0.8rem 1rem', borderRadius: 12, background: '#FFFBEB', border: '1px solid #FDE68A', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
           <AlertTriangle size={18} color="#D97706" />
@@ -360,12 +392,13 @@ function ProductsTab({ products, loading, canSell, categories, onAdd, onEdit, on
         <EmptyState icon={Package} text={loading ? 'Loading…' : products.length === 0 ? (canSell ? 'No products yet — add your first product.' : 'Products can be added once your account is approved.') : 'No products match your search.'} />
       ) : (
         <div style={{ ...cardStyle, overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', minWidth: 720 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', minWidth: 800 }}>
             <thead>
               <tr style={{ background: '#F9FAFB', textAlign: 'left', color: MUTED, fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 <th style={{ padding: '0.75rem 1rem' }}>Product</th>
                 <th style={{ padding: '0.75rem 1rem' }}>Category</th>
                 <th style={{ padding: '0.75rem 1rem' }}>Price</th>
+                <th style={{ padding: '0.75rem 1rem' }}>GST</th>
                 <th style={{ padding: '0.75rem 1rem' }}>Stock</th>
                 <th style={{ padding: '0.75rem 1rem' }}>Status</th>
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Actions</th>
@@ -392,6 +425,17 @@ function ProductsTab({ products, loading, canSell, categories, onAdd, onEdit, on
                     <td style={{ padding: '0.7rem 1rem' }}>
                       <div style={{ fontWeight: 800 }}>{money(p.price)}{p.unit ? <span style={{ fontWeight: 500, color: MUTED }}> / {p.unit}</span> : null}</div>
                       {Number(p.mrp) > Number(p.price) && <div style={{ fontSize: '0.74rem', color: '#9CA3AF', textDecoration: 'line-through' }}>{money(p.mrp)}</div>}
+                    </td>
+                    <td style={{ padding: '0.7rem 1rem', fontSize: '0.8rem' }}>
+                      {p.effectiveGstRate !== undefined ? (
+                        <>
+                          <div style={{ fontWeight: 700 }}>{p.effectiveGstRate}%</div>
+                          <div style={{ fontSize: '0.7rem', color: MUTED }}>
+                            {p.gstSource === 'product' ? 'Set by you' : p.gstSource === 'category' ? 'Category default' : 'Site default'}
+                            {p.effectiveHsn ? ` · HSN ${p.effectiveHsn}` : ''}
+                          </div>
+                        </>
+                      ) : '—'}
                     </td>
                     <td style={{ padding: '0.7rem 1rem', fontWeight: 700, color: low ? '#B45309' : DARK }}>{p.stockCount ?? '—'}{low && ' ⚠'}</td>
                     <td style={{ padding: '0.7rem 1rem' }}>
@@ -432,14 +476,247 @@ const ORDER_TABS = [
   { id: 'all', label: 'All', match: () => true },
 ];
 
-function OrdersTab({ orders, loading, onUpdateStatus, busyKey }) {
-  const [tab, setTab] = useState('new');
-  const counts = Object.fromEntries(ORDER_TABS.map((t) => [t.id, orders.filter(t.match).length]));
-  const visible = orders.filter(ORDER_TABS.find((t) => t.id === tab).match);
+const fmtLeft = (minutes) => {
+  const abs = Math.abs(minutes);
+  const h = Math.floor(abs / 60);
+  const m = abs % 60;
+  const text = h ? `${h}h ${m}m` : `${m}m`;
+  return minutes < 0 ? `${text} overdue` : `${text} left`;
+};
+
+const formatTime = (value) => {
+  const d = value ? new Date(value) : null;
+  if (!d || Number.isNaN(d.getTime())) return '';
+  return d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+};
+
+// The slowest status across the vendor's items in an order
+const orderStatusOf = (order) =>
+  order.items
+    .map((l) => l.vendorStatus || 'Processing')
+    .sort((a, b) => ITEM_STATUSES.indexOf(a) - ITEM_STATUSES.indexOf(b))[0] || 'Processing';
+
+// Who is delivering is asked when the order leaves the vendor.
+const NEEDS_RIDER = ['Shipped', 'Out for Delivery'];
+
+const VEHICLE_TYPES = ['Bike', 'Auto', 'Mini truck', 'Pickup', 'Truck', 'Tempo', 'Other'];
+
+function RiderModal({ order, status, deliveryMen = [], onClose, onSubmit, busy }) {
+  const saved = order.shipment?.rider || {};
+  const onDuty = deliveryMen.filter((m) => m.active !== false);
+  const [pick, setPick] = useState(saved.deliveryManId && onDuty.some((m) => m.id === saved.deliveryManId) ? saved.deliveryManId : onDuty.length ? onDuty[0].id : 'other');
+  const [form, setForm] = useState({ driverName: saved.name || '', driverPhone: saved.phone || '', vehicleNumber: saved.vehicleNumber || '', note: '', saveToTeam: true });
+  const set = (k, v) => setForm((prev) => ({ ...prev, [k]: v }));
+  const required = status === 'Shipped' || status === 'Out for Delivery';
+  const manual = pick === 'other';
+  const phoneOk = /^[6-9]\d{9}$/.test(form.driverPhone.replace(/\D/g, '').slice(-10));
+  const valid = !required || (manual ? form.driverName.trim() && phoneOk : Boolean(pick));
+
+  const submit = () =>
+    onSubmit(
+      manual
+        ? { ...form }
+        : { deliveryManId: pick, note: form.note }
+    );
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1200, padding: '1rem' }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: '#fff', borderRadius: 18, width: '100%', maxWidth: 460, maxHeight: '92vh', overflowY: 'auto', padding: '1.4rem', boxShadow: '0 25px 60px rgba(0,0,0,0.3)' }}>
+        <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Mark order #{order.orderNumber || order.id} as {status}</h3>
+        <p style={{ margin: '6px 0 1rem', fontSize: '0.82rem', color: MUTED }}>
+          {required ? 'Choose who is delivering. The customer sees their name and can call them.' : 'Add a note for the customer (optional).'}
+        </p>
+
+        {required && (
+          <>
+            {onDuty.length > 0 && (
+              <div style={{ display: 'grid', gap: 8, marginBottom: '0.8rem' }}>
+                {onDuty.map((m) => (
+                  <label key={m.id} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '0.6rem 0.8rem', borderRadius: 12, border: `1.5px solid ${pick === m.id ? ACCENT : BORDER}`, background: pick === m.id ? ACCENT_SOFT : '#fff', cursor: 'pointer' }}>
+                    <input type="radio" name="rider" checked={pick === m.id} onChange={() => setPick(m.id)} style={{ accentColor: ACCENT }} />
+                    <span style={{ flex: 1 }}>
+                      <span style={{ display: 'block', fontWeight: 800, fontSize: '0.86rem' }}>{m.name}</span>
+                      <span style={{ display: 'block', fontSize: '0.74rem', color: MUTED }}>{m.phone}{m.vehicleType ? ` · ${m.vehicleType}` : ''}{m.vehicleNumber ? ` · ${m.vehicleNumber}` : ''}</span>
+                    </span>
+                    {m.activeDeliveries > 0 && <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#9A3412', background: '#FFEDD5', borderRadius: 999, padding: '2px 8px' }}>{m.activeDeliveries} on road</span>}
+                  </label>
+                ))}
+                <label style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '0.6rem 0.8rem', borderRadius: 12, border: `1.5px solid ${manual ? ACCENT : BORDER}`, background: manual ? ACCENT_SOFT : '#fff', cursor: 'pointer' }}>
+                  <input type="radio" name="rider" checked={manual} onChange={() => setPick('other')} style={{ accentColor: ACCENT }} />
+                  <span style={{ fontWeight: 700, fontSize: '0.84rem' }}>Someone else (enter details)</span>
+                </label>
+              </div>
+            )}
+
+            {manual && (
+              <div style={{ display: 'grid', gap: '0.7rem' }}>
+                <div>
+                  <label style={labelStyle}>Delivery person *</label>
+                  <input style={inputStyle} value={form.driverName} onChange={(e) => set('driverName', e.target.value)} placeholder="Name" />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.7rem' }}>
+                  <div>
+                    <label style={labelStyle}>Mobile *</label>
+                    <input style={inputStyle} inputMode="numeric" value={form.driverPhone} onChange={(e) => set('driverPhone', e.target.value)} placeholder="10 digit number" />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Vehicle no.</label>
+                    <input style={inputStyle} value={form.vehicleNumber} onChange={(e) => set('vehicleNumber', e.target.value.toUpperCase())} placeholder="MP09 AB 1234" />
+                  </div>
+                </div>
+                <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: '0.8rem', fontWeight: 600 }}>
+                  <input type="checkbox" checked={form.saveToTeam} onChange={(e) => set('saveToTeam', e.target.checked)} style={{ accentColor: ACCENT }} /> Save to my delivery team
+                </label>
+              </div>
+            )}
+          </>
+        )}
+
+        <div style={{ marginTop: '0.7rem' }}>
+          <label style={labelStyle}>Note</label>
+          <input style={inputStyle} value={form.note} onChange={(e) => set('note', e.target.value)} placeholder="e.g. Left the warehouse at 2:30 PM" />
+        </div>
+        <div style={{ display: 'flex', gap: 10, marginTop: '1.1rem' }}>
+          <button onClick={onClose} style={{ flex: 1, padding: '0.7rem', borderRadius: 10, border: `1.5px solid ${BORDER}`, background: '#fff', cursor: 'pointer', fontWeight: 700, fontFamily: 'inherit' }}>Cancel</button>
+          <button disabled={!valid || busy} onClick={submit} style={{ ...primaryBtn(!valid || busy), flex: 1, justifyContent: 'center' }}>
+            {busy ? 'Updating…' : `Confirm ${status}`}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Delivery team
+// ---------------------------------------------------------------------------
+const emptyMan = { id: '', name: '', phone: '', vehicleType: 'Bike', vehicleNumber: '', notes: '', active: true };
+
+function DeliveryTeamTab({ deliveryMen, loading, onSave, onDelete, onToggle }) {
+  const [form, setForm] = useState(null); // null = closed
+  const [saving, setSaving] = useState(false);
+  const set = (k, v) => setForm((prev) => ({ ...prev, [k]: v }));
+  const phoneOk = form && /^[6-9]\d{9}$/.test(String(form.phone).replace(/\D/g, '').slice(-10));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    const ok = await onSave(form);
+    setSaving(false);
+    if (ok) setForm(null);
+  };
 
   return (
     <div>
-      <PageHeader title="Orders" subtitle="Orders containing your products. Update each item as you pack and ship it — customers see the progress live." />
+      <PageHeader
+        title="Delivery Team"
+        subtitle="Save your delivery people once, then pick one when you ship an order. Customers see their name and can call them."
+        action={<button onClick={() => setForm({ ...emptyMan })} style={primaryBtn(false)}><Plus size={16} /> Add delivery person</button>}
+      />
+
+      {deliveryMen.length === 0 ? (
+        <EmptyState icon={Truck} text={loading ? 'Loading…' : 'No delivery people saved yet. Add your first one.'} />
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+          {deliveryMen.map((m) => (
+            <div key={m.id} style={{ ...cardStyle, padding: '1rem 1.1rem', opacity: m.active === false ? 0.6 : 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: ACCENT_SOFT, border: `1px solid ${ACCENT_BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0 }}>
+                    {m.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: 800, color: DARK }}>{m.name}</div>
+                    <a href={`tel:${m.phone}`} style={{ fontSize: '0.8rem', color: '#0284C7', textDecoration: 'none', fontWeight: 600 }}>{m.phone}</a>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
+                  <button onClick={() => setForm({ ...emptyMan, ...m })} title="Edit" style={{ background: 'none', border: 'none', cursor: 'pointer' }}><Edit2 size={15} color="#64748B" /></button>
+                  <button onClick={() => onDelete(m)} title="Remove" style={{ background: 'none', border: 'none', cursor: 'pointer' }}><Trash2 size={15} color="#DC2626" /></button>
+                </div>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: MUTED, marginTop: 8 }}>
+                {[m.vehicleType, m.vehicleNumber].filter(Boolean).join(' · ') || 'No vehicle details'}
+              </div>
+              {m.notes && <div style={{ fontSize: '0.76rem', color: MUTED, marginTop: 4 }}>{m.notes}</div>}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: 800, color: m.activeDeliveries ? '#9A3412' : MUTED }}>
+                  {m.activeDeliveries ? `${m.activeDeliveries} order${m.activeDeliveries > 1 ? 's' : ''} on the road` : 'Free'}
+                </span>
+                <button
+                  onClick={() => onToggle(m)}
+                  style={{ border: 'none', cursor: 'pointer', padding: '3px 10px', borderRadius: 999, fontWeight: 800, fontSize: '0.72rem', background: m.active === false ? '#F1F5F9' : '#DCFCE7', color: m.active === false ? '#475569' : '#166534' }}
+                >
+                  {m.active === false ? 'Off duty' : 'On duty'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {form && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1200, padding: '1rem' }} onClick={() => setForm(null)}>
+          <form onSubmit={submit} onClick={(e) => e.stopPropagation()} style={{ background: '#fff', borderRadius: 18, width: '100%', maxWidth: 440, padding: '1.4rem', display: 'grid', gap: '0.8rem', boxShadow: '0 25px 60px rgba(0,0,0,0.3)' }}>
+            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>{form.id ? 'Edit delivery person' : 'Add delivery person'}</h3>
+            <div><label style={labelStyle}>Name *</label><input style={inputStyle} value={form.name} onChange={(e) => set('name', e.target.value)} required /></div>
+            <div>
+              <label style={labelStyle}>Mobile number *</label>
+              <input style={inputStyle} inputMode="numeric" value={form.phone} onChange={(e) => set('phone', e.target.value)} placeholder="10 digit number" required />
+              {form.phone && !phoneOk && <div style={{ fontSize: '0.72rem', color: '#B91C1C', marginTop: 3 }}>Enter a valid 10 digit mobile number</div>}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.7rem' }}>
+              <div>
+                <label style={labelStyle}>Vehicle</label>
+                <select style={inputStyle} value={form.vehicleType} onChange={(e) => set('vehicleType', e.target.value)}>
+                  {VEHICLE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div><label style={labelStyle}>Vehicle number</label><input style={inputStyle} value={form.vehicleNumber} onChange={(e) => set('vehicleNumber', e.target.value.toUpperCase())} placeholder="MP09 AB 1234" /></div>
+            </div>
+            <div><label style={labelStyle}>Notes</label><input style={inputStyle} value={form.notes} onChange={(e) => set('notes', e.target.value)} placeholder="e.g. Heavy loads only, works 9am–6pm" /></div>
+            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+              <button type="button" onClick={() => setForm(null)} style={{ flex: 1, padding: '0.7rem', borderRadius: 10, border: `1.5px solid ${BORDER}`, background: '#fff', cursor: 'pointer', fontWeight: 700, fontFamily: 'inherit' }}>Cancel</button>
+              <button type="submit" disabled={saving || !phoneOk || form.name.trim().length < 2} style={{ ...primaryBtn(saving || !phoneOk || form.name.trim().length < 2), flex: 1, justifyContent: 'center' }}>
+                {saving ? 'Saving…' : 'Save'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const SettleCell = ({ label, value, tone }) => (
+  <div style={{ minWidth: 110 }}>
+    <div style={{ fontSize: '0.68rem', fontWeight: 700, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</div>
+    <div style={{ fontWeight: 800, fontSize: '0.92rem', color: tone || DARK }}>{value}</div>
+  </div>
+);
+
+function OrdersTab({ orders, loading, onUpdateStatus, onUpdateOrder, busyKey, deliveryMen }) {
+  const [tab, setTab] = useState('new');
+  const [riderFor, setRiderFor] = useState(null); // { order, status }
+  const counts = Object.fromEntries(ORDER_TABS.map((t) => [t.id, orders.filter(t.match).length]));
+  const visible = orders.filter(ORDER_TABS.find((t) => t.id === tab).match);
+
+  const submitRider = async (form) => {
+    const ok = await onUpdateOrder(riderFor.order.id, {
+      status: riderFor.status,
+      deliveryManId: form.deliveryManId,
+      driverName: form.driverName,
+      driverPhone: form.driverPhone,
+      vehicleNumber: form.vehicleNumber,
+      note: form.note,
+      saveToTeam: Boolean(form.saveToTeam),
+    });
+    if (ok) setRiderFor(null);
+  };
+
+  return (
+    <div>
+      <PageHeader title="Orders" subtitle="You deliver your own orders. Move each order through packing, shipping and delivery — customers see the progress live." />
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: '1rem' }}>
         {ORDER_TABS.map((t) => (
@@ -469,19 +746,49 @@ function OrdersTab({ orders, loading, onUpdateStatus, busyKey }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {visible.map((order) => {
             const addr = order.siteAddress || order.shippingAddress || {};
-            const addrLine = [addr.street || addr.addressLine, addr.city, addr.state].filter(Boolean).join(', ') + (addr.pincode ? ` - ${addr.pincode}` : '');
+            const addrLine = [addr.street || addr.addressLine, addr.landmark, addr.city, addr.state].filter(Boolean).join(', ') + (addr.pincode ? ` - ${addr.pincode}` : '');
             const paid = /^paid/i.test(order.paymentStatus || order.payment?.status || '');
+            const overall = orderStatusOf(order);
+            const nextAction = NEXT_ACTION[overall];
+            const st = order.settlement || {};
+            const orderKey = `${order.id}:*`;
+            const rider = order.shipment?.rider;
+            const gstSplit = st.igst > 0 ? `IGST ${money(st.igst)}` : `CGST ${money(st.cgst)} + SGST ${money(st.sgst)}`;
             return (
-              <div key={order.id} style={{ ...cardStyle, overflow: 'hidden' }}>
+              <div key={order.id} style={{ ...cardStyle, overflow: 'hidden', borderColor: order.isDelayed ? '#FCA5A5' : BORDER }}>
                 <div style={{ padding: '1rem 1.25rem', background: '#FAFAFA', borderBottom: `1px solid ${BORDER}`, display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                   <div>
-                    <div style={{ fontWeight: 800, color: DARK }}>Order #{order.orderNumber || order.id}</div>
+                    <div style={{ fontWeight: 800, color: DARK, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                      Order #{order.orderNumber || order.id} <StatusChip status={overall} />
+                    </div>
                     <div style={{ fontSize: '0.76rem', color: MUTED }}>{formatDate(order.createdAt)} · {order.paymentMethod || order.payment?.method || '—'}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontWeight: 800, fontSize: '1.05rem', color: DARK }}>{money(order.vendorTotal)}</div>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: paid ? '#166534' : '#B45309' }}>{paid ? 'PAID' : 'PAY ON DELIVERY'}</span>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: paid ? '#166534' : '#B45309' }}>
+                      {paid ? 'PAID ONLINE' : `COLLECT ${money(order.collectOnDelivery)} ON DELIVERY`}
+                    </span>
                   </div>
+                </div>
+
+                {/* Delivery promise for this order's zone */}
+                <div style={{ padding: '0.7rem 1.25rem', display: 'flex', gap: '1.25rem', flexWrap: 'wrap', alignItems: 'center', background: order.isDelayed ? '#FEF2F2' : '#F0F9FF', borderBottom: `1px solid ${BORDER}`, fontSize: '0.8rem' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700 }}>
+                    <MapPin size={14} /> {order.deliveryZone?.name || 'Delivery zone'}
+                  </span>
+                  {order.promisedBy && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Clock size={14} /> Deliver by <b>{formatTime(order.promisedBy)}</b>
+                    </span>
+                  )}
+                  {order.minutesLeft !== null && order.minutesLeft !== undefined && (
+                    <span style={{ fontWeight: 800, color: order.isDelayed ? '#B91C1C' : '#0369A1' }}>{fmtLeft(order.minutesLeft)}</span>
+                  )}
+                  {rider?.name && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}>
+                      <Truck size={14} /> {rider.name}{rider.phone ? ` · ${rider.phone}` : ''}{rider.vehicleNumber ? ` · ${rider.vehicleNumber}` : ''}
+                    </span>
+                  )}
                 </div>
 
                 <div style={{ padding: '0.9rem 1.25rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap', borderBottom: `1px solid #F3F4F6`, fontSize: '0.82rem', color: '#374151' }}>
@@ -500,12 +807,18 @@ function OrdersTab({ orders, loading, onUpdateStatus, busyKey }) {
                       <span>{addrLine}</span>
                     </div>
                   )}
+                  {(order.unloadingNotes || order.vehicleAccess || order.deliverySlot) && (
+                    <div style={{ flex: '1 1 100%', fontSize: '0.78rem', color: MUTED }}>
+                      {[order.deliverySlot && `Slot: ${order.deliverySlot}`, order.vehicleAccess && `Vehicle access: ${order.vehicleAccess}`, order.unloadingNotes].filter(Boolean).join(' · ')}
+                    </div>
+                  )}
                 </div>
 
                 {order.items.map((line, idx) => {
                   const status = line.vendorStatus || 'Processing';
                   const action = NEXT_ACTION[status];
                   const key = `${order.id}:${line.product?.id}`;
+                  const s = line.settlement || {};
                   return (
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0.85rem 1.25rem', borderTop: idx === 0 ? 'none' : '1px solid #F3F4F6', flexWrap: 'wrap' }}>
                       <div style={{ width: 46, height: 46, borderRadius: 10, background: '#F3F4F6', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -515,11 +828,12 @@ function OrdersTab({ orders, loading, onUpdateStatus, busyKey }) {
                         <div style={{ fontWeight: 700, color: DARK, fontSize: '0.88rem' }}>{line.product?.name}</div>
                         <div style={{ fontSize: '0.78rem', color: MUTED }}>
                           {line.quantity}{line.product?.unit ? ` ${line.product.unit}` : ''} × {money(line.price)} = <b style={{ color: DARK }}>{money(line.lineTotal ?? line.price * line.quantity)}</b>
+                          {s.gstRate !== null && s.gstRate !== undefined && <> · GST {s.gstRate}% ({money(s.gstAmount)}){s.hsnCode ? ` · HSN ${s.hsnCode}` : ''}</>}
                         </div>
                       </div>
                       <StatusChip status={status} />
                       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        {action && (
+                        {action && !NEEDS_RIDER.includes(action.next) && (
                           <button
                             disabled={busyKey === key}
                             onClick={() => onUpdateStatus(order.id, line.product?.id, action.next)}
@@ -528,25 +842,46 @@ function OrdersTab({ orders, loading, onUpdateStatus, busyKey }) {
                             <Truck size={14} /> {action.label}
                           </button>
                         )}
-                        <select
-                          aria-label="Set status"
-                          value={status}
-                          disabled={busyKey === key}
-                          onChange={(e) => onUpdateStatus(order.id, line.product?.id, e.target.value)}
-                          style={{ padding: '0.4rem 0.5rem', borderRadius: 8, border: `1px solid ${BORDER}`, fontSize: '0.76rem', background: '#fff' }}
-                        >
-                          {ITEM_STATUSES.map((s) => (
-                            <option key={s} value={s}>{s}</option>
-                          ))}
-                        </select>
                       </div>
                     </div>
                   );
                 })}
+
+                {/* Money breakdown for this vendor's part of the order */}
+                <div style={{ padding: '0.9rem 1.25rem', borderTop: `1px solid ${BORDER}`, background: '#FCFCFD', display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <SettleCell label="Taxable value" value={money(st.taxable)} />
+                  <SettleCell label={`GST (${gstSplit})`} value={money(st.gstAmount)} />
+                  <SettleCell label="Platform fee" value={`- ${money(st.commission)}`} tone="#B45309" />
+                  <SettleCell label="Your payout" value={money(st.payout)} tone="#166534" />
+                  {nextAction && (
+                    <button
+                      disabled={busyKey === orderKey}
+                      onClick={() =>
+                        NEEDS_RIDER.includes(nextAction.next) || nextAction.next === 'Delivered'
+                          ? setRiderFor({ order, status: nextAction.next })
+                          : onUpdateOrder(order.id, { status: nextAction.next })
+                      }
+                      style={{ ...primaryBtn(busyKey === orderKey), marginLeft: 'auto' }}
+                    >
+                      <Truck size={15} /> {order.items.length > 1 ? `${nextAction.label} (all items)` : nextAction.label}
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
+      )}
+
+      {riderFor && (
+        <RiderModal
+          order={riderFor.order}
+          status={riderFor.status}
+          deliveryMen={deliveryMen}
+          busy={busyKey === `${riderFor.order.id}:*`}
+          onClose={() => setRiderFor(null)}
+          onSubmit={submitRider}
+        />
       )}
     </div>
   );
@@ -555,39 +890,137 @@ function OrdersTab({ orders, loading, onUpdateStatus, busyKey }) {
 // ---------------------------------------------------------------------------
 // Profile
 // ---------------------------------------------------------------------------
-function ProfileTab({ vendorUser, profileForm, setProfileForm, onSave, saving }) {
+const Section = ({ title, hint, children }) => (
+  <div style={{ ...cardStyle, padding: '1.25rem', marginBottom: '1rem' }}>
+    <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800 }}>{title}</h3>
+    {hint && <p style={{ margin: '3px 0 0.9rem', fontSize: '0.78rem', color: MUTED }}>{hint}</p>}
+    {!hint && <div style={{ height: '0.8rem' }} />}
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem' }}>{children}</div>
+  </div>
+);
+
+const Field = ({ label, children, full }) => (
+  <div style={full ? { gridColumn: '1 / -1' } : undefined}>
+    <label style={labelStyle}>{label}</label>
+    {children}
+  </div>
+);
+
+function ProfileTab({ vendorUser, profileForm, setProfileForm, meta, onSave, saving }) {
   if (!profileForm) return null;
   const approved = vendorUser.vendorStatus === 'approved';
-  const fields = [
-    { key: 'businessName', label: 'Business / Shop Name' },
-    { key: 'name', label: 'Contact Person', readOnly: true },
-    { key: 'phone', label: 'Mobile Number' },
-    { key: 'email', label: 'Email', readOnly: true },
-    { key: 'city', label: 'City' },
-    { key: 'gstin', label: 'GSTIN' },
-  ];
+  const completion = profileForm.profileCompletion || { percent: 0, missing: [] };
+  const set = (key, value) => setProfileForm((prev) => ({ ...prev, [key]: value }));
+  const setIn = (group, key, value) => setProfileForm((prev) => ({ ...prev, [group]: { ...(prev[group] || {}), [key]: value } }));
+  const zones = meta?.zones || [];
+  const selectedZones = profileForm.serviceZones || [];
+  const toggleZone = (id) => set('serviceZones', selectedZones.includes(id) ? selectedZones.filter((z) => z !== id) : [...selectedZones, id]);
+  const pickup = profileForm.pickupAddress || {};
+  const bank = profileForm.bankDetails || {};
+
   return (
-    <div style={{ maxWidth: 560 }}>
-      <PageHeader title="Store Profile" subtitle="Details customers and our team see for your store" />
-      <div style={{ ...cardStyle, padding: '1.25rem' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 999, background: approved ? '#DCFCE7' : '#FEF3C7', color: approved ? '#166534' : '#92400E', fontWeight: 800, fontSize: '0.76rem', textTransform: 'capitalize', marginBottom: '1rem' }}>
-          {approved ? <CheckCircle size={14} /> : <Clock size={14} />} {vendorUser.vendorStatus}
-        </div>
-        {fields.map(({ key, label, readOnly }) => (
-          <div key={key} style={{ marginBottom: '0.9rem' }}>
-            <label style={labelStyle}>{label}</label>
-            <input
-              value={profileForm[key] || ''}
-              readOnly={readOnly}
-              onChange={(e) => setProfileForm((prev) => ({ ...prev, [key]: e.target.value }))}
-              style={{ ...inputStyle, background: readOnly ? '#F9FAFB' : '#fff', color: readOnly ? MUTED : DARK }}
-            />
+    <div style={{ maxWidth: 820 }}>
+      <PageHeader title="Store Profile" subtitle="Your business, tax, pickup, bank and delivery details" />
+
+      <div style={{ ...cardStyle, padding: '1.1rem 1.25rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 999, background: approved ? '#DCFCE7' : '#FEF3C7', color: approved ? '#166534' : '#92400E', fontWeight: 800, fontSize: '0.76rem', textTransform: 'capitalize' }}>
+            {approved ? <CheckCircle size={14} /> : <Clock size={14} />} {vendorUser.vendorStatus}
           </div>
-        ))}
-        <button onClick={onSave} disabled={saving} style={primaryBtn(saving)}>
-          {saving ? 'Saving…' : 'Save Changes'}
-        </button>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, fontSize: '0.84rem', cursor: 'pointer' }}>
+            <input type="checkbox" checked={profileForm.isAcceptingOrders !== false} onChange={(e) => set('isAcceptingOrders', e.target.checked)} style={{ accentColor: ACCENT, width: 16, height: 16 }} />
+            Accepting new orders
+          </label>
+        </div>
+        <div style={{ marginTop: '0.9rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, marginBottom: 5 }}>
+            <span>Profile {completion.percent}% complete</span>
+            {completion.missing.length > 0 && <span style={{ color: MUTED, fontWeight: 600 }}>Missing: {completion.missing.map((m) => m.label).join(', ')}</span>}
+          </div>
+          <div style={{ height: 8, borderRadius: 999, background: '#F3F4F6', overflow: 'hidden' }}>
+            <div style={{ width: `${completion.percent}%`, height: '100%', background: completion.percent === 100 ? '#16A34A' : ACCENT, transition: 'width .3s' }} />
+          </div>
+        </div>
       </div>
+
+      <Section title="Business" hint="Shown to customers on your products and invoices">
+        <Field label="Business / Shop Name *"><input style={inputStyle} value={profileForm.businessName || ''} onChange={(e) => set('businessName', e.target.value)} /></Field>
+        <Field label="Business Type">
+          <select style={inputStyle} value={profileForm.businessType || ''} onChange={(e) => set('businessType', e.target.value)}>
+            <option value="">Select</option>
+            {(meta?.businessTypes || ['Manufacturer', 'Distributor', 'Wholesaler', 'Dealer', 'Retailer']).map((t) => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </Field>
+        <Field label="Contact Person"><input style={{ ...inputStyle, background: '#F9FAFB', color: MUTED }} value={profileForm.name || ''} readOnly /></Field>
+        <Field label="Email"><input style={{ ...inputStyle, background: '#F9FAFB', color: MUTED }} value={profileForm.email || ''} readOnly /></Field>
+        <Field label="Mobile Number"><input style={inputStyle} inputMode="numeric" value={profileForm.phone || ''} onChange={(e) => set('phone', e.target.value)} /></Field>
+        <Field label="Customer Support Number"><input style={inputStyle} inputMode="numeric" value={profileForm.supportPhone || ''} onChange={(e) => set('supportPhone', e.target.value)} /></Field>
+        <Field label="About your business" full>
+          <textarea style={{ ...inputStyle, minHeight: 64, resize: 'vertical' }} value={profileForm.businessDescription || ''} onChange={(e) => set('businessDescription', e.target.value)} placeholder="What you sell, brands you stock, years in business…" />
+        </Field>
+      </Section>
+
+      <Section title="Tax details" hint="Used for GST invoices and your payouts">
+        <Field label="GST registered?">
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600, fontSize: '0.86rem', paddingTop: 8 }}>
+            <input type="checkbox" checked={Boolean(profileForm.gstRegistered)} onChange={(e) => set('gstRegistered', e.target.checked)} style={{ accentColor: ACCENT, width: 16, height: 16 }} /> Yes, I have a GSTIN
+          </label>
+        </Field>
+        <Field label={`GSTIN${profileForm.gstRegistered ? ' *' : ''}`}>
+          <input style={inputStyle} maxLength={15} value={profileForm.gstin || ''} onChange={(e) => set('gstin', e.target.value.toUpperCase())} placeholder="23ABCDE1234F1Z5" />
+        </Field>
+        <Field label="PAN">
+          <input style={inputStyle} maxLength={10} value={profileForm.pan || ''} onChange={(e) => set('pan', e.target.value.toUpperCase())} placeholder="ABCDE1234F" />
+        </Field>
+      </Section>
+
+      <Section title="Pickup / store address" hint="Where orders are packed and dispatched from. Its state decides CGST + SGST vs IGST.">
+        <Field label="Street / Building" full><input style={inputStyle} value={pickup.street || ''} onChange={(e) => setIn('pickupAddress', 'street', e.target.value)} /></Field>
+        <Field label="Landmark"><input style={inputStyle} value={pickup.landmark || ''} onChange={(e) => setIn('pickupAddress', 'landmark', e.target.value)} /></Field>
+        <Field label="City"><input style={inputStyle} value={pickup.city || ''} onChange={(e) => setIn('pickupAddress', 'city', e.target.value)} /></Field>
+        <Field label="State"><input style={inputStyle} value={pickup.state || ''} onChange={(e) => setIn('pickupAddress', 'state', e.target.value)} placeholder="Madhya Pradesh" /></Field>
+        <Field label="Pincode"><input style={inputStyle} inputMode="numeric" maxLength={6} value={pickup.pincode || ''} onChange={(e) => setIn('pickupAddress', 'pincode', e.target.value.replace(/\D/g, ''))} /></Field>
+      </Section>
+
+      <Section title="Bank account" hint="Your payouts (sales + GST − platform fee) are paid here">
+        <Field label="Account holder name"><input style={inputStyle} value={bank.accountHolder || ''} onChange={(e) => setIn('bankDetails', 'accountHolder', e.target.value)} /></Field>
+        <Field label="Account number"><input style={inputStyle} inputMode="numeric" value={bank.accountNumber || ''} onChange={(e) => setIn('bankDetails', 'accountNumber', e.target.value.replace(/\D/g, ''))} /></Field>
+        <Field label="IFSC"><input style={inputStyle} maxLength={11} value={bank.ifsc || ''} onChange={(e) => setIn('bankDetails', 'ifsc', e.target.value.toUpperCase())} placeholder="HDFC0001234" /></Field>
+        <Field label="Bank name"><input style={inputStyle} value={bank.bankName || ''} onChange={(e) => setIn('bankDetails', 'bankName', e.target.value)} /></Field>
+        <Field label="UPI ID (optional)"><input style={inputStyle} value={bank.upiId || ''} onChange={(e) => setIn('bankDetails', 'upiId', e.target.value)} /></Field>
+      </Section>
+
+      <div style={{ ...cardStyle, padding: '1.25rem', marginBottom: '1rem' }}>
+        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800 }}>Delivery zones</h3>
+        <p style={{ margin: '3px 0 0.9rem', fontSize: '0.78rem', color: MUTED }}>
+          You deliver these orders yourself. Customers in a zone you select can order your products and expect delivery within the zone's time.
+          {selectedZones.length === 0 && ' Nothing selected means you deliver to every zone.'}
+        </p>
+        {zones.length === 0 ? (
+          <div style={{ fontSize: '0.84rem', color: MUTED }}>The admin has not set up delivery zones yet.</div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '0.6rem' }}>
+            {zones.map((z) => {
+              const on = selectedZones.includes(z.id);
+              return (
+                <label key={z.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '0.7rem 0.8rem', borderRadius: 12, border: `1.5px solid ${on ? ACCENT : BORDER}`, background: on ? ACCENT_SOFT : '#fff', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={on} onChange={() => toggleZone(z.id)} style={{ accentColor: ACCENT, width: 16, height: 16, marginTop: 2 }} />
+                  <span>
+                    <span style={{ display: 'block', fontWeight: 800, fontSize: '0.86rem' }}>{z.name}</span>
+                    <span style={{ display: 'block', fontSize: '0.74rem', color: MUTED }}>
+                      {z.city ? `${z.city} · ` : ''}within {z.etaMinutes >= 60 ? `${Math.round((z.etaMinutes / 60) * 10) / 10} hr` : `${z.etaMinutes} min`} · {z.pincodes.length} pincode{z.pincodes.length === 1 ? '' : 's'}
+                    </span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <button onClick={onSave} disabled={saving} style={primaryBtn(saving)}>
+        {saving ? 'Saving…' : 'Save Changes'}
+      </button>
     </div>
   );
 }
@@ -599,6 +1032,7 @@ const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'products', label: 'My Products', icon: Package },
   { id: 'orders', label: 'Orders', icon: ShoppingBag },
+  { id: 'team', label: 'Delivery Team', icon: Users },
   { id: 'profile', label: 'Profile', icon: User },
 ];
 
@@ -615,6 +1049,8 @@ export default function VendorView() {
   const [loading, setLoading] = useState(false);
   const [productModal, setProductModal] = useState(null); // null | {} (new) | product (edit)
   const [profileForm, setProfileForm] = useState(null);
+  const [deliveryMen, setDeliveryMen] = useState([]);
+  const [meta, setMeta] = useState(null); // live categories, GST slabs, zones, defaults
   const [savingProfile, setSavingProfile] = useState(false);
   const [busyKey, setBusyKey] = useState(null);
   const knownOrderIds = useRef(null);
@@ -666,6 +1102,15 @@ export default function VendorView() {
     [addToast]
   );
 
+  const loadDeliveryMen = useCallback(async () => {
+    try {
+      const res = await api.getDeliveryMen();
+      setDeliveryMen(res.data || []);
+    } catch {
+      /* the list is optional - shipping still works with details typed in */
+    }
+  }, []);
+
   const vendorId = vendorUser?.id;
 
   // Initial load of everything + keep orders fresh while the panel is open.
@@ -674,6 +1119,8 @@ export default function VendorView() {
     loadOrders();
     loadProducts();
     loadStats();
+    api.getVendorMeta().then((res) => setMeta(res.data)).catch(() => {});
+    loadDeliveryMen();
     const timer = setInterval(() => loadOrders({ silent: true }), ORDER_POLL_MS);
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -682,9 +1129,17 @@ export default function VendorView() {
   useEffect(() => {
     if (!vendorId) return;
     if (tab === 'dashboard') loadStats();
-    if (tab === 'products') loadProducts();
-    if (tab === 'orders') loadOrders({ silent: true });
+    if (tab === 'products') {
+      loadProducts();
+      api.getVendorMeta().then((res) => setMeta(res.data)).catch(() => {});
+    }
+    if (tab === 'orders') {
+      loadOrders({ silent: true });
+      loadDeliveryMen();
+    }
+    if (tab === 'team') loadDeliveryMen();
     if (tab === 'profile') {
+      api.getVendorMeta().then((res) => setMeta(res.data)).catch(() => {});
       api
         .getVendorProfile()
         .then((res) => setProfileForm({ ...res.data }))
@@ -762,15 +1217,76 @@ export default function VendorView() {
     }
   };
 
+  // Move all of this vendor's items in an order (optionally with the delivery person's details).
+  const updateOrderStatus = async (orderId, { saveToTeam, ...payload }) => {
+    setBusyKey(`${orderId}:*`);
+    try {
+      // Keep a delivery person typed in by hand, if asked, so next time they can just be picked.
+      if (saveToTeam && !payload.deliveryManId && payload.driverName && payload.driverPhone) {
+        try {
+          const saved = await api.createDeliveryMan({ name: payload.driverName, phone: payload.driverPhone, vehicleNumber: payload.vehicleNumber });
+          payload = { status: payload.status, note: payload.note, deliveryManId: saved.data.id };
+          loadDeliveryMen();
+        } catch {
+          /* already saved or invalid for the team list - ship with the typed details */
+        }
+      }
+      await api.updateVendorOrderStatus(orderId, payload);
+      addToast(`Order marked as ${payload.status}`, 'success');
+      await loadOrders({ silent: true });
+      loadStats();
+      return true;
+    } catch (err) {
+      addToast(err?.message || 'Could not update the order', 'error');
+      return false;
+    } finally {
+      setBusyKey(null);
+    }
+  };
+
+  const saveDeliveryMan = async (man) => {
+    try {
+      const data = { name: man.name, phone: man.phone, vehicleType: man.vehicleType, vehicleNumber: man.vehicleNumber, notes: man.notes, active: man.active !== false };
+      if (man.id) await api.updateDeliveryMan(man.id, data);
+      else await api.createDeliveryMan(data);
+      addToast(man.id ? 'Delivery person updated' : 'Delivery person added', 'success');
+      loadDeliveryMen();
+      return true;
+    } catch (err) {
+      addToast(err?.message || 'Could not save the delivery person', 'error');
+      return false;
+    }
+  };
+
+  const removeDeliveryMan = async (man) => {
+    if (!window.confirm(`Remove ${man.name} from your delivery team?`)) return;
+    try {
+      await api.deleteDeliveryMan(man.id);
+      addToast('Removed from your team', 'success');
+      loadDeliveryMen();
+    } catch (err) {
+      addToast(err?.message || 'Could not remove', 'error');
+    }
+  };
+
   const saveProfile = async () => {
     setSavingProfile(true);
     try {
-      await api.updateVendorProfile({
+      const res = await api.updateVendorProfile({
         businessName: profileForm.businessName,
+        businessType: profileForm.businessType,
+        businessDescription: profileForm.businessDescription,
         phone: profileForm.phone,
-        city: profileForm.city,
+        supportPhone: profileForm.supportPhone,
+        gstRegistered: Boolean(profileForm.gstRegistered),
         gstin: profileForm.gstin,
+        pan: profileForm.pan,
+        pickupAddress: profileForm.pickupAddress,
+        bankDetails: profileForm.bankDetails,
+        serviceZones: profileForm.serviceZones || [],
+        isAcceptingOrders: profileForm.isAcceptingOrders !== false,
       });
+      if (res?.data) setProfileForm({ ...res.data });
       addToast('Profile updated', 'success');
     } catch (err) {
       addToast(err?.message || 'Could not update profile', 'error');
@@ -875,22 +1391,31 @@ export default function VendorView() {
               products={products}
               loading={loading}
               canSell={canSell}
-              categories={categories}
+              categories={meta?.categories?.length ? meta.categories : categories}
               onAdd={() => setProductModal({})}
               onEdit={(p) => setProductModal(p)}
               onDelete={removeProduct}
               onToggleStock={toggleStock}
             />
           )}
-          {tab === 'orders' && <OrdersTab orders={orders} loading={loading} onUpdateStatus={updateItemStatus} busyKey={busyKey} />}
+          {tab === 'orders' && <OrdersTab orders={orders} loading={loading} onUpdateStatus={updateItemStatus} onUpdateOrder={updateOrderStatus} busyKey={busyKey} deliveryMen={deliveryMen} />}
+          {tab === 'team' && (
+            <DeliveryTeamTab
+              deliveryMen={deliveryMen}
+              loading={loading}
+              onSave={saveDeliveryMan}
+              onDelete={removeDeliveryMan}
+              onToggle={(m) => saveDeliveryMan({ ...m, active: m.active === false })}
+            />
+          )}
           {tab === 'profile' && (
-            <ProfileTab vendorUser={vendorUser} profileForm={profileForm} setProfileForm={setProfileForm} onSave={saveProfile} saving={savingProfile} />
+            <ProfileTab vendorUser={vendorUser} profileForm={profileForm} setProfileForm={setProfileForm} meta={meta} onSave={saveProfile} saving={savingProfile} />
           )}
         </main>
       </div>
 
       {productModal !== null && (
-        <ProductModal product={productModal} categories={categories} onClose={() => setProductModal(null)} onSave={saveProduct} canSell={canSell} />
+        <ProductModal product={productModal} categories={meta?.categories?.length ? meta.categories : categories} meta={meta} onClose={() => setProductModal(null)} onSave={saveProduct} canSell={canSell} />
       )}
     </div>
   );
@@ -899,7 +1424,7 @@ export default function VendorView() {
 // ---------------------------------------------------------------------------
 // Add / edit product modal
 // ---------------------------------------------------------------------------
-function ProductModal({ product, categories = [], onClose, onSave, canSell }) {
+function ProductModal({ product, categories = [], meta, onClose, onSave, canSell }) {
   const isEdit = Boolean(product.id);
   const [form, setForm] = useState({
     id: product.id || '',
@@ -915,6 +1440,9 @@ function ProductModal({ product, categories = [], onClose, onSave, canSell }) {
     description: product.description || '',
     image: product.image || '',
     inStock: product.inStock !== false,
+    gstRatePercent: product.gstRatePercent ?? '',
+    hsnCode: product.hsnCode || '',
+    wholesaleTiers: Array.isArray(product.wholesaleTiers) ? product.wholesaleTiers : [],
   });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -923,7 +1451,21 @@ function ProductModal({ product, categories = [], onClose, onSave, canSell }) {
 
   const set = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
   const selectedCategory = categories.find((c) => c.slug === form.categorySlug);
-  const subcategories = Array.isArray(selectedCategory?.subcategories) ? selectedCategory.subcategories : [];
+  const subcategories = (Array.isArray(selectedCategory?.subcategories) ? selectedCategory.subcategories : []).map((sub) =>
+    sub && typeof sub === 'object' ? sub.name ?? sub.label ?? '' : sub
+  );
+
+  // The GST the customer is charged: the product's own rate, else the category's, else the site's.
+  const slabs = meta?.gstSlabs || [0, 5, 12, 18, 28];
+  const categoryRate = selectedCategory?.gstRatePercent;
+  const hasCategoryRate = categoryRate !== undefined && categoryRate !== null && categoryRate !== '';
+  const inheritedRate = hasCategoryRate ? Number(categoryRate) : meta?.defaultGstRate ?? 18;
+  const gstRate = form.gstRatePercent === '' ? inheritedRate : Number(form.gstRatePercent);
+  const priceNum = Number(form.price) || 0;
+  const inclusive = Boolean(meta?.isGstInclusive);
+  const gstOnPrice = inclusive ? priceNum - priceNum / (1 + gstRate / 100) : (priceNum * gstRate) / 100;
+  const setTier = (i, field, value) =>
+    setForm((prev) => ({ ...prev, wholesaleTiers: prev.wholesaleTiers.map((t, idx) => (idx === i ? { ...t, [field]: value } : t)) }));
 
   const upload = async (file) => {
     if (!file) return;
@@ -946,9 +1488,11 @@ function ProductModal({ product, categories = [], onClose, onSave, canSell }) {
     const { categorySlug, ...rest } = form;
     await onSave({
       ...rest,
-      category: selectedCategory?.name || '',
       categorySlug,
-      section: selectedCategory?.section || '',
+      gstRatePercent: form.gstRatePercent === '' ? null : Number(form.gstRatePercent),
+      wholesaleTiers: form.wholesaleTiers
+        .map((t) => ({ minQty: Number(t.minQty), price: Number(t.price) }))
+        .filter((t) => t.minQty > 1 && t.price > 0),
       price,
       mrp: Number(form.mrp) || price,
       stockCount: Number(form.stockCount) || 0,
@@ -1033,6 +1577,58 @@ function ProductModal({ product, categories = [], onClose, onSave, canSell }) {
               <label style={labelStyle}>Brand</label>
               <input style={inputStyle} value={form.brand} onChange={(e) => set('brand', e.target.value)} />
             </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+            <div>
+              <label style={labelStyle}>GST Rate</label>
+              <select style={inputStyle} value={form.gstRatePercent} onChange={(e) => set('gstRatePercent', e.target.value)}>
+                <option value="">{hasCategoryRate ? `Category default (${inheritedRate}%)` : `Store default (${inheritedRate}%)`}</option>
+                {slabs.map((r) => (
+                  <option key={r} value={r}>{r}%</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>HSN Code</label>
+              <input
+                style={inputStyle}
+                inputMode="numeric"
+                maxLength={8}
+                value={form.hsnCode}
+                onChange={(e) => set('hsnCode', e.target.value.replace(/\D/g, ''))}
+                placeholder={selectedCategory?.hsnCode ? `Default ${selectedCategory.hsnCode}` : 'e.g. 25232930'}
+              />
+            </div>
+          </div>
+          {priceNum > 0 && (
+            <div style={{ fontSize: '0.78rem', background: ACCENT_SOFT, border: `1px solid ${ACCENT_BORDER}`, borderRadius: 10, padding: '0.55rem 0.8rem' }}>
+              {inclusive
+                ? `Your price includes ${gstRate}% GST (${money(Math.round(gstOnPrice))}). Taxable value ${money(Math.round(priceNum - gstOnPrice))}.`
+                : `Customer pays ${money(priceNum)} + ${gstRate}% GST (${money(Math.round(gstOnPrice))}) = ${money(Math.round(priceNum + gstOnPrice))} per ${form.unit || 'unit'}.`}
+            </div>
+          )}
+
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label style={labelStyle}>Bulk pricing (optional)</label>
+              <button
+                type="button"
+                onClick={() => setForm((prev) => ({ ...prev, wholesaleTiers: [...prev.wholesaleTiers, { minQty: '', price: '' }] }))}
+                style={{ background: 'none', border: 'none', color: '#0284C7', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}
+              >
+                + Add tier
+              </button>
+            </div>
+            {form.wholesaleTiers.map((tier, i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, alignItems: 'center' }}>
+                <input style={inputStyle} type="number" min="2" placeholder="Min qty" value={tier.minQty} onChange={(e) => setTier(i, 'minQty', e.target.value)} />
+                <input style={inputStyle} type="number" min="1" placeholder="Price per unit (₹)" value={tier.price} onChange={(e) => setTier(i, 'price', e.target.value)} />
+                <button type="button" onClick={() => setForm((prev) => ({ ...prev, wholesaleTiers: prev.wholesaleTiers.filter((_, idx) => idx !== i) }))} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                  <Trash2 size={15} color="#DC2626" />
+                </button>
+              </div>
+            ))}
           </div>
 
           <div>
