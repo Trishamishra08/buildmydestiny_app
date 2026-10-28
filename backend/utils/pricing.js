@@ -150,11 +150,26 @@ export const couponDiscount = (coupon, subtotal, now = new Date()) => {
 };
 
 /**
+ * GST rate (percent) for one product: its own rate, else its category's rate, else the
+ * fallback (the site-wide rate). A rate of 0 is respected.
+ */
+export const resolveGstRate = (product, category, fallback) => {
+  for (const candidate of [product?.gstRatePercent, category?.gstRatePercent]) {
+    if (candidate !== undefined && candidate !== null && candidate !== '' && !Number.isNaN(Number(candidate))) {
+      return Number(candidate);
+    }
+  }
+  return fallback;
+};
+
+/**
  * Everything charged on top of the item subtotal.
+ * Pass `lines` ([{ lineTotal, gstRatePercent }]) to charge GST per product; without them the
+ * whole subtotal is taxed at the site-wide rate.
  * @returns {{ subtotal, discount, subtotalAfterDiscount, deliveryFee, deliveryNote,
  *             unloadingCharge, gstAmount, isGstInclusive, deliveryType, grandTotal }}
  */
-export const computeTotals = ({ subtotal, coupon = null, settings = {}, includeUnloading = false }) => {
+export const computeTotals = ({ subtotal, coupon = null, settings = {}, includeUnloading = false, lines = null }) => {
   const s = { ...DEFAULT_PRICING_SETTINGS, ...(settings || {}) };
   const discount = couponDiscount(coupon, subtotal).amount;
   const subtotalAfterDiscount = Math.max(0, subtotal - discount);
@@ -196,11 +211,29 @@ export const computeTotals = ({ subtotal, coupon = null, settings = {}, includeU
         : num(s.unloadingChargeStandard, 199)
       : 0;
 
-  const gstRate = num(s.gstRatePercent, 18) / 100;
+  const siteRate = num(s.gstRatePercent, 18);
+  const gstRate = siteRate / 100;
   const isGstInclusive = Boolean(s.isGstInclusive);
-  const gstAmount = isGstInclusive
-    ? Math.round(subtotalAfterDiscount * (gstRate / (1 + gstRate)))
-    : Math.round(subtotalAfterDiscount * gstRate);
+
+  // Each line carries its share of the coupon discount, so tax is on what was actually paid.
+  const gstLines = Array.isArray(lines) && lines.length
+    ? lines.map((line) => {
+        const lineTotal = num(line.lineTotal, 0);
+        const share = subtotal > 0 ? Math.round((discount * lineTotal) / subtotal) : 0;
+        const net = Math.max(0, lineTotal - share);
+        const rate = num(line.gstRatePercent, siteRate);
+        const amount = isGstInclusive
+          ? Math.round(net * (rate / 100 / (1 + rate / 100)))
+          : Math.round(net * (rate / 100));
+        return { rate, taxable: isGstInclusive ? net - amount : net, amount };
+      })
+    : null;
+
+  const gstAmount = gstLines
+    ? gstLines.reduce((acc, l) => acc + l.amount, 0)
+    : isGstInclusive
+      ? Math.round(subtotalAfterDiscount * (gstRate / (1 + gstRate)))
+      : Math.round(subtotalAfterDiscount * gstRate);
 
   const grandTotal = Math.max(
     0,
@@ -215,6 +248,7 @@ export const computeTotals = ({ subtotal, coupon = null, settings = {}, includeU
     deliveryNote,
     unloadingCharge,
     gstAmount,
+    gstLines,
     isGstInclusive,
     deliveryType,
     grandTotal,
