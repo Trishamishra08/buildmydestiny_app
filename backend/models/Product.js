@@ -24,6 +24,10 @@ const Product = createAppModel('Product', {
     isPopular: Mixed,
     // Multivendor marketplace: set when a vendor (not the platform admin) lists this product.
     vendorId: { type: String, index: true },
+    // Tax: leave gstRatePercent / hsnCode empty to inherit the category's values.
+    gstRatePercent: Mixed,
+    hsnCode: Mixed,
+    commissionPercent: Mixed,
     vendorName: Mixed,
   },
 });

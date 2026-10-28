@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import api from '../services/api';
 import { useServerSync } from '../services/serverSync';
-import { computeTotals, couponDiscount, resolveVariantOptions, unitPrice, getCartItemKey } from '../utils/pricing';
+import { computeTotals, couponDiscount, resolveVariantOptions, unitPrice, getCartItemKey, resolveGstRate } from '../utils/pricing';
 import { getDeliverySchedule } from '../utils/deliverySchedule';
 import { auth, googleProvider } from '../config/firebase';
 import {
@@ -758,7 +758,21 @@ export const StoreProvider = ({ children }) => {
     gstAmount,
     isGstInclusive,
     grandTotal,
-  } = computeTotals({ subtotal: cartSubtotal, coupon: activeCoupon, settings: siteSettings, includeUnloading: isUnloadingSelected });
+  } = computeTotals({
+    subtotal: cartSubtotal,
+    coupon: activeCoupon,
+    settings: siteSettings,
+    includeUnloading: isUnloadingSelected,
+    // GST per product: the product's own rate, else its category's, else the site rate.
+    lines: cart.map((item) => ({
+      lineTotal: (item.price || 0) * item.quantity,
+      gstRatePercent: resolveGstRate(
+        item.product,
+        categories.find((c) => c.slug && c.slug === item.product?.categorySlug),
+        undefined
+      ),
+    })),
+  });
 
   // Cart Operations
   const addToCart = (product, quantity = 1) => {
