@@ -9,14 +9,11 @@ build/
 frontend/dist/
 
 # Environment Variables
-.env
-.env*
 *.env
 backend/.env
 backend/.env*
 frontend/.env
 frontend/.env*
-.env.local
 .env.development.local
 .env.test.local
 .env.production.local
@@ -30,8 +27,8 @@ pnpm-debug.log*
 # Editor / OS files
 .DS_Store
 Thumbs.db
-.vscode/
 .idea/
 branch_structure.json
 temp_auto_push.bat
 temp_interactive_push.bat
+config.bat

@@ -4,6 +4,7 @@ import {
   getVendorProfile,
   updateVendorProfile,
   getVendorStats,
+  getVendorMeta,
   listMyProducts,
   createMyProduct,
   updateMyProduct,
@@ -11,6 +12,10 @@ import {
   listMyOrders,
   updateMyOrderItemStatus,
   updateMyOrderStatus,
+  listDeliveryMen,
+  createDeliveryMan,
+  updateDeliveryMan,
+  deleteDeliveryMan,
   listVendors,
   setVendorStatus,
   requireApprovedVendor,
@@ -25,6 +30,7 @@ const adminOnly = [protect, authorize('admin')];
 router.get('/me', ...vendorOnly, getVendorProfile);
 router.put('/me', ...vendorOnly, updateVendorProfile);
 router.get('/stats', ...vendorOnly, getVendorStats);
+router.get('/meta', ...vendorOnly, getVendorMeta);
 
 // Vendor's own products
 router.get('/products', ...vendorOnly, listMyProducts);
@@ -37,6 +43,13 @@ router.delete('/products/:key', ...vendorOnly, deleteMyProduct);
 router.get('/orders', ...vendorOnly, listMyOrders);
 router.patch('/orders/:orderId/status', ...vendorOnly, updateMyOrderStatus);
 router.patch('/orders/:orderId/items/:productId/status', ...vendorOnly, updateMyOrderItemStatus);
+
+// Vendor's saved delivery people (picked when an order is shipped)
+router.get('/delivery-men', ...vendorOnly, listDeliveryMen);
+router.post('/delivery-men', ...vendorOnly, createDeliveryMan);
+router.put('/delivery-men/:id', ...vendorOnly, updateDeliveryMan);
+router.patch('/delivery-men/:id', ...vendorOnly, updateDeliveryMan);
+router.delete('/delivery-men/:id', ...vendorOnly, deleteDeliveryMan);
 
 // Admin: vendor account approval
 router.get('/admin/list', ...adminOnly, listVendors);

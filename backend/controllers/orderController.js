@@ -6,6 +6,7 @@ import { notifyNewOrder } from './notificationHooks.js';
 import { priceCart } from '../utils/orderPricing.js';
 import { confirmPayment, sandboxAllowed } from '../utils/razorpay.js';
 import { FLOW, buildTracking, orderFieldsForStep, applyStatusToItems, buildShipments, trackingView } from '../utils/orderFlow.js';
+import { reserveStock, releaseStock } from '../utils/stock.js';
 import { resolveDelivery, orderAddress, etaLabel } from '../utils/deliveryZones.js';
 
 /**
@@ -198,6 +199,7 @@ export const placeOrder = async (req, res) => {
       throw err;
     }
 
+    await reserveStock(saved.items).catch((err) => console.warn('Stock update failed:', err.message));
     if (intentId) await PaymentIntent.updateOne({ id: intentId }, { $set: { orderId: id } });
     if (couponCode) {
       // Count the redemption (skipped if an admin stored usageCount as text).
@@ -252,6 +254,11 @@ export const patchOrder = async (req, res) => {
       }
     } else if (statusChanged && /cancel/i.test(String(fields.status))) {
       update.statusCode = 'cancelled';
+    }
+    // A cancelled order frees its stock again (once).
+    const nowCancelled = /cancel/i.test(String(fields.status || ''));
+    if (nowCancelled && !/cancel/i.test(String(existing.status || ''))) {
+      await releaseStock(existing.items).catch((err) => console.warn('Stock release failed:', err.message));
     }
 
     const saved = await Order.findOneAndUpdate({ id: req.params.key }, { $set: update }, { new: true }).lean();

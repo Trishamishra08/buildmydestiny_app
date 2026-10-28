@@ -4,6 +4,7 @@ import { useStore } from '../context/StoreContext';
 import { MOCK_ORDERS } from '../data/mockData';
 import OrderTimeline from '../components/OrderTimeline';
 import { getDeliverySchedule } from '../utils/deliverySchedule';
+import VendorDeliveryCard from '../components/VendorDeliveryCard';
 
 export const OrderTrackingView = () => {
   const { viewParams, navigateTo, getOrderById } = useStore();
@@ -37,6 +38,9 @@ export const OrderTrackingView = () => {
         <ArrowLeft size={16} />
         <span>Back to My Orders</span>
       </button>
+
+      {/* Vendor-managed delivery: status, rider and time left per seller */}
+      <VendorDeliveryCard orderId={order.id} />
 
       {/* Dynamic Delivery Date Notice Banner */}
       <div

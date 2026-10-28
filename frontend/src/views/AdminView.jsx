@@ -76,6 +76,7 @@ import {
 import { useStore } from '../context/StoreContext';
 import Logo from '../components/Logo';
 import PanelLogin from '../components/PanelLogin';
+import AdminTaxZones from '../components/AdminTaxZones';
 import api from '../services/api';
 import { uploadCloudFile } from '../services/storageService';
 import { uploadBannerToCloud } from '../services/cloudinaryService';
@@ -668,6 +669,7 @@ export default function AdminView() {
       items: [
         { id: 'orders', label: 'Orders & Logistics', icon: Truck, badge: orders.filter(o => o.statusCode !== 'delivered').length },
         { id: 'live-tracking', label: 'Live Tracking', icon: Compass },
+        { id: 'tax-zones', label: 'Tax, Commission & Zones', icon: Layers },
       ],
     },
     {
@@ -2302,6 +2304,7 @@ export default function AdminView() {
             {adminActiveTab === 'live-tracking' && renderLiveTrackingView()}
             {adminActiveTab === 'customers' && renderUsersView('Customers')}
             {adminActiveTab === 'vendors' && renderVendorsView()}
+            {adminActiveTab === 'tax-zones' && <AdminTaxZones />}
             {adminActiveTab === 'coupons' && renderCouponsView()}
             {adminActiveTab === 'banners' && renderBannersView()}
             {adminActiveTab === 'bookings' && renderBookingsView()}
