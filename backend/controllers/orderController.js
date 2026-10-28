@@ -5,7 +5,8 @@ import buildCrud from './crudFactory.js';
 import { notifyNewOrder } from './notificationHooks.js';
 import { priceCart } from '../utils/orderPricing.js';
 import { confirmPayment, sandboxAllowed } from '../utils/razorpay.js';
-import { FLOW, buildTracking, orderFieldsForStep, applyStatusToItems } from '../utils/orderFlow.js';
+import { FLOW, buildTracking, orderFieldsForStep, applyStatusToItems, buildShipments, trackingView } from '../utils/orderFlow.js';
+import { resolveDelivery, orderAddress, etaLabel } from '../utils/deliveryZones.js';
 
 /**
  * Material orders
@@ -32,9 +33,6 @@ const CUSTOMER_FIELDS = [
   'isAfter8PMOrder',
   'date',
   'time',
-  'driverName',
-  'driverPhone',
-  'vehicleNumber',
 ];
 
 const fail = (res, status, message) => res.status(status).json({ success: false, message });
@@ -47,13 +45,9 @@ const newOrderId = async () => {
   return `MST-${Date.now()}`;
 };
 
-const initialTracking = (body) =>
-  buildTracking(2, {
-    driverName: body?.tracking?.driverName || body?.driverName || '',
-    driverPhone: body?.tracking?.driverPhone || body?.driverPhone || '',
-    vehicleNumber: body?.tracking?.vehicleNumber || body?.vehicleNumber || '',
-    liveEtaMinutes: 720,
-  });
+// Drivers are assigned later by the delivering vendor, never by the customer.
+const initialTracking = (etaMinutes) =>
+  buildTracking(2, { driverName: '', driverPhone: '', vehicleNumber: '', liveEtaMinutes: etaMinutes });
 
 /**
  * @desc  Place an order. Customers send what they want (products, quantities, variants,
@@ -137,8 +131,16 @@ export const placeOrder = async (req, res) => {
       gateway = 'Cash On Site';
     }
 
+    // Delivery is handled by the vendors themselves: the customer's pincode decides the
+    // zone (and its delivery promise) and every vendor in the order must serve that zone.
+    const delivery = await resolveDelivery({
+      address: orderAddress(body),
+      productIds: lines.map((l) => l.product?.id).filter(Boolean),
+    });
+
     const id = await newOrderId();
     const now = new Date();
+    const promisedBy = new Date(now.getTime() + delivery.etaMinutes * 60000).toISOString();
     const customer = Object.fromEntries(CUSTOMER_FIELDS.filter((f) => body[f] !== undefined).map((f) => [f, body[f]]));
 
     const order = {
@@ -177,7 +179,14 @@ export const placeOrder = async (req, res) => {
         ...(isOnline ? { razorpayOrderId, razorpayPaymentId } : {}),
       },
       ...(isOnline ? { razorpayPaymentId } : {}),
-      tracking: initialTracking(body),
+      tracking: initialTracking(delivery.etaMinutes),
+      deliveryManagedBy: 'vendor',
+      deliveryZone: delivery.zone ? { id: delivery.zone.id, name: delivery.zone.name, city: delivery.zone.city } : null,
+      etaMinutes: delivery.etaMinutes,
+      promisedBy,
+      expectedDelivery: `Within ${etaLabel(delivery.etaMinutes)}`,
+      deliveryMessage: `Delivered by the vendor within ${etaLabel(delivery.etaMinutes)}`,
+      shipments: buildShipments(lines, { etaMinutes: delivery.etaMinutes, promisedBy }),
     };
 
     let saved;
@@ -201,7 +210,7 @@ export const placeOrder = async (req, res) => {
 
     res.status(201).json({ success: true, data: saved });
   } catch (error) {
-    if (intentId && !error.status) {
+    if (intentId) {
       await PaymentIntent.updateOne({ id: intentId }, { $set: { status: 'created' } }).catch(() => {});
     }
     fail(res, error.status || 500, error.message);
@@ -248,6 +257,27 @@ export const patchOrder = async (req, res) => {
     const saved = await Order.findOneAndUpdate({ id: req.params.key }, { $set: update }, { new: true }).lean();
     const { _id: _drop, ...clean } = saved;
     res.json({ success: true, data: clean });
+  } catch (error) {
+    fail(res, error.status || 500, error.message);
+  }
+};
+
+/**
+ * @desc  Live delivery tracking for one order: per-vendor status, rider details and the
+ *        time left against the zone's delivery promise.
+ * @route GET /api/orders/:key/track
+ * @access Private (owner or admin)
+ */
+export const trackOrder = async (req, res) => {
+  try {
+    const order = await Order.findOne({ id: req.params.key }).lean();
+    const isAdmin = req.user.role === 'admin';
+    const owns =
+      order &&
+      (String(order.userId) === String(req.user._id) ||
+        (req.user.email && String(order.customerEmail) === String(req.user.email).toLowerCase()));
+    if (!order || (!isAdmin && !owns)) return fail(res, 404, 'Record not found');
+    res.json({ success: true, data: trackingView(order) });
   } catch (error) {
     fail(res, error.status || 500, error.message);
   }

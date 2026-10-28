@@ -1268,6 +1268,7 @@ export const CheckoutView = () => {
         customer={user}
         orderItems={cart}
         couponCode={appliedCoupon?.code || null}
+        siteAddress={selectedAddress}
         summary={{
           subtotal: cartSubtotal,
           gstAmount: gstAmount,

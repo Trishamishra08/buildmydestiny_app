@@ -26,6 +26,11 @@ const Order = createAppModel('Order', {
     deliveryDate: Mixed,
     expectedDelivery: Mixed,
     deliveryMessage: Mixed,
+    deliveryManagedBy: Mixed,
+    deliveryZone: Mixed,
+    etaMinutes: Number,
+    promisedBy: Mixed,
+    shipments: [Mixed],
     isAfter8PMOrder: Mixed,
     // Set on online orders; unique so one payment can never pay for two orders.
     razorpayPaymentId: { type: String, unique: true, sparse: true },

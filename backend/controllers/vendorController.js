@@ -1,7 +1,14 @@
 import User from '../models/User.js';
 import Product from '../models/Product.js';
 import Order from '../models/Order.js';
-import { VENDOR_ITEM_STATUSES, rollupFromItems } from '../utils/orderFlow.js';
+import DeliveryZone from '../models/DeliveryZone.js';
+import {
+  VENDOR_ITEM_STATUSES,
+  rollupFromItems,
+  buildShipments,
+  canMoveItemStatus,
+  statusLabel,
+} from '../utils/orderFlow.js';
 
 const fail = (res, status, message) => res.status(status).json({ success: false, message });
 
@@ -61,6 +68,13 @@ export const updateVendorProfile = async (req, res, next) => {
     const update = {};
     for (const field of allowed) {
       if (req.body?.[field] !== undefined) update[field] = req.body[field];
+    }
+    // Zones this vendor delivers to (must be real zones; empty = all zones).
+    if (req.body?.serviceZones !== undefined) {
+      const ids = [...new Set((Array.isArray(req.body.serviceZones) ? req.body.serviceZones : []).map(String))];
+      const known = await DeliveryZone.find({ id: { $in: ids } }).select('id').lean();
+      if (known.length !== ids.length) return fail(res, 400, 'One or more delivery zones do not exist');
+      update.serviceZones = ids;
     }
     const user = await User.findByIdAndUpdate(req.user._id, { $set: update }, { new: true, runValidators: true })
       .select('-password')
@@ -300,45 +314,117 @@ export const listMyOrders = async (req, res, next) => {
 const ITEM_STATUSES = VENDOR_ITEM_STATUSES;
 
 /**
+ * Move a vendor's line items of an order to `status`, keep that vendor's shipment (rider,
+ * history) in step and roll the order status up. Delivery is run by the vendor, so this is
+ * the only place fulfilment progress is written.
+ *
+ * @param productId  limit the change to one line item (omit to move all of the vendor's items)
+ * @returns {{ error?: [number, string], order?, items? }}
+ */
+const advanceVendorItems = async ({ orderId, vendorId, productId, status, rider = {}, note = '' }) => {
+  if (!ITEM_STATUSES.includes(status)) {
+    return { error: [400, `Status must be one of: ${ITEM_STATUSES.join(', ')}`] };
+  }
+  const order = await Order.findOne({ id: orderId }).lean();
+  if (!order) return { error: [404, 'Order not found'] };
+  if (/cancel/i.test(String(order.status))) return { error: [409, 'This order has been cancelled'] };
+
+  const mine = (line) =>
+    String(line?.product?.vendorId) === vendorId && (!productId || String(line?.product?.id) === productId);
+  const targets = (order.items || []).filter(mine);
+  if (!targets.length) return { error: [403, 'This item does not belong to you'] };
+
+  const pending = targets.filter((line) => (line.vendorStatus || 'Processing') !== status);
+  if (pending.some((line) => !canMoveItemStatus(line.vendorStatus, status))) {
+    return { error: [409, `Order is already past "${status}" - status can only move forward`] };
+  }
+
+  const items = (order.items || []).map((line) => (pending.includes(line) ? { ...line, vendorStatus: status } : line));
+
+  // The vendor's shipment records who is delivering and when each step happened.
+  const now = new Date().toISOString();
+  const shipments = (order.shipments?.length ? order.shipments : buildShipments(order.items, order)).map((s) => {
+    if (String(s.vendorId) !== vendorId) return s;
+    const cleanRider = Object.fromEntries(
+      ['name', 'phone', 'vehicleNumber'].map((k) => [k, String(rider[k] ?? s.rider?.[k] ?? '').trim().slice(0, 60)])
+    );
+    return {
+      ...s,
+      rider: cleanRider,
+      history: pending.length
+        ? [...(s.history || []), { status, label: statusLabel(status), note: String(note || '').slice(0, 200), at: now }]
+        : s.history,
+    };
+  });
+
+  const rollup = rollupFromItems(items, order.tracking || {});
+  const mineShipment = shipments.find((s) => String(s.vendorId) === vendorId);
+  const update = { items, shipments, ...(rollup || {}) };
+  // The order-level tracking card shows the latest rider the customer should expect.
+  if (mineShipment?.rider?.name) {
+    update.tracking = {
+      ...(update.tracking || order.tracking || {}),
+      driverName: mineShipment.rider.name,
+      driverPhone: mineShipment.rider.phone,
+      vehicleNumber: mineShipment.rider.vehicleNumber,
+    };
+  }
+  if (rollup?.statusCode === 'delivered' && /cash|pay on site|pending/i.test(String(order.paymentStatus || ''))) {
+    update.paymentStatus = 'Paid (Cash Collected)';
+    update.payment = { ...(order.payment || {}), status: 'Paid (Cash Collected)' };
+  }
+
+  await Order.updateOne({ id: orderId }, { $set: update });
+  return {
+    order: { id: order.id, status: update.status || order.status },
+    items: targets.map((line) => ({ ...line, vendorStatus: status })),
+  };
+};
+
+const sendAdvance = (res, result, pick = (r) => r.items) =>
+  result.error ? fail(res, result.error[0], result.error[1]) : res.json({ success: true, data: pick(result), order: result.order });
+
+const riderFrom = (body = {}) => ({ name: body.driverName, phone: body.driverPhone, vehicleNumber: body.vehicleNumber });
+
+/**
  * @desc    Update the fulfilment status of the vendor's own line item within an order
  * @route   PATCH /api/vendor/orders/:orderId/items/:productId/status
  * @access  Private (vendor, owner of that line item only)
  */
 export const updateMyOrderItemStatus = async (req, res, next) => {
   try {
-    const vendorId = String(req.user._id);
-    const { status } = req.body || {};
-    if (!ITEM_STATUSES.includes(status)) {
-      return fail(res, 400, `Status must be one of: ${ITEM_STATUSES.join(', ')}`);
-    }
-
-    const order = await Order.findOne({ id: req.params.orderId }).lean();
-    if (!order) return fail(res, 404, 'Order not found');
-
-    let found = null;
-    const nextItems = (order.items || []).map((line) => {
-      if (
-        String(line?.product?.id) === req.params.productId &&
-        String(line?.product?.vendorId) === vendorId
-      ) {
-        found = { ...line, vendorStatus: status };
-        return found;
-      }
-      return line;
+    const result = await advanceVendorItems({
+      orderId: req.params.orderId,
+      vendorId: String(req.user._id),
+      productId: req.params.productId,
+      status: req.body?.status,
+      rider: riderFrom(req.body),
+      note: req.body?.note,
     });
+    sendAdvance(res, result, (r) => r.items[0]);
+  } catch (error) {
+    next(error);
+  }
+};
 
-    if (!found) return fail(res, 403, 'This item does not belong to you');
-
-    // The customer sees the slowest item's progress across all vendors in the order.
-    const rollup = rollupFromItems(nextItems, order.tracking || {});
-    const update = { items: nextItems, ...(rollup || {}) };
-    if (rollup?.statusCode === 'delivered' && /cash|pay on site|pending/i.test(String(order.paymentStatus || ''))) {
-      update.paymentStatus = 'Paid (Cash Collected)';
-      update.payment = { ...(order.payment || {}), status: 'Paid (Cash Collected)' };
-    }
-
-    await Order.updateOne({ id: req.params.orderId }, { $set: update });
-    res.json({ success: true, data: found, order: { id: order.id, status: update.status || order.status } });
+/**
+ * @desc    Update the whole of the vendor's part of an order in one go (Ready to Ship ->
+ *          Shipped -> Out for Delivery -> Delivered), optionally with the delivery person's
+ *          details. The customer follows this on their tracking screen.
+ * @route   PATCH /api/vendor/orders/:orderId/status
+ *          { status, driverName?, driverPhone?, vehicleNumber?, note? }
+ * @access  Private (vendor)
+ */
+export const updateMyOrderStatus = async (req, res, next) => {
+  try {
+    const result = await advanceVendorItems({
+      orderId: req.params.orderId,
+      vendorId: String(req.user._id),
+      status: req.body?.status,
+      rider: riderFrom(req.body),
+      note: req.body?.note,
+    });
+    sendAdvance(res, result);
   } catch (error) {
     next(error);
   }

@@ -48,6 +48,8 @@ const userSchema = new mongoose.Schema(
       enum: ['pending', 'approved', 'rejected'],
       default: 'pending',
     },
+    // Delivery zones (DeliveryZone ids) this vendor delivers to. Empty = every zone.
+    serviceZones: { type: [String], default: [] },
     avatar: {
       type: String,
       default: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',

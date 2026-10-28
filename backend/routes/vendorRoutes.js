@@ -10,6 +10,7 @@ import {
   deleteMyProduct,
   listMyOrders,
   updateMyOrderItemStatus,
+  updateMyOrderStatus,
   listVendors,
   setVendorStatus,
   requireApprovedVendor,
@@ -34,6 +35,7 @@ router.delete('/products/:key', ...vendorOnly, deleteMyProduct);
 
 // Orders containing the vendor's products
 router.get('/orders', ...vendorOnly, listMyOrders);
+router.patch('/orders/:orderId/status', ...vendorOnly, updateMyOrderStatus);
 router.patch('/orders/:orderId/items/:productId/status', ...vendorOnly, updateMyOrderItemStatus);
 
 // Admin: vendor account approval

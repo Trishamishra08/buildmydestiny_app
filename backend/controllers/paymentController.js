@@ -1,5 +1,6 @@
 import PaymentIntent from '../models/PaymentIntent.js';
 import { priceCart } from '../utils/orderPricing.js';
+import { resolveDelivery, orderAddress } from '../utils/deliveryZones.js';
 import { isConfigured, publicKey, sandboxAllowed, createGatewayOrder, confirmPayment } from '../utils/razorpay.js';
 
 if (!isConfigured()) {
@@ -27,6 +28,11 @@ export const createRazorpayOrder = async (req, res) => {
       items,
       couponCode,
       includeUnloading: Boolean(includeUnloading ?? isUnloadingSelected ?? false),
+    });
+    // Don't take money for an address the vendors can't deliver to.
+    await resolveDelivery({
+      address: orderAddress(req.body),
+      productIds: lines.map((l) => l.product?.id).filter(Boolean),
     });
     if (totals.grandTotal <= 0) {
       return res.status(400).json({ success: false, message: 'Nothing to pay for this order' });

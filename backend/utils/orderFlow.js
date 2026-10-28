@@ -87,3 +87,95 @@ export const applyStatusToItems = (items = [], status) => {
   if (!itemStatus) return items;
   return items.map((line) => ({ ...line, vendorStatus: itemStatus }));
 };
+
+// ---------------------------------------------------------------------------
+// Vendor-managed delivery
+//
+// Each vendor delivers their own items (no courier aggregator). An order keeps one
+// "shipment" per vendor: who is delivering, the rider details, the delivery promise
+// (zone based, 3 hours by default) and a status history the customer can follow.
+// A shipment's status is always derived from its line items, so it can never disagree.
+// ---------------------------------------------------------------------------
+
+export const PLATFORM_VENDOR = 'platform';
+
+export const lineVendorId = (line) => String(line?.product?.vendorId || PLATFORM_VENDOR);
+
+/** Forward-only: a vendor may move on (or skip ahead) but never go back or reopen a delivered item. */
+export const canMoveItemStatus = (from, to) => {
+  const a = VENDOR_ITEM_STATUSES.indexOf(from || 'Processing');
+  const b = VENDOR_ITEM_STATUSES.indexOf(to);
+  return b > a;
+};
+
+/** One shipment per vendor present in the order. */
+export const buildShipments = (lines = [], { etaMinutes, promisedBy } = {}) => {
+  const byVendor = new Map();
+  for (const line of lines) {
+    const id = lineVendorId(line);
+    if (!byVendor.has(id)) {
+      byVendor.set(id, {
+        vendorId: id,
+        vendorName: line?.product?.vendorName || (id === PLATFORM_VENDOR ? 'BuildMyDestiny' : 'Vendor'),
+        rider: { name: '', phone: '', vehicleNumber: '' },
+        etaMinutes,
+        promisedBy,
+        history: [{ status: 'Processing', label: 'Order received by vendor', at: new Date().toISOString() }],
+      });
+    }
+  }
+  return [...byVendor.values()];
+};
+
+/** Shipment status = the slowest of that vendor's items. */
+export const shipmentStatus = (lines = []) => {
+  const steps = lines.map((l) => VENDOR_ITEM_STATUSES.indexOf(l.vendorStatus || 'Processing'));
+  return VENDOR_ITEM_STATUSES[Math.max(Math.min(...steps), 0)] || 'Processing';
+};
+
+const CUSTOMER_LABEL = {
+  Processing: 'Vendor is preparing your order',
+  'Ready to Ship': 'Packed and ready to ship',
+  Shipped: 'Shipped - on the way',
+  'Out for Delivery': 'Out for delivery',
+  Delivered: 'Delivered',
+};
+export const statusLabel = (status) => CUSTOMER_LABEL[status] || status;
+
+/** Customer-facing view of an order's delivery: per-vendor progress against the promise. */
+export const trackingView = (order, now = new Date()) => {
+  const items = order.items || [];
+  const shipments = (order.shipments?.length ? order.shipments : buildShipments(items)).map((s) => {
+    const lines = items.filter((l) => lineVendorId(l) === s.vendorId);
+    const status = shipmentStatus(lines);
+    const delivered = status === 'Delivered';
+    const promisedAt = s.promisedBy ? new Date(s.promisedBy) : null;
+    const minutesLeft = promisedAt && !delivered ? Math.round((promisedAt - now) / 60000) : null;
+    return {
+      vendorId: s.vendorId,
+      vendorName: s.vendorName,
+      status,
+      message: statusLabel(status),
+      step: VENDOR_ITEM_STATUSES.indexOf(status) + 1,
+      totalSteps: VENDOR_ITEM_STATUSES.length,
+      rider: s.rider || null,
+      promisedBy: s.promisedBy || null,
+      minutesLeft,
+      isDelayed: minutesLeft !== null && minutesLeft < 0,
+      deliveredAt: delivered ? s.history?.find((h) => h.status === 'Delivered')?.at || null : null,
+      items: lines.map((l) => ({ id: l.product?.id, name: l.product?.name, quantity: l.quantity, status: l.vendorStatus || 'Processing' })),
+      history: s.history || [],
+    };
+  });
+  return {
+    orderId: order.id,
+    status: order.status,
+    statusCode: order.statusCode,
+    managedBy: 'vendor',
+    zone: order.deliveryZone || null,
+    etaMinutes: order.etaMinutes ?? null,
+    promisedBy: order.promisedBy || null,
+    tracking: order.tracking,
+    shipments,
+  };
+};

@@ -17,6 +17,7 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import categorySectionRoutes from './routes/categorySectionRoutes.js';
 import vendorRoutes from './routes/vendorRoutes.js';
+import zoneRoutes from './routes/zoneRoutes.js';
 import {
   couponRoutes,
   settingsRoutes,
@@ -90,6 +91,7 @@ app.get(['/', '/api'], (req, res) => {
       payments: '/api/payments',
       upload: '/api/upload',
       vendor: '/api/vendor',
+      zones: '/api/zones',
     },
   });
 });
@@ -114,6 +116,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/vendor', vendorRoutes);
+app.use('/api/zones', zoneRoutes);
 
 // Error Handling Middlewares
 app.use(notFound);

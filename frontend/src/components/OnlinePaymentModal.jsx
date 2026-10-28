@@ -29,6 +29,7 @@ export const OnlinePaymentModal = ({
   amount = 535,
   orderItems = [],
   couponCode = null,
+  siteAddress = null,
   customer = {},
   summary = {},
   onPaymentSuccess,
@@ -164,6 +165,7 @@ export const OnlinePaymentModal = ({
         quantity: item.quantity,
       })),
       couponCode: couponCode || null,
+      siteAddress,
       includeUnloading: Boolean(summary?.isUnloadingSelected),
     });
 
